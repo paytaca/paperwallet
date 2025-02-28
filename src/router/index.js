@@ -1,10 +1,10 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import LandingPage from '@/views/LandingPage.vue';
-import Header from '@/views/Header.vue';
+import WalletGenerator from '@/components/WalletGenerator.vue';
 
 const routes = [
   { path: '/', name: 'LandingPage', component: LandingPage },
-  { path: '/header', name: 'Header', component: Header }
+  { path: '/walletgenerator', name: 'WalletGenerator', component: WalletGenerator },
 ];
 
 const router = createRouter({
