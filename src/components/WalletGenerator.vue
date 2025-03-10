@@ -679,10 +679,10 @@ font-family: 'Lexend';
 
 .private-key {
   position: absolute;
-  font-size: 0.6rem;
+  font-size: 10.9px;
   top: 17vh; 
   left: 18%;
-  right: 40%;
+  right: 36.3%;
   transform: translateX(-53%) translateY(90%) rotate(-45.7deg); /* Centers horizontally */
   white-space: nowrap;
   max-width: 90%;
