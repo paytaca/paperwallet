@@ -591,19 +591,22 @@ font-family: 'Lexend';
 
 
 .select-button {
-  font-style: 'Lexend';
-  font-size: 20px;
+  font-family: 'Lexend', sans-serif;
+  font-size: 100px; 
   position: absolute;
   bottom: 90px;
-  background: #ff9800;
-  color: white;
+  background: rgb(51 65 85);
+  color: #ccc;
   border: none;
-  padding: 20px 15px;
-  border-radius: 6px;
+  padding: 15px 30px;
+  width: 200px;
+  height: 30px;
+  border-radius: 10px;
   cursor: pointer;
   opacity: 0;
-  transition: opacity 0.3s ease-in-out, transform 0.2s ease-in-out;
+  transition: opacity 0.4s ease-in-out, transform 0.5s ease-in-out;
 }
+
 
 
 .design-preview:hover .select-button {
