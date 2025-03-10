@@ -679,10 +679,11 @@ font-family: 'Lexend';
 
 .private-key {
   position: absolute;
-  font-size: 0.7rem;
+  font-size: 0.6rem;
   top: 17vh; 
   left: 18%;
-  transform: translateX(-53%) translateY(100%) rotate(-45.7deg); /* Centers horizontally */
+  right: 40%;
+  transform: translateX(-53%) translateY(90%) rotate(-45.7deg); /* Centers horizontally */
   white-space: nowrap;
   max-width: 90%;
   overflow: hidden;
@@ -749,7 +750,7 @@ font-family: 'Lexend';
   }
 
   .wallet-description {
-    font-size: 18px;
+    font-size: 25px;
     margin-top: -40px;
   }
 
@@ -763,7 +764,7 @@ font-family: 'Lexend';
   }
 
   .select-button {
-    font-size: 10px;
+    font-size: 13px;
     padding: 6px 12px;
   }
 }
