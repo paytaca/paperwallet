@@ -335,7 +335,7 @@ generateQRCode(address, amount) {
         <html>
           <head>
             <title>Print Wallet</title>
-            <style>body { text-align: center; margin: 0; padding: 20px; } img { height: 100% width: 100%; max-width: 1000px; }</style>
+            <style>body { text-align: center; margin: 0; padding: 0; } img { height: 100% width: 100%; max-width: 1000px; }</style>
           </head>
           <body><img src="${imageData}" alt="Printed Wallet"></body>
         </html>
@@ -544,7 +544,7 @@ font-family: 'Lexend';
 .design-grid {
   display: grid;
   margin-left: 50px;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Responsive grid */
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: 15px;
   justify-content: center;
   align-items: center;
@@ -553,7 +553,7 @@ font-family: 'Lexend';
 
 
 .design-preview {
-  position: relative; /* Makes child elements position relative to this */
+  position: relative; 
   display: flex;
   justify-content: center;
   align-items: center;
@@ -562,8 +562,8 @@ font-family: 'Lexend';
 
 .design-preview img {
   width: 100%;
-  height: auto; /* Maintains aspect ratio */
-  object-fit: contain; /* Prevents stretching */
+  height: auto; 
+  object-fit: contain; 
   display: block;
 }
 
@@ -622,7 +622,7 @@ font-family: 'Lexend';
 .selected-design .design-image-container {
   position: relative;
   display: inline-block;
-  padding-top: 15px;
+  padding-top: 10px;
 }
 
 .selected-design .design-image {
@@ -664,7 +664,7 @@ font-family: 'Lexend';
 
 .selected-design .qr-code {
   width: 101.9px; 
-  height: 101px;
+  height: 101.9px;
 }
 
 .wallet-address{
@@ -683,7 +683,7 @@ font-family: 'Lexend';
   top: 17vh; 
   left: 18%;
   right: 36.3%;
-  transform: translateX(-53%) translateY(90%) rotate(-45.7deg); /* Centers horizontally */
+  transform: translateX(-53%) translateY(90%) rotate(-45.7deg); 
   white-space: nowrap;
   max-width: 90%;
   overflow: hidden;
@@ -775,37 +775,37 @@ font-family: 'Lexend';
     padding: 10px 20px;
   }
   .selected-design .qr-code {
-  width: 30px; /* Adjust the size of the QR codes */
+  width: 30px; 
   height: 30px;
   }
   .selected-design .public-section {
   position: absolute;
   display: flex;
-  right: 57px; /* Position public QR code and address on the right */
-  top: 30px;
+  right: 57px; 
+  top: 40px;
   }
 
   .selected-design .private-section {
     position: absolute;
     display: flex;
-    left: 18.9px;   /* Position private QR code and key on the left */
+    left: 18.9px;   
     top: 41.5px;
   }
   .wallet-address{
   position: absolute;
   font-size: 20px;
-  top: 3%; /* Adjust this value to keep it fixed */
-  left: 67.9%; /* Center the text */
-  transform: translateX(-50%); /* Ensures centering */
+  top: 3%;
+  left: 67.9%; 
+  transform: translateX(-50%); 
   white-space: nowrap;
   }
 
   .private-key {
   position: absolute;
-  font-size: clamp(9px, 1.2vw, 12px); /* Responsive text size */
-  top: 30.5%; /* Keeps it in the same relative position */
-  left: 50%; /* Centers it relative to the wallet */
-  transform: translateX(-50%) rotate(-45.7deg); /* Keeps it locked in place */
+  font-size: clamp(9px, 1.2vw, 12px); 
+  top: 30.5%; 
+  left: 50%; 
+  transform: translateX(-50%) rotate(-45.7deg); 
   white-space: nowrap;
 }
   
@@ -838,7 +838,7 @@ font-family: 'Lexend';
   }
 
   .design-grid {
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); /* Smaller grid for small screens */
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); 
   }
 
   .select-button {
@@ -858,7 +858,7 @@ font-family: 'Lexend';
   }
 
   .design-grid {
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Adjusted for tablets */
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
   }
 }
 
@@ -869,20 +869,20 @@ font-family: 'Lexend';
   }
 
   .design-grid {
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* More spacious layout */
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); 
   }
 }
 
 
 @media (max-width: 1440px) {
   .selected-design .public-section {
-    right: 11.6%; 
-    top: 15.4%;
+    right: 11.8%; 
+    top: 14.5%;
   }
 
   .selected-design .private-section {
-    left: 1.2%;
-    top: 40.6px;
+    left: 1.17%;
+    top: 35px;
   }
 
   .selected-design .qr-code {
@@ -905,26 +905,4 @@ font-family: 'Lexend';
     height: min(40vw, 90px);
   }
 }
-
-@media print {
-  * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-  }
-
-  .wallet-container {
-    display: block; /* Ensures correct layout */
-    width: 100%;
-  }
-
-  .paper-wallet {
-    page-break-before: always; /* Forces new page for each wallet */
-  }
-
-  .paper-wallet:first-child {
-    page-break-before: auto !important; /* Prevents skipping the first page */
-  }
-}
-
 </style>
