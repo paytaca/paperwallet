@@ -3,7 +3,7 @@
 
 <header class="landing-header">
    <img src="@/assets/paytaca.jpg" alt="Paytaca Logo" class="site-logo">
-   <h2 class="site-title">Paytaca.com</h2>
+   <a ref = "https://www.paytaca.com/" target = "_blank" class = "site-title" >Paytaca.com</a>
 </header>
 
 <div class="header-padding">
@@ -22,11 +22,10 @@
     </div>
     <div class="design-option" @click="selectDesign('design3')">
       <img src="@/assets/design3.png" alt="Design 3">
+      </div>
     </div>
   </div>
 </div>
-
-  </div>
 </template>
 
 <script>
