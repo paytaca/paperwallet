@@ -535,7 +535,6 @@ font-family: 'Lexend';
   width: 10px;
 }
 
-
 .customization-section {
   padding: 20px;
   background-color: #fff;
@@ -551,7 +550,6 @@ font-family: 'Lexend';
   padding: 15px;
 }
 
-
 .design-preview {
   position: relative; 
   display: flex;
@@ -566,7 +564,6 @@ font-family: 'Lexend';
   object-fit: contain; 
   display: block;
 }
-
 
 .design-image {
   width: 100%;
@@ -584,11 +581,9 @@ font-family: 'Lexend';
   transition: opacity 0.3s ease;
 }
 
-
 .design-preview:hover .overlay {
   opacity: 3;
 }
-
 
 .select-button {
   font-family: 'Lexend', sans-serif;
@@ -608,13 +603,12 @@ font-family: 'Lexend';
 }
 
 
-
 .design-preview:hover .select-button {
   opacity: 2;
 }.selected-design-container {
   position: relative;
   position: relative;
-  width: 100%;	 
+  width: 100%;   
   height: 100%; 
   overflow: hidden;
 }
@@ -690,7 +684,6 @@ font-family: 'Lexend';
   text-overflow: ellipsis;
 }
 
-
 .bch-amount {
   display: flex;
   justify-content: center;
@@ -711,12 +704,11 @@ font-family: 'Lexend';
 }
 
 .wallet-padding {
-  margin-top: -15px;
+  margin-top: -20px;
   padding-top: -80px;
-  padding: -40px;
-  padding-bottom: -50px;
+  padding: -80px;
+  padding-bottom: 1px;
 }
-
 
 /* Responsive Styles */
 @media (max-width: 1440px) {
@@ -873,7 +865,6 @@ font-family: 'Lexend';
   }
 }
 
-
 @media (max-width: 1440px) {
   .selected-design .public-section {
     right: 11.8%; 
@@ -890,7 +881,6 @@ font-family: 'Lexend';
     height: min(14vw, 100px);
   }
 }
-
 
 @media (max-width: 768px) {
   .selected-design .public-section,
