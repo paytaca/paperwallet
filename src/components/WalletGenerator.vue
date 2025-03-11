@@ -5,7 +5,7 @@
   <div class="landing-container">
     <header class="landing-header">
       <img src="@/assets/paytaca.jpg" alt="Paytaca Logo" class="site-logo" />
-      <h2 class="site-title">Paytaca.com</h2>
+      <a href="https://www.paytaca.com/#home" target="_blank" class="site-title">Paytaca.com</a>
     </header>
 
     <div class="header-padding">
@@ -393,21 +393,24 @@ generateQRCode(address, amount) {
   display: flex;
   flex-direction: column;
   align-items: center;
+  min-height: 20vh;
+  min-width: 20vw;
   font-family: "Poppins", sans-serif;
-  width: 100%;
+  width: 98.4%;
+  padding: flex;
 }
 
 .landing-header {
-background-color: white;
-width: 100%;
-padding: 5px 30px;
-position: fixed;
-top: 0;
-left: 0;
-display: flex;
-align-items: center; 
-gap: 10px; 
-z-index: 1000;
+  background-color: white;
+  width: 100%;
+  padding: 15px 30px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  display: flex;
+  align-items: center; 
+  gap: 10px; 
+  z-index: 1000;
 }
 
 .header-padding {
@@ -444,11 +447,11 @@ margin-top: 50px;
 }
 
 .site-title {
-font-size: 20px;
-font-weight: bold;
-color: rgb(30 41 59 );
-font-family:'Lexend';
-text-decoration: none;
+  font-size: 20px;
+  font-weight: bold;
+  color: rgb(30 41 59 );
+  font-family:'Lexend';
+  text-decoration: none;
 }
 
 .wallet-description {
@@ -872,8 +875,8 @@ font-family: 'Lexend';
   }
 
   .selected-design .private-section {
-    left: 1.17%;
-    top: 35px;
+    left: 1.10%;
+    top: 33px;
   }
 
   .selected-design .qr-code {
