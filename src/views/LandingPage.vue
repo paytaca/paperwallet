@@ -186,9 +186,9 @@ export default {
 }
 
 .landing-container {
-  background: url('@/assets/backdrop.png') no-repeat center center fixed;
+  background-color: #E2E8F0;
   position: fixed;
-  background-size: 105%;
+  background-size: 150%;
   z-index: -1;
   width: 100vw;
   height: 100vh;
@@ -196,15 +196,15 @@ export default {
   flex-direction: column;
   align-items: center;
   min-height: 20vh;
-  min-width: 20vw;
+  min-width: 100vw;
   font-family: "Poppins", sans-serif;
   width: 98.4%;
   padding: flex;
 }
 
 .landing-header {
-  background-color: white;
-  width: 100%;
+  background-color: #E2E8F0;
+  width: 100vw;
   padding: 15px 30px;
   position: fixed;
   top: 0;

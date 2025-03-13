@@ -501,12 +501,12 @@ generateQRCode(address, amount) {
 }
 
 .dark-mode .toggle-button {
-  background: #333;
+  background: #121212;
   color: white;
 }
 
 .light-mode .toggle-button {
-  background: rgb(255, 231, 92);
+  background: #EEDC82;
   color: #333;
 }
 
