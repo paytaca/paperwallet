@@ -1,22 +1,23 @@
 {
-  "name": "paperwallet",
-  "private": true,
+  "name": "paytaca-project",
   "version": "0.0.0",
+  "private": true,
   "type": "module",
+  "main": "main.js",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "dev": "concurrently \"vite\" \"cross-env NODE_ENV=development electron ./electron/main.js\"",
+    "build": "vite build && electron-builder",
+    "start": "electron ./electron/main.js"
   },
   "dependencies": {
     "@bitauth/libauth": "^3.0.0",
-    "@psf/bch-js": "^6.8.0",
-    "axios": "^1.8.1",
+    "axios": "^1.7.9",
     "base32-encode": "^2.0.0",
-    "bcryptjs": "^3.0.2",
+    "bcryptjs": "^2.4.3",
     "bitcoincashjs-lib": "^3.3.3",
     "bitcoinjs-lib": "^6.1.7",
-    "bitcore-lib-cash": "^10.8.0",
+    "bitcore-lib-cash": "^10.7.0",
     "bs58check": "^4.0.0",
     "buffer": "^6.0.3",
     "crypto-js": "^4.2.0",
@@ -27,7 +28,25 @@
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.2.1",
-    "vite": "^6.2.1",
-    "vite-plugin-vue-devtools": "^7.7.2"
+    "concurrently": "^9.1.2",
+    "cross-env": "^7.0.3",
+    "electron": "^35.0.1",
+    "electron-builder": "^25.1.8",
+    "vite": "^6.1.0",
+    "vite-plugin-vue-devtools": "^7.7.0"
+  },
+  "build": {
+    "appId": "com.yourapp.id",
+    "productName": "YourAppName",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist/**/*",
+      "electron/**/*"
+    ],
+    "win": {
+      "target": "nsis"
+    }
   }
 }
