@@ -186,7 +186,7 @@ export default {
 }
 
 .landing-container {
-  background-color: white;
+  background: url('@/assets/backdrop.png') no-repeat center center fixed;
   position: fixed;
   background-size: 105%;
   z-index: -1;
