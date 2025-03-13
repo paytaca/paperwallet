@@ -2,10 +2,17 @@
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1">
   </head>
-  <div class="landing-container">
+  <div :class="{ 'dark-mode': isDarkMode }" class="landing-container">
     <header class="landing-header">
       <img src="@/assets/paytaca.jpg" alt="Paytaca Logo" class="site-logo" />
       <a href="https://www.paytaca.com/#home" target="_blank" class="site-title">Paytaca.com</a>
+      
+      <!-- Dark Mode Toggle Button -->
+      <button class="toggle-button" @click="toggleDarkMode">
+  <span v-if="isDarkMode">🌙</span>
+  <span v-else>🌞</span>
+</button>
+
     </header>
 
     <div class="header-padding">
@@ -130,6 +137,8 @@ export default {
       customAmount: null,
       addressCount: 1,
       generatedWallets: [],
+      isLightMode: localStorage.getItem("lightMode") == "true",
+      isDarkMode: localStorage.getItem("darkMode") == "true",
       designs: [
         { id: 1, image: "src/assets/pw1.png", textColor: 'black' },
         { id: 2, image: "src/assets/pw2.png", textColor: 'white' },
@@ -147,7 +156,30 @@ export default {
     await this.generateNewKeys(); // Generate new keys upon component creation
   },
 
+  async created() {
+    document.body.classList.toggle("dark-mode", this.isdarkMode);
+    document.body.classList.toggle("light-mode", this.islightMode);
+  },
+
   methods: {
+    //Dark Mode Method
+    toggleDarkMode() {
+  this.isDarkMode = !this.isDarkMode;
+  this.isLightMode = !this.isLightMode; // Ensure only one mode is active
+
+  // Save the mode in local storage
+  localStorage.setItem("darkMode", this.isDarkMode);
+  localStorage.setItem("lightMode", this.isLightMode);
+
+  // Remove both modes first, then apply the correct one
+  document.body.classList.remove("light-mode", "dark-mode");
+  if (this.isDarkMode) {
+    document.body.classList.add("dark-mode");
+  } else {
+    document.body.classList.add("light-mode");
+  }
+},
+
     // Computes SHA-256 hash for a given data input
     async sha256(data = '', encoding = 'utf8') {
       let buffer;
@@ -388,21 +420,119 @@ generateQRCode(address, amount) {
 
 <style scoped>
 
+/* Dark Mode */
+.dark-mode .landing-header {  /* Fixed Typo */
+  background-color: #2c3440;
+  color: white;
+}
+
+.dark-mode .header-padding {
+  background-color: rgb(51 65 85);
+  color: white;
+}
+
+.dark-mode .landing-container,
+.dark-mode .customization-section {
+  background-color: #2c3440;
+  color: white;
+}
+
+
+.dark-mode .wallet-container {
+  background-color: #161B22;
+  color: white;
+}
+
+.dark-mode .step-label1,
+.dark-mode .step-label3 {
+  background-color: #515863;
+}
+
+.dark-mode .step-label2 {
+  background-color: #E63946;
+}
+
+
+
+/* Ensure specific text updates in dark mode */
+.dark-mode .site-title,
+.dark-mode .wallet-description {
+  color: #E2E8F0 !important;
+}
+
+/* Light Mode */
+.light-mode .landing-container,
+.light-mode .landing-header,
+.light-mode .wallet-container {
+  background-color: rgb(239, 246, 255);
+  color: black;
+}
+
+/* Ensure specific text updates in light mode */
+.light-mode .site-title,
+.light-mode .wallet-description{
+  color: rgb(51, 65, 85) !important;
+}
+
+
+
+
+.toggle-button {
+  position: fixed;
+  top: 6px;
+  right: 35px;
+  width: 40px;
+  height: 40px;
+  background: white;
+  color: black;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  transition: background 0.3s ease, transform 0.2s;
+}
+
+.toggle-button:hover {
+  transform: scale(1.1);
+}
+
+.dark-mode .toggle-button {
+  background: #333;
+  color: white;
+}
+
+.light-mode .toggle-button {
+  background: rgb(255, 231, 92);
+  color: #333;
+}
+
+
+
+
+
 .landing-container {
+  position: fixed; /* Sticks it to the viewport */
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh; /* Ensures full height */
   background-color: white;
   display: flex;
   flex-direction: column;
   align-items: center;
-  min-height: 20vh;
-  min-width: 20vw;
   font-family: "Poppins", sans-serif;
-  width: 98.4%;
-  padding: flex;
+  overflow-y: auto; 
+  overflow-x: hidden;/* Prevents unwanted scrolling */
 }
+
 
 .landing-header {
   background-color: white;
-  width: 100%;
+  width: 94.3%;
   padding: 15px 30px;
   position: fixed;
   top: 0;
@@ -426,6 +556,7 @@ text-align: center;
 justify-content: center;
 }
 
+
 .header-padding-text {
 font-size: 25px;
 font-weight: bold;
@@ -447,11 +578,11 @@ margin-top: 50px;
 }
 
 .site-title {
-  font-size: 20px;
-  font-weight: bold;
-  color: rgb(30 41 59 );
-  font-family:'Lexend';
-  text-decoration: none;
+font-size: 20px;
+font-weight: bold;
+color: rgb(30 41 59 );
+font-family:'Lexend';
+text-decoration: none;
 }
 
 .wallet-description {
@@ -675,6 +806,7 @@ font-family: 'Lexend';
 }
 
 .private-key {
+  font-weight: 90%;
   position: absolute;
   font-size: 10.9px;
   top: 17vh; 
@@ -875,8 +1007,8 @@ font-family: 'Lexend';
   }
 
   .selected-design .private-section {
-    left: 1.10%;
-    top: 33px;
+    left: 1.17%;
+    top: 35px;
   }
 
   .selected-design .qr-code {
@@ -899,3 +1031,4 @@ font-family: 'Lexend';
   }
 }
 </style>
+

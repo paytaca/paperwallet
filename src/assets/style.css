@@ -1,7 +1,8 @@
-body {
-    font-family: 'Lexend', serif;
-    font-size: larger;
-    margin: 0;
-    background: #02edd5;
-    color: #000000;
-  }
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100vw;
+  height: 100%;
+  overflow-x: hidden; /* Prevent horizontal scroll */
+  position: absolute;
+}

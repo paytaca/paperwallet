@@ -187,6 +187,11 @@ export default {
 
 .landing-container {
   background-color: white;
+  position: fixed;
+  background-size: 105%;
+  z-index: -1;
+  width: 100vw;
+  height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
