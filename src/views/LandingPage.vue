@@ -3,7 +3,16 @@
     <header class="landing-header">
       <img src="@/assets/paytaca.jpg" alt="Paytaca Logo" class="site-logo">
       <a href="https://www.paytaca.com/#home" target="_blank" class="site-title">Paytaca.com</a>
+
+      <!--Dark Mode Toggle Button-->
+    <button class = "toggle-button" @click = "toggleDarkMode">
+      <span v-if = "isDarkMode">🌙</span>
+      <span v-else>🌞</span>
+    </button>
+
     </header>
+
+
 
     <div class="header-padding">
       <img src="@/assets/paper5.png" class="paper5-logo">
@@ -53,16 +62,47 @@ export default {
       qrCodeData: "",
       jumbledText: this.generateJumbledText(),
       offsetX: 0,
-      offsetY: 0
+      offsetY: 0,
+      isLightMode: localStorage.getItem("lightMode") === "true" || localStorage.getItem("lightMode"),
+      isDarkMode: localStorage.getItem("darkMode") === "true" && localStorage.getItem("lightMode") !== "true"
     };
   },
+
+  async created() {
+    document.body.classList.toggle("dark-mode", this.isdarkMode);
+    document.body.classList.toggle("light-mode", this.islightMode);
+  },
+
+
   mounted() {
     window.addEventListener("mousemove", this.captureEntropy);
   },
   beforeDestroy() {
     window.removeEventListener("mousemove", this.captureEntropy);
   },
+
+
   methods: {
+    //Dark Mode Toggle
+
+    toggleDarkMode() {
+      this.isLightMode = !this.isLightMode;
+      this.isDarkMode = !this.isDarkMode;
+
+      localStorage.setItem("lightMode", this.isLightMode);
+      localStorage.setItem("darkMode", this.isDarkMode);
+
+      document.body.classList.remove("light-mode", "dark-mode");
+      if (this.isDarkMode) {
+        document.body.classList.add("dark-mode");
+        document.body.classList.remove("light-mode");
+      }else{
+        document.body.classList.add("light-mode");
+        document.body.classList.remove("dark-mode");
+      }
+    },
+
+
     captureEntropy(event) {
       if (this.addressGenerated || this.progress >= 100) return;
       this.entropy += `${event.clientX},${event.clientY}|`;
@@ -178,6 +218,91 @@ export default {
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&display=swap');
 
+
+/*Dark Mode*/ 
+.dark-mode .landing-container,
+.dark-mode .landing-header {
+  background-color: rgb(30 41 59 );
+}
+
+.dark-mode .hash-generator {
+  background-color: #E2E8F0 ;
+}
+
+.dark-mode .header-padding {
+  background-color: rgb(239, 246, 255);
+}
+
+/*Darkmode Text*/
+.dark-mode .site-title,
+.dark-mode .jumbled-text,
+.dark-mode .wallet-description {
+  color: rgb(239, 246, 255);
+}
+
+.dark-mode .header-padding-text {
+  color: rgb(30 41 59 );
+}
+
+/*LightMode*/
+.light-mode .landing-container,
+.light-mode .landing-header {
+  background-color: rgb(239, 246, 255);
+}
+
+.light-mode .header-padding {
+  background-color: rgb(30 41 59);
+}
+
+
+/*LightMode Text*/
+.light-mode .header-padding-text {
+  color: rgb(239, 246, 255);
+}
+
+.light-mode .site-title,
+.light-mode .jumbled-text,
+.light-mode .wallet-description {
+  color: rgb(30 41 59 );
+}
+
+
+
+.toggle-button {
+  position: fixed;
+  top: 6px;
+  right: 35px;
+  width: 40px;
+  height: 40px;
+  background: white;
+  color: black;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  transition: background 0.3s ease, transform 0.2s;
+}
+
+.toggle-button:hover {
+  transform: scale(1.1);
+}
+
+.dark-mode .toggle-button {
+  background: #121212;
+  color: white;
+}
+
+.light-mode .toggle-button {
+  background: #EEDC82;
+  color: #333;
+}
+
+
+
 .lexend {
   font-family: "Lexend", serif;
   font-optical-sizing: auto;
@@ -188,18 +313,20 @@ export default {
 .landing-container {
   background-color: #E2E8F0;
   position: fixed;
-  background-size: 150%;
+  background-size: cover;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   z-index: -1;
   width: 100vw;
   height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
-  min-height: 20vh;
+  min-height: 100vh;
   min-width: 100vw;
   font-family: "Poppins", sans-serif;
-  width: 98.4%;
-  padding: flex;
 }
 
 .landing-header {

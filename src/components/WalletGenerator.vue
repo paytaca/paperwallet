@@ -137,8 +137,8 @@ export default {
       customAmount: null,
       addressCount: 1,
       generatedWallets: [],
-      isLightMode: localStorage.getItem("lightMode") == "true",
-      isDarkMode: localStorage.getItem("darkMode") == "true",
+      isLightMode: localStorage.getItem("lightMode") === "true" || localStorage.getItem("lightMode"),
+      isDarkMode: localStorage.getItem("darkMode") === "true" && localStorage.getItem("lightMode") !== "true",
       designs: [
         { id: 1, image: "src/assets/pw1.png", textColor: 'black' },
         { id: 2, image: "src/assets/pw2.png", textColor: 'white' },
@@ -427,8 +427,12 @@ generateQRCode(address, amount) {
 }
 
 .dark-mode .header-padding {
-  background-color: rgb(51 65 85);
+  background-color: rgb(239, 246, 255);
   color: white;
+}
+
+.dark-mode .header-padding-text {
+  color: #2c3440;
 }
 
 .dark-mode .landing-container,
@@ -439,7 +443,7 @@ generateQRCode(address, amount) {
 
 
 .dark-mode .wallet-container {
-  background-color: #161B22;
+  background-color: rgb(239, 246, 255);
   color: white;
 }
 
@@ -472,6 +476,11 @@ generateQRCode(address, amount) {
 .light-mode .site-title,
 .light-mode .wallet-description{
   color: rgb(51, 65, 85) !important;
+}
+
+.light-mode .customization-section {
+  background-color: rgb(239, 246, 255);
+  color: black;
 }
 
 
@@ -515,24 +524,24 @@ generateQRCode(address, amount) {
 
 
 .landing-container {
-  position: fixed; /* Sticks it to the viewport */
+  position: fixed; 
   top: 0;
   left: 0;
   width: 100vw;
-  height: 100vh; /* Ensures full height */
+  height: 100vh; 
   background-color: white;
   display: flex;
   flex-direction: column;
   align-items: center;
   font-family: "Poppins", sans-serif;
   overflow-y: auto; 
-  overflow-x: hidden;/* Prevents unwanted scrolling */
+  overflow-x: hidden;
 }
 
 
 .landing-header {
   background-color: white;
-  width: 94.3%;
+  width: calc(100% - 15px);
   padding: 15px 30px;
   position: fixed;
   top: 0;
@@ -541,6 +550,7 @@ generateQRCode(address, amount) {
   align-items: center; 
   gap: 10px; 
   z-index: 1000;
+  box-sizing: border-box;
 }
 
 .header-padding {
@@ -556,6 +566,18 @@ text-align: center;
 justify-content: center;
 }
 
+/*.darkmode-header {
+  width: 100%;
+  height: 140%;
+  background-color: rgb(30 41 59 );
+  margin-top: 1px;
+  margin-bottom: 100px;
+  display: flex;
+  padding: 5px 30px;
+  align-items: center;
+  text-align: center;
+  justify-content: center;
+}*/
 
 .header-padding-text {
 font-size: 25px;
