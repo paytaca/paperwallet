@@ -152,7 +152,7 @@ export default {
         { id: 10, image: "src/assets/flipgradposver.png", textColor: 'black' },
         { id: 11, image: "src/assets/purenegaver.png", textColor: 'white' },
         { id: 12, image: "src/assets/blackverb.png", textColor: 'white' },
-        { id: 9, image: "src/assets/blackverr.png", textColor: 'white' },
+        { id: 13, image: "src/assets/blackverr.png", textColor: 'white' },
       ],
     };
   },
