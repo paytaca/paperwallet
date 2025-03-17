@@ -60,7 +60,14 @@
           </select>
 
           <label class="address">Addresses to generate:</label>
-          <input class="input-bar" type="number" v-model.number="addressCount" @input="generateMultipleKeys" />
+          
+          <div class="loader-wrapper">
+  <div v-if="loading" class="spinner"></div>
+  <input class="input-bar" type="number" v-model.number="addressCount" @input="generateMultipleKeys" />
+</div>
+
+
+
 
           <!-- Paper Wallet Container -->
           <div v-if="customAmount && addressCount" class="paper-wallet-container">
@@ -139,6 +146,8 @@ export default {
       generatedWallets: [],
       isLightMode: localStorage.getItem("lightMode") === "true" || localStorage.getItem("lightMode"),
       isDarkMode: localStorage.getItem("darkMode") === "true" && localStorage.getItem("lightMode") !== "true",
+      addressCount: 0,
+      loading: false,
       designs: [
         { id: 1, image: "src/assets/pw1.png", textColor: 'black' },
         { id: 2, image: "src/assets/pw2.png", textColor: 'white' },
@@ -175,8 +184,10 @@ export default {
   document.body.classList.remove("light-mode", "dark-mode");
   if (this.isDarkMode) {
     document.body.classList.add("dark-mode");
+    document.body.classList.remove("light-mode");
   } else {
     document.body.classList.add("light-mode");
+    document.body.classList.remove("light-mode");
   }
 },
 
@@ -247,6 +258,7 @@ export default {
 
     // Generates multiple Bitcoin Cash addresses based on user input
     async generateMultipleKeys() {
+      this.loading = true; // Start loader
     const MAX_WALLETS = 10; // Set your desired wallet limit
 
     // Ensure addressCount starts at 1
@@ -317,6 +329,7 @@ export default {
 
         this.generatedWallets.push(wallet);
     }
+    this.loading = false; // Stop loader after generation
 },
 
     // Updates the public QR code with a payment amount
@@ -419,6 +432,35 @@ generateQRCode(address, amount) {
 
 
 <style scoped>
+
+.loader-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.spinner {
+  position: absolute;
+  top: 13px;   /* Raise above input */
+  left: 50px;   /* Position beside input */
+  width: 16px;
+  height: 16px;
+  border: 2px solid #ccc;
+  border-top: 2px solid #077732;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.input-bar {
+  width: 60px;
+  padding: 4px;
+  margin-top: 10px;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+
 
 /* Dark Mode */
 .dark-mode .landing-header {  /* Fixed Typo */
@@ -674,17 +716,18 @@ font-family: 'Lexend';
   font-weight: bold;
   margin-top: 10px;
   margin-bottom: 10px;
-  margin-right: 5px;
+  margin-right: 1px;
 }
 
 .address {
   font-weight: bold;
-  margin-left: 20px;
+  margin-left: 10px;
 }
 
 .input-bar {
   width: 30px;
-  margin-left: 10px;
+  margin-left: 1px;
+  margin-top: 10px;
 }
 
 .amount {
