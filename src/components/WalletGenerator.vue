@@ -489,7 +489,7 @@ generateQRCode(address, amount) {
 }
 
 .dark-mode .customization-section {
-  background-color: rgb(239, 246, 255);
+  background-color: #E2E8F0;
   color: black;
 }
 
@@ -531,7 +531,7 @@ generateQRCode(address, amount) {
 }
 
 .light-mode .customization-section {
-  background-color: rgb(239, 246, 255);
+  background-color: #E2E8F0;
   color: black;
 }
 
@@ -675,7 +675,7 @@ font-family: 'Lexend';
   border: 1px solid #ccc;
   border-radius: 8px;
   padding: 20px;
-  background-color: #f9f9f9;
+  background-color: #E2E8F0;
 }
 
 .step-container {
@@ -746,7 +746,7 @@ font-family: 'Lexend';
 
 .customization-section {
   padding: 10px;
-  background-color: #fff;
+  background-color: #E2E8F0;
 }
 
 .design-grid {

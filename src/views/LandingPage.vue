@@ -226,7 +226,7 @@ export default {
 }
 
 .dark-mode .hash-generator {
-  background-color: #E2E8F0 ;
+  background-color: #E2E8F0;
 }
 
 .dark-mode .header-padding {
