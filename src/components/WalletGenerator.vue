@@ -488,6 +488,11 @@ generateQRCode(address, amount) {
   color: white;
 }
 
+.dark-mode .customization-section {
+  background-color: rgb(239, 246, 255);
+  color: black;
+}
+
 
 .dark-mode .wallet-container {
   background-color: rgb(239, 246, 255);
@@ -539,7 +544,7 @@ generateQRCode(address, amount) {
   right: 35px;
   width: 40px;
   height: 40px;
-  background: white;
+  background: #EEDC82;
   color: black;
   border: none;
   border-radius: 50%;
@@ -740,7 +745,7 @@ font-family: 'Lexend';
 }
 
 .customization-section {
-  padding: 20px;
+  padding: 10px;
   background-color: #fff;
 }
 
@@ -867,7 +872,9 @@ font-family: 'Lexend';
 
 .wallet-address{
   position: absolute;
-  font-size: 0.9rem;
+  font-size: 0.8rem;
+  color: black;
+  font-weight: bold;
   top: 3%; 
   left: 71%; 
   transform: translateX(-50%);
@@ -877,6 +884,7 @@ font-family: 'Lexend';
 
 .private-key {
   font-weight: 90%;
+  color: white;
   position: absolute;
   font-size: 10.9px;
   top: 17vh; 
