@@ -62,11 +62,52 @@
           <label class="address">Addresses to generate:</label>
           
           <div class="loader-wrapper">
-  <div v-if="loading" class="spinner"></div>
-  <input class="input-bar" type="number" v-model.number="addressCount" @input="generateMultipleKeys" />
+            <div v-if="loading" class="spinner"></div>
+              <input class="input-bar" type="number" v-model.number="addressCount" @input="generateMultipleKeys" />
+             <button class="encryption" @click="toggleAdvanceSettingdropdown">
+                  {{ showAdvanceSettingdropdown ? 'Hide Advanced Settings' : 'Advance Settings' }}
+            </button>  
+            </div>
+             
+      
+             <div class="dropdown-wrapper">
+  <div v-if="showAdvanceSettingdropdown" class="dropdown-panel">
+  <p><strong>Check the BIP38 option, enter a passphrase, and click "Generate" to create an encrypted wallet</strong></p>
+
+  <!-- BIP38 Checkbox & Link -->
+
+  <div class="advanced-settings-row">
+  <!-- BIP38 Checkbox -->
+  <input type="checkbox" v-model="encryptOption" id="bip38" />
+
+  <!-- Label + Link -->
+  <label for="bip38">
+    BIP38 Encrypt? 
+    <span class = "tooltip-container">
+    <a class="what-is-this" href="#">(What's this?)</a>
+    <span class="tooltip-text">
+    Selecting this option allows you to encrypt your wallet with a password you choose.
+    You will not be able to spend from the wallet without this password. The benefit is
+    additional security, but be careful — there is no way to recover your password if you forget it!
+  </span>
+</span>
+  </label>
+
+  <!-- Passphrase -->
+  <label for="passphrase" class="passphrase-label">Passphrase:</label>
+  <input id="passphrase" type="text" v-model="passphrase" class="passphrase-input" />
+
+  <!-- Generate Button -->
+  <button v-if="encryptOption" class="generate-btn">Generate</button>
 </div>
 
 
+  
+</div>
+</div>
+
+
+          
 
 
           <!-- Paper Wallet Container -->
@@ -148,6 +189,9 @@ export default {
       isDarkMode: localStorage.getItem("darkMode") === "true" && localStorage.getItem("lightMode") !== "true",
       addressCount: 0,
       loading: false,
+      showAdvanceSettingdropdown: false,
+      encryptOption: false,
+      passphrase: '',
       designs: [
         { id: 1, image: "src/assets/posbver.png", textColor: 'black' },
         { id: 2, image: "src/assets/newbnegaver.png", textColor: 'white' },
@@ -176,6 +220,11 @@ export default {
   },
 
   methods: {
+    toggleAdvanceSettingdropdown() {
+      this.showAdvanceSettingdropdown = !this.showAdvanceSettingdropdown;
+    },
+
+
     //Dark Mode Method
     toggleDarkMode() {
   this.isDarkMode = !this.isDarkMode;
@@ -437,6 +486,105 @@ generateQRCode(address, amount) {
 
 
 <style scoped>
+
+.tooltip-container {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+}
+
+.tooltip-text {
+  line-height: 25px;
+  visibility: hidden;
+  width: 350px;
+  background-color: #E2E8F0;
+  color: rgb(51, 65, 85);
+  text-align: left;
+  padding: 8px 10px;
+  border-radius: 5px;
+  font-size: 0.85em;
+
+  /* Positioning */
+  position: absolute;
+  z-index: 1;
+  top: 125%; /* Below the link */
+  left: 50%;
+  transform: translateX(-50%);
+
+  /* Optional Arrow */
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.tooltip-container:hover .tooltip-text {
+  visibility: visible;
+  opacity: 1;
+}
+
+.advanced-settings-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.what-is-this {
+  font-size: 10px;
+  color: rgb(51, 65, 85);
+}
+
+.passphrase {
+  margin-left: 20px;
+}
+
+.passphrase-input {
+  padding: 4px 6px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  min-width: 150px;
+}
+
+.generate-btn {
+  padding: 6px 10px;
+  background-color: rgb(239, 246, 255);
+  color: rgb(51, 65, 85);
+  font-size: 15px;
+  border: 2px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.generate-btn:hover {
+  background-color: #E2E8F0;
+  opacity: 10px;
+}
+
+.encryption {
+  padding: 5px 10px;
+  cursor: pointer;
+  border: 1px solid #333;
+  font-size: 13px;
+  font-family: 'Lexend';
+  margin-left: 40px;
+  border-radius: 4px;
+}
+
+.dropdown-panel {
+  margin-top: 10px;
+  background-color: #f9f9f9;
+  border-top: 1px solid #00cfcf;
+  padding: 10px;
+  width: 767px;
+  display: relative;
+}
+
+.dropdown-panel input[type = "text"] {
+  margin-left: 5px;
+  padding: 4px;
+  width: 100px;
+}
 
 .loader-wrapper {
   position: relative;
