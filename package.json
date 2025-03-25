@@ -20,9 +20,11 @@
     "bitcore-lib-cash": "^10.7.0",
     "bs58check": "^4.0.0",
     "buffer": "^6.0.3",
+    "cashaddrjs": "^0.4.4",
     "crypto-js": "^4.2.0",
     "html2canvas": "^1.4.1",
     "qrcode": "^1.5.4",
+    "secp256k1": "^5.0.1",
     "vue": "^3.5.13",
     "vue-router": "^4.5.0"
   },

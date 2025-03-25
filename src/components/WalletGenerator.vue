@@ -163,10 +163,13 @@
 </template>
 
 <script>
-import { binToHex, hexToBin, ripemd160, binToBase58, decodeBase58Address, encodeCashAddress, secp256k1 } from "@bitauth/libauth";
+import CryptoJS from 'crypto-js';
 import QRCode from "qrcode";
 import { Buffer } from "buffer";
-import html2canvas from "html2canvas";
+import secp256k1 from 'secp256k1';
+import bs58 from "bs58";
+import cashaddr from "cashaddrjs";
+import html2canvas from 'html2canvas';
 
 export default {
   data() {
@@ -187,7 +190,6 @@ export default {
       generatedWallets: [],
       isLightMode: localStorage.getItem("lightMode") === "true" || localStorage.getItem("lightMode"),
       isDarkMode: localStorage.getItem("darkMode") === "true" && localStorage.getItem("lightMode") !== "true",
-      addressCount: 0,
       loading: false,
       showAdvanceSettingdropdown: false,
       encryptOption: false,
@@ -211,13 +213,10 @@ export default {
   },
 
   async created() {
-    await this.generateNewKeys(); // Generate new keys upon component creation
-  },
-
-  async created() {
-    document.body.classList.toggle("dark-mode", this.isdarkMode);
-    document.body.classList.toggle("light-mode", this.islightMode);
-  },
+  await this.generateNewKeys(); // Generate new keys upon component creation
+  document.body.classList.toggle("dark-mode", this.isDarkMode);
+  document.body.classList.toggle("light-mode", this.isLightMode);
+},
 
   methods: {
     toggleAdvanceSettingdropdown() {
@@ -254,13 +253,45 @@ export default {
       } else if (encoding === 'utf8') {
         buffer = new TextEncoder().encode(data);
       } else if (encoding === 'hex') {
-        buffer = hexToBin(data);
+        buffer = this.hexToBin(data);
       } else {
         throw new Error('Unsupported encoding type');
       }
 
-      const hashBuffer = await crypto.subtle.digest('SHA-256', buffer);
-      return binToHex(new Uint8Array(hashBuffer));
+      // Use window.crypto.subtle explicitly
+      const hashBuffer = await window.crypto.subtle.digest('SHA-256', buffer);
+      return this.binToHex(new Uint8Array(hashBuffer));
+    },
+    binToHex(uint8Array) {
+      return Array.from(uint8Array)
+        .map(byte => byte.toString(16).padStart(2, '0'))
+        .join('');
+    },
+
+    // Convert Hex to Uint8Array
+    hexToBin(hex) {
+      return new Uint8Array(
+        hex.match(/.{1,2}/g).map(byte => parseInt(byte, 16))
+      );
+    },
+
+    // Convert Uint8Array to Base58 (if needed for WIF key)
+    binToBase58(uint8Array) {
+      return bs58.encode(uint8Array); // Requires 'bs58' library
+    },
+
+    ripemd160(buffer) {
+      return new Uint8Array(
+        CryptoJS.RIPEMD160(CryptoJS.enc.Hex.parse(this.binToHex(buffer)))
+          .toString(CryptoJS.enc.Hex)
+          .match(/.{1,2}/g)
+          .map(byte => parseInt(byte, 16))
+      );
+    },
+
+    
+    encodeCashAddress({ prefix, type, payload }) {
+      return cashaddr.encode(prefix, type.toUpperCase(), payload);
     },
 
     // Generates new private and public keys, WIF, and Bitcoin Cash address
@@ -269,47 +300,57 @@ export default {
       this.privateKeyWIF = privateKey.wif;
       this.publicKeyHex = privateKey.publicKey;
       this.bitcoinCashAddress = privateKey.address;
+      await this.generatePublicQRCodes();
+    },
+    generatePublicKey(privateKeyHex) {
+      const privateKey = Buffer.from(privateKeyHex, 'hex');
+      const publicKey = secp256k1.getPublicKey(privateKey, true);  // 'true' for compressed public key
+      return publicKey.toString('hex');
+    },
 
-      this.qrCodeDataPrivate = await QRCode.toDataURL(this.privateKeyWIF);
-      this.updatePublicQRCodes();
+    // Generate BCH address with proper format
+    generateBCHAddress(publicKeyHex) {
+      const publicKeyHash = this.ripemd160(this.sha256(publicKeyHex));  // Perform RIPEMD-160 on SHA-256 hash of public key
+      return `bitcoincash:${publicKeyHash}`;  // BCH address should have 'bitcoincash:' prefix
     },
 
     // Generates a private key, derives public key and Bitcoin Cash address
     async generatePrivateKey() {
-      const privateKeyBytes = new Uint8Array(32);
-      crypto.getRandomValues(privateKeyBytes);
+      // Generate a 32-byte private key using browser crypto API
+      const privateKey = new Uint8Array(32);
+      window.crypto.getRandomValues(privateKey);
 
-      const privateKeyHex = binToHex(privateKeyBytes);
+      // Generate compressed public key
+      const publicKey = secp256k1.publicKeyCreate(privateKey, true);
+
+      const privateKeyHex = this.binToHex(privateKey);
+      const publicKeyHex = this.binToHex(publicKey);
+
       const privateKeyHash = await this.sha256(privateKeyHex, 'hex');
-
-      const publicKeyBytes = secp256k1.derivePublicKeyCompressed(privateKeyBytes);
-      const publicKeyHex = binToHex(publicKeyBytes);
       const publicKeyHash = await this.sha256(publicKeyHex, 'hex');
 
       const sha256Hash = await this.sha256(publicKeyHex, 'hex');
-      const ripemdHash = ripemd160.hash(hexToBin(sha256Hash));
-
-      const extendedKey = new Uint8Array([0x80, ...privateKeyBytes, 0x01]);
+      const ripemdHash = this.ripemd160(this.hexToBin(sha256Hash));
+      const extendedKey = new Uint8Array([0x80, ...privateKey, 0x01]);
       const hashWif1 = await this.sha256(extendedKey, 'hex');
-      const hashWif2 = await this.sha256(hexToBin(hashWif1), 'hex');
-      const checksumWif = hexToBin(hashWif2).slice(0, 4);
+      const hashWif2 = await this.sha256(this.hexToBin(hashWif1), 'hex');
+      const checksumWif = this.hexToBin(hashWif2).slice(0, 4);
       const wifKey = new Uint8Array([...extendedKey, ...checksumWif]);
-      const finalWIF = binToBase58(wifKey);
+      const finalWIF = this.binToBase58(wifKey);
 
       return {
         privateKey: privateKeyHex,
         privateKeyHash,
         publicKey: publicKeyHex,
         publicKeyHash,
-        address: encodeCashAddress({
+        address: this.encodeCashAddress({
           prefix: 'bitcoincash',
-          type: 'p2pkh',
+          type: 'P2PKH',
           payload: ripemdHash,
-        }).address,
+        }),
         wif: finalWIF
       };
     },
-
     // Generates multiple Bitcoin Cash addresses based on user input
     async generateMultipleKeys() {
       this.loading = true; // Start loader
@@ -409,7 +450,7 @@ export default {
 
     try {
       wallet.qrCodePublic = await QRCode.toDataURL(qrDataPublic, {
-        errorCorrectionLevel: 'L',
+        errorCorrectionLevel: 'L', 
       });
       console.log(`QR Code updated for ${cleanAddress}:`, wallet.qrCodePublic);
     } catch (error) {

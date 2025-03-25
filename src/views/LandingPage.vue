@@ -47,14 +47,18 @@
 </template>
 
 <script>
-import { binToHex, hexToBin, ripemd160, binToBase58, encodeCashAddress, decodeBase58Address, secp256k1 } from "@bitauth/libauth";
+import { Buffer } from 'buffer';
+import CryptoJS from "crypto-js";
 import QRCode from "qrcode";
+import { ec as EC } from "elliptic";
+import bs58 from "bs58";
+import { encode as cashaddrEncode } from "cashaddrjs";
 
 export default {
   name: "BCHAddressGenerator",
   data() {
     return {
-      entropy: "",
+      entropy: "",   
       manualEntropy: "",
       progress: 0,
       generatedAddress: "",
@@ -127,77 +131,49 @@ export default {
     },
 
     async generateAddress() {
-      // Generate a valid Bitcoin Cash address from the entropy
-      const privateKey = await this.generatePrivateKeyFromEntropy(this.entropy);
-      const publicKey = privateKey.publicKey;
-      const cashAddress = privateKey.address;
-
-      this.generatedAddress = cashAddress;
+      const { privateKey, publicKey, legacyAddress, cashAddress } =
+        await this.generatePrivateKeyFromEntropy(this.entropy);
+      this.generatedAddress = cashAddress; // Use the BCH CashAddr format
       this.addressGenerated = true;
-      this.qrCodeData = await QRCode.toDataURL(this.generatedAddress);
-      console.log(this.generatedAddress);
+      this.qrCodeData = await QRCode.toDataURL(this.generatedAddress); 
+      console.log(this.generatedAddress); // Log the generated address
       this.redirectToWalletGenerator();
     },
-
+    
     async generatePrivateKeyFromEntropy(entropy) {
-      // Convert the entropy to a private key (32 bytes)
-      const privateKeyBytes = new Uint8Array(32);
-      for (let i = 0; i < 32; i++) {
-        privateKeyBytes[i] = entropy.charCodeAt(i % entropy.length); // Fill the entropy into the private key
-      }
+      const ec = new EC("secp256k1");
 
-      // Derive the public key from the private key (compressed format) using secp256k1 from @bitauth/libauth
-      const publicKeyBytes = secp256k1.derivePublicKeyCompressed(privateKeyBytes);
-      const publicKeyHex = binToHex(publicKeyBytes);
+      // Generate private key from entropy
+      const hash = CryptoJS.SHA256(entropy).toString();
+      const keyPair = ec.keyFromPrivate(hash, "hex");
+      const privateKeyHex = keyPair.getPrivate("hex");
+      const publicKeyHex = keyPair.getPublic(true, "hex"); // Compressed public key
 
-      // Hash the public key to get the Bitcoin address
-      const sha256Hash = await this.sha256(publicKeyHex, 'hex');
-      const ripemdHash = ripemd160.hash(hexToBin(sha256Hash));
+      // Hash the public key (SHA-256 → RIPEMD-160)
+      const sha256Hash = CryptoJS.SHA256(CryptoJS.enc.Hex.parse(publicKeyHex)).toString();
+      const ripemd160Hash = CryptoJS.RIPEMD160(CryptoJS.enc.Hex.parse(sha256Hash)).toString();
 
-      // Encode as Bitcoin Cash Address (P2PKH)
-      const versionByte = new Uint8Array([0x00]);
-      const addressData = new Uint8Array([...versionByte, ...ripemdHash]);
+      // Construct Legacy Address (Base58Check)
+      const versionByte = "00"; // Mainnet P2PKH prefix
+      const payload = versionByte + ripemd160Hash;
 
-      // Double SHA-256 for checksum
-      const hash1 = await this.sha256(addressData, 'hex');
-      const hash2 = await this.sha256(hexToBin(hash1), 'hex');
-      const checksum = hexToBin(hash2).slice(0, 4);
+      // Compute checksum (Double SHA-256)
+      const checksum = CryptoJS.SHA256(CryptoJS.SHA256(CryptoJS.enc.Hex.parse(payload)))
+        .toString()
+        .substring(0, 8);
 
-      // Concatenate and encode in Base58Check
-      const dataWithChecksum = new Uint8Array([...addressData, ...checksum]);
-      const legacyAddress = binToBase58(dataWithChecksum);
+      const finalAddressHex = payload + checksum;
+      const legacyAddress = bs58.encode(Buffer.from(finalAddressHex, "hex"));
 
-      // Convert to Bitcoin Cash Address format
-      const decodedLegacyAddress = decodeBase58Address(legacyAddress);
+      // Convert to Bitcoin Cash Address format (CashAddr)
+      const cashAddress = cashaddrEncode("bitcoincash", "P2PKH", Buffer.from(ripemd160Hash, "hex"));
 
-      // Check if payload exists before encoding the cash address
-      if (!decodedLegacyAddress || !decodedLegacyAddress.payload) {
-        throw new Error("Decoded legacy address does not have a valid payload.");
-      }
-
-      const cashAddress = encodeCashAddress({
-        prefix: 'bitcoincash',
-        type: 'p2pkh',
-        payload: decodedLegacyAddress.payload,
-        throwErrors: false,
-      }).address;
-
-      return { privateKey: privateKeyBytes, publicKey: publicKeyHex, address: cashAddress };
-    },
-
-    async sha256(data = '', encoding = 'utf8') {
-      let buffer;
-      if (data instanceof Uint8Array) {
-        buffer = data;
-      } else if (encoding === 'utf8') {
-        buffer = new TextEncoder().encode(data);
-      } else if (encoding === 'hex') {
-        buffer = hexToBin(data);
-      } else {
-        throw new Error('Unsupported encoding type');
-      }
-      const hashBuffer = await crypto.subtle.digest('SHA-256', buffer);
-      return binToHex(new Uint8Array(hashBuffer));
+      return {
+        privateKey: privateKeyHex,
+        publicKey: publicKeyHex,
+        legacyAddress,
+        cashAddress
+      };
     },
 
     redirectToWalletGenerator() {
