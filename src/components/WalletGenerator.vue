@@ -70,46 +70,37 @@
             </div>
              
       
-             <div class="dropdown-wrapper">
-  <div v-if="showAdvanceSettingdropdown" class="dropdown-panel">
-  <p><strong>Check the BIP38 option, enter a passphrase, and click "Generate" to create an encrypted wallet</strong></p>
+            <div class="dropdown-wrapper">
+            <div v-if="showAdvanceSettingdropdown" class="dropdown-panel">
+            <p><strong>Check the BIP38 option, enter a passphrase, and click "Generate" to create an encrypted wallet</strong></p>
 
-  <!-- BIP38 Checkbox & Link -->
+            <!-- BIP38 Checkbox & Link -->
 
-  <div class="advanced-settings-row">
-  <!-- BIP38 Checkbox -->
-  <input type="checkbox" v-model="encryptOption" id="bip38" />
+            <div class="advanced-settings-row">
+            <!-- BIP38 Checkbox -->
+            <input type="checkbox" v-model="encryptOption" id="bip38" />
 
-  <!-- Label + Link -->
-  <label for="bip38">
-    BIP38 Encrypt? 
-    <span class = "tooltip-container">
-    <a class="what-is-this" href="#">(What's this?)</a>
-    <span class="tooltip-text">
-    Selecting this option allows you to encrypt your wallet with a password you choose.
-    You will not be able to spend from the wallet without this password. The benefit is
-    additional security, but be careful — there is no way to recover your password if you forget it!
-  </span>
-</span>
-  </label>
+            <!-- Label + Link -->
+            <label for="bip38">
+              BIP38 Encrypt? 
+              <span class = "tooltip-container">
+              <a class="what-is-this" href="#">(What's this?)</a>
+              <span class="tooltip-text">
+              Selecting this option allows you to encrypt your wallet with a password you choose.
+              You will not be able to spend from the wallet without this password. The benefit is
+              additional security, but be careful — there is no way to recover your password if you forget it!
+            </span>
+          </span>
+            </label>
+            <!-- Passphrase -->
+            <label for="passphrase" class="passphrase-label">Passphrase:</label>
+            <input id="passphrase" type="text" v-model="passphrase" class="passphrase-input" />
 
-  <!-- Passphrase -->
-  <label for="passphrase" class="passphrase-label">Passphrase:</label>
-  <input id="passphrase" type="text" v-model="passphrase" class="passphrase-input" />
-
-  <!-- Generate Button -->
-  <button v-if="encryptOption" class="generate-btn">Generate</button>
-</div>
-
-
-  
-</div>
-</div>
-
-
-          
-
-
+            <!-- Generate Button -->
+            <button v-if="encryptOption" @click="generatePrivateKey()" class="generate-btn">Generate</button>
+          </div> 
+        </div>
+          </div>
           <!-- Paper Wallet Container -->
           <div v-if="customAmount && addressCount" class="paper-wallet-container">
             <div class="paper-wallet">
@@ -142,7 +133,7 @@
                     <div class="qr-section private-section">
                       <img :src="wallet.qrCodePrivate" alt="Private QR Code" class="qr-code private-qr" />
                     </div>
-                    <p class="private-key">{{ wallet.wif }}</p>
+                    <p class="private-key">{{ wallet.encryptedWIF ? wallet.encryptedWIF : wallet.wif }}</p>
                   </div>
                   </div>
                 </div>
@@ -170,6 +161,13 @@ import secp256k1 from 'secp256k1';
 import bs58 from "bs58";
 import cashaddr from "cashaddrjs";
 import html2canvas from 'html2canvas';
+import axios from 'axios';
+import bip38 from 'bip38';
+import * as wif from 'wif';
+import process from 'process';
+
+window.Buffer = Buffer;
+window.process = process;
 
 export default {
   data() {
@@ -213,7 +211,6 @@ export default {
   },
 
   async created() {
-  await this.generateNewKeys(); // Generate new keys upon component creation
   document.body.classList.toggle("dark-mode", this.isDarkMode);
   document.body.classList.toggle("light-mode", this.isLightMode);
 },
@@ -338,6 +335,15 @@ export default {
       const wifKey = new Uint8Array([...extendedKey, ...checksumWif]);
       const finalWIF = this.binToBase58(wifKey);
 
+      let encryptedWIF = null;
+
+      if (this.encryptOption && this.passphrase) {
+        const decodedWIF = wif.decode(finalWIF);
+        encryptedWIF = bip38.encrypt(decodedWIF.privateKey, decodedWIF.compressed, this.passphrase);
+        console.log('Encrypted WIF:', encryptedWIF);
+      }
+
+
       return {
         privateKey: privateKeyHex,
         privateKeyHash,
@@ -348,7 +354,8 @@ export default {
           type: 'P2PKH',
           payload: ripemdHash,
         }),
-        wif: finalWIF
+       wif: finalWIF,
+       encryptedWIF: encryptedWIF || null,
       };
     },
     // Generates multiple Bitcoin Cash addresses based on user input

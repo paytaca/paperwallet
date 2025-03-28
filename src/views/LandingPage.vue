@@ -53,6 +53,7 @@ import QRCode from "qrcode";
 import { ec as EC } from "elliptic";
 import bs58 from "bs58";
 import { encode as cashaddrEncode } from "cashaddrjs";
+import axios from 'axios';
 
 export default {
   name: "BCHAddressGenerator",
