@@ -122,6 +122,7 @@
                     <div class="bch-amount">
                       <p>{{ wallet.customAmount }} BCH</p> <!-- Show the correct amount per wallet -->
                     </div>
+                    <p v-if="bip38Enabled" class="bip38-label">BIP38 ENCRYPTED</p>
 
                     <!-- Public Address QR -->
                     <div class="qr-section public-section">
@@ -374,6 +375,9 @@ export default {
       this.loading = true;
       if (this.encryptOption) {
         this.wallets = [];
+        this.bip38Enabled = true;
+      }else{
+        this.bip38Enabled = false;
       }
     const MAX_WALLETS = 10; // Set your desired wallet limit
 
@@ -547,6 +551,23 @@ generateQRCode(address, amount) {
 
 
 <style scoped>
+
+.bip38-label {
+  font-weight: bold;
+  font-size: 7.6px;
+  color: rgb(51, 65, 85);
+  text-align: center;
+  margin-bottom: 10px;
+  position: absolute;
+  bottom: 183px;
+  left: 220.9px;
+  transform: translateX(-50%) rotate(-180deg);
+  border: 1.5px solid #E2E8F0;
+  padding: 5px 5px; 
+  border-radius: 5px;
+  background-color: white;
+}
+
 
 .tooltip-container {
   position: relative;
@@ -1107,11 +1128,12 @@ font-family: 'Lexend';
 }
 
 .bch-amount {
+  position: absolute;
   display: flex;
   justify-content: center;
   align-items: center; 
   text-align: center;
-  font-size: 25px; 
+  font-size: 19px; 
   font-weight: bold;
   color: #DAA425;
   padding: 29%; 
@@ -1123,6 +1145,9 @@ font-family: 'Lexend';
   margin-right: -50px;
   margin-top: -10px;
   margin-bottom: 10px;
+  transform: translateX(-50%) rotate(-180deg);
+  bottom: -30px;
+  left: 90px;
 }
 
 .wallet-padding {
