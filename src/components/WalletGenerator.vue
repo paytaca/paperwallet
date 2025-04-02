@@ -65,7 +65,7 @@
             <div v-if="loading" class="spinner"></div>
               <input class="input-bar" type="text" v-model.number="addressCount" @keyup.enter="generateMultipleKeys" />
              <button class="encryption" @click="toggleAdvanceSettingdropdown">
-                  {{ showAdvanceSettingdropdown ? 'Hide Advanced Settings' : 'Advance Settings' }}
+                  {{ showAdvanceSettingdropdown ? 'Hide Advanced Settings' : 'Advanced Settings' }}
             </button>  
             </div>
              
@@ -188,7 +188,7 @@ export default {
       addressCount: 1,
       generatedWallets: [],
       isLightMode: localStorage.getItem("lightMode") === "true" || localStorage.getItem("lightMode"),
-      isDarkMode: localStorage.getItem("darkMode") === "true" && localStorage.getItem("lightMode") !== "true",
+      isDarkMode: localStorage.getItem("darkMode") === "true" && localStorage.getItem("darkMode") !== "true",
       loading: false,
       showAdvanceSettingdropdown: false,
       encryptOption: false,
@@ -585,15 +585,11 @@ generateQRCode(address, amount) {
   padding: 8px 10px;
   border-radius: 5px;
   font-size: 0.85em;
-
-  /* Positioning */
   position: absolute;
   z-index: 1;
-  top: 125%; /* Below the link */
+  top: 125%;
   left: 50%;
   transform: translateX(-50%);
-
-  /* Optional Arrow */
   opacity: 0;
   transition: opacity 0.3s ease;
 }
@@ -675,8 +671,8 @@ generateQRCode(address, amount) {
 
 .spinner {
   position: absolute;
-  top: 13px;   /* Raise above input */
-  left: 50px;   /* Position beside input */
+  top: 13px; 
+  left: 50px; 
   width: 16px;
   height: 16px;
   border: 2px solid #ccc;
@@ -698,7 +694,7 @@ generateQRCode(address, amount) {
 
 
 /* Dark Mode */
-.dark-mode .landing-header {  /* Fixed Typo */
+.dark-mode .landing-header {  
   background-color: #2c3440;
   color: white;
 }
@@ -784,7 +780,8 @@ generateQRCode(address, amount) {
   align-items: center;
   justify-content: center;
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-  transition: background 0.3s ease, transform 0.2s;
+  transition: background 0.3s ease, transform 0.2s;                                                     
+  position: fixed;
 }
 
 .toggle-button:hover {
@@ -825,7 +822,6 @@ generateQRCode(address, amount) {
   background-color: white;
   width: calc(100% - 15px);
   padding: 15px 30px;
-  position: fixed;
   top: 0;
   left: 0;
   display: flex;
@@ -833,39 +829,28 @@ generateQRCode(address, amount) {
   gap: 10px; 
   z-index: 1000;
   box-sizing: border-box;
+  position: fixed;
 }
 
 .header-padding {
-width: 100%;
-height: 140px;
-background-color: rgb(30 41 59 );
-margin-top: 1px;
-margin-bottom: 100px;
-display: flex;
-padding: 5px 30px;
-align-items: center;
-text-align: center;
-justify-content: center;
-}
-
-/*.darkmode-header {
   width: 100%;
-  height: 140%;
+  height: 70px;
   background-color: rgb(30 41 59 );
-  margin-top: 1px;
-  margin-bottom: 100px;
+  margin-top: 4%;
+  margin-bottom: 4%;
   display: flex;
-  padding: 5px 30px;
+  padding: 5px 50px;
   align-items: center;
   text-align: center;
   justify-content: center;
-}*/
+}
+
 
 .header-padding-text {
 font-size: 25px;
 font-weight: bold;
 color: white;
-margin-top: 70px;
+margin-top: 25px;
 font-family: 'Lexend';
 }
 
@@ -875,10 +860,10 @@ height: 25px;
 }
 
 .paper5-logo {
-width: 50px;
-height: 50px;
+width: 45px;
+height: 45px;
 margin-right:5px;
-margin-top: 50px;
+margin-top: 10px;
 }
 
 .site-title {
@@ -922,6 +907,7 @@ font-family: 'Lexend';
   background-color: rgb(51 65 85);
   color: white;
   cursor: pointer;
+  height: 30px;
 }
 
 .step-label2 {
@@ -931,6 +917,7 @@ font-family: 'Lexend';
   background-color: #e05458;
   color: white;
   cursor: pointer;
+  height: 30px;
 }
 
 .step-label3 {
@@ -940,6 +927,7 @@ font-family: 'Lexend';
   background-color: rgb(51 65 85);
   color: white;
   cursor: pointer;
+  height: 30px;
 }
 .step-text {
   margin-left: 10px;
