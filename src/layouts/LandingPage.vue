@@ -1,7 +1,7 @@
 <template>
   <div class="landing-container">
     <header class="landing-header">
-      <img src="@/assets/paytaca.jpg" alt="Paytaca Logo" class="site-logo">
+      <img src="../assets/paytaca.jpg" alt="Paytaca Logo" class="site-logo">
       <a href="https://www.paytaca.com/#home" target="_blank" class="site-title">Paytaca.com</a>
 
       <!--Dark Mode Toggle Button-->
@@ -15,7 +15,7 @@
 
 
     <div class="header-padding">
-      <img src="@/assets/paper5.png" class="paper5-logo">
+      <img src="../assets/paper5.png" class="paper5-logo">
       <h1 class="header-padding-text">Bitcoin Cash (BCH) Paper Wallet</h1>
     </div>
 
@@ -32,7 +32,7 @@
             <span class="progress-text">{{ progress.toFixed(1) }}%</span>
           </div>
         </div>
-        
+
         <!-- Manual input area -->
         <input class="input-bar" v-model="manualEntropy" @input="updateEntropy" placeholder="no mouse? enter random text here">
       </div>
@@ -53,13 +53,13 @@ import QRCode from "qrcode";
 import { ec as EC } from "elliptic";
 import bs58 from "bs58";
 import { encode as cashaddrEncode } from "cashaddrjs";
-import axios from 'axios';
+
 
 export default {
   name: "BCHAddressGenerator",
   data() {
     return {
-      entropy: "",   
+      entropy: "",
       manualEntropy: "",
       progress: 0,
       generatedAddress: "",
@@ -69,7 +69,7 @@ export default {
       offsetX: 0,
       offsetY: 0,
       isLightMode: localStorage.getItem("lightMode") === "true" || localStorage.getItem("lightMode"),
-      isDarkMode: localStorage.getItem("darkMode") === "true" && localStorage.getItem("darkMode") !== "true"
+      isDarkMode: localStorage.getItem("darkMode") === "true" && localStorage.getItem("darkMode") !== "true",
     };
   },
 
@@ -82,7 +82,7 @@ export default {
   mounted() {
     window.addEventListener("mousemove", this.captureEntropy);
   },
-  beforeDestroy() {
+  beforeUnmount() {
     window.removeEventListener("mousemove", this.captureEntropy);
   },
 
@@ -111,7 +111,7 @@ export default {
     captureEntropy(event) {
       if (this.addressGenerated || this.progress >= 100) return;
       this.entropy += `${event.clientX},${event.clientY}|`;
-      this.progress += 0.1;
+      this.progress += 0.3;
       if (this.progress >= 100) {
         this.progress = 100;
         this.generateAddress();
@@ -124,7 +124,7 @@ export default {
     updateEntropy() {
       if (this.addressGenerated || this.progress >= 100) return;
       this.entropy += this.manualEntropy;
-      this.progress += 0.1;
+      this.progress += 0.76;
       if (this.progress >= 100) {
         this.progress = 100;
         this.generateAddress();
@@ -132,15 +132,15 @@ export default {
     },
 
     async generateAddress() {
-      const { privateKey, publicKey, legacyAddress, cashAddress } =
+      const { cashAddress } =
         await this.generatePrivateKeyFromEntropy(this.entropy);
       this.generatedAddress = cashAddress; // Use the BCH CashAddr format
       this.addressGenerated = true;
-      this.qrCodeData = await QRCode.toDataURL(this.generatedAddress); 
-      console.log(this.generatedAddress); // Log the generated address
+      this.qrCodeData = await QRCode.toDataURL(this.generatedAddress);
+      // console.log(this.generatedAddress);
       this.redirectToWalletGenerator();
     },
-    
+
     async generatePrivateKeyFromEntropy(entropy) {
       const ec = new EC("secp256k1");
 
@@ -196,7 +196,7 @@ export default {
 @import url('https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&display=swap');
 
 
-/*Dark Mode*/ 
+/*Dark Mode*/
 .dark-mode .landing-container,
 .dark-mode .landing-header {
   background-color: rgb(30 41 59 );
@@ -262,6 +262,7 @@ export default {
   justify-content: center;
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
   transition: background 0.3s ease, transform 0.2s;
+  z-index: 1000;
 }
 
 .toggle-button:hover {
@@ -314,8 +315,8 @@ export default {
   top: 0;
   left: 0;
   display: flex;
-  align-items: center; 
-  gap: 10px; 
+  align-items: center;
+  gap: 10px;
   z-index: 1000;
 }
 
@@ -360,6 +361,48 @@ export default {
   text-decoration: none;
 }
 
+@media (max-width: 600px) {
+  .site-title{
+    font-size: 14px;
+  }
+  .toggle-button{
+    font-size: 14px;
+    margin-top: 5px;
+    width: 30px;
+    height: 30px;
+  }
+  .header-padding-text{
+    font-size: 12px;
+  }
+  .paper5-logo{
+    height: 30px;
+    width: 30px;
+  }
+  .wallet-description{
+    font-size: 14px !important;
+    padding: 10px;
+  }
+  .hash-generator{
+    width: 100% !important;
+    margin-top: 0 !important;
+  }
+  .progress-container p{
+    font-size: 14px;
+  }
+  .progress-bar-container {
+    height: 30px !important;
+  }
+  .input-bar{
+    font-size: 12px !important;
+  }
+  .jumbled-text{
+    font-size: 14px !important;
+    width: 100vw !important;
+    word-break: break-word;
+    padding: 20px;
+  }
+}
+
 .wallet-description {
   text-align: center;
   font-size: 25px;
@@ -377,7 +420,7 @@ export default {
   font-weight: bold;
   font-size: 20px;
   font-family: 'Lexend';
-  
+
 }
 
 .progress-bar-container {
@@ -418,18 +461,18 @@ export default {
   border-radius: 5px;
   margin-top: 10px;
   padding: 0 10px;
-  font-size: 20px;
+  font-size: 15px;
 }
 
 .hash-generator {
-  width: 400px; 
-  background-color: white; 
-  padding: 20px; 
-  border-radius: 10px; 
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); 
-  text-align: center; 
-  margin: 30px auto 0; 
-  position: relative; 
+  width: 400px;
+  background-color: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  margin: 30px auto 0;
+  position: relative;
 }
 
 .jumbled-text {
