@@ -4,7 +4,7 @@ A Vue.js-powered website for generating stylish and secure Bitcoin Cash (BCH) pa
 ## 🚀Features
 Custom Designs - choose from a variety of paper wallet backgrounds
 Dark Mode Support
-BIP-38 Encryption - for passphrase protected wallet
+BIP-38 Encryption - passphrase protected wallet
 Custom BCH Amount - selector for preloaded value display
 
 ## 🔧Project Setup
@@ -12,4 +12,4 @@ npm install
 npm run dev
 
 ## 🔐Security Note
-All key generation and and ancryption are done client-side.
+All key generation and ecryption are done client-side.
