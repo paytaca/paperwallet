@@ -1,32 +1,15 @@
-# paytaca (paytaca-paperwallet)
+## 🧾BCH Paper Wallet Generator
+A Vue.js-powered website for generating stylish and secure Bitcoin Cash (BCH) paper wallets, it includes functonality to generate Bitcoin Cash (BCH) addresses securely. Users can select paper wallet designs and print fully customized paper wallets for cold storage and gifting.
 
-A Quasar Project
+## 🚀Features
+Custom Designs - choose from a variety of paper wallet backgrounds
+Dark Mode Support
+BIP-38 Encryption - for passphrase protected wallet
+Custom BCH Amount - selector for preloaded value display
 
-## Install the dependencies
-```bash
-yarn
-# or
+## 🔧Project Setup
 npm install
-```
+npm run dev
 
-### Start the app in development mode (hot-code reloading, error reporting, etc.)
-```bash
-quasar dev
-```
-
-
-### Lint the files
-```bash
-yarn lint
-# or
-npm run lint
-```
-
-
-### Build the app for production
-```bash
-quasar build
-```
-
-### Customize the configuration
-See [Configuring quasar.config.js](https://v2.quasar.dev/quasar-cli-vite/quasar-config-js).
+## 🔐Security Note
+All key generation and and ancryption are done client-side.
