@@ -103,7 +103,7 @@ export default {
         document.body.classList.remove("light-mode");
       }else{
         document.body.classList.add("light-mode");
-        document.body.classList.remove("dark-mode");
+        document.body.classList.remove("light-mode");
       }
     },
 
@@ -251,7 +251,7 @@ export default {
   right: 35px;
   width: 40px;
   height: 40px;
-  background: white;
+  background: #EEDC82;
   color: black;
   border: none;
   border-radius: 50%;

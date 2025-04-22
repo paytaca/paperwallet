@@ -3,22 +3,51 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
   </head>
   <div :class="{ 'dark-mode': isDarkMode }" class="landing-container">
+
     <header class="landing-header">
-      <img src="../assets/paytaca.jpg" alt="Paytaca Logo" class="site-logo" />
-      <a href="https://www.paytaca.com/#home" target="_blank" class="site-title">Paytaca.com</a>
-      
-      <!-- Dark Mode Toggle Button -->
-      <button class="toggle-button" @click="toggleDarkMode">
-  <span v-if="isDarkMode">🌙</span>
-  <span v-else>🌞</span>
-</button>
+      <q-card-section class="landing-header" style = "
+      height: clamp(20px, 11vh, 70px);
+      ">
+  <img src="../assets/paytaca.jpg" alt="Paytaca Logo" class="site-logo" />
+  <a href="https://www.paytaca.com/#home" target="_blank" class="site-title" 
+  style = "
+  font-size: clamp(17px, 2vw, 20px);
+  ">
+  Paytaca.com</a>
+
+  <!-- Dark Mode Toggle Button -->
+  <button class="toggle-button" @click="toggleDarkMode" 
+  style = "
+  z-index: 1000; 
+  position: sticky; 
+  margin-left: auto;
+  ">
+    <span v-if="isDarkMode">🌙</span>
+    <span v-else>🌞</span>
+  </button>
+</q-card-section>
+
 
     </header>
 
-    <div class="header-padding">
-      <img src="../assets/paper5.png" class="paper5-logo" />
-      <h1 class="header-padding-text">Bitcoin Cash (BCH) Paper Wallet</h1>
-    </div>
+    <q-card-section class="header-padding" style = "
+    margin: 70px; 
+    height: 100px;">
+  <img src="../assets/paper5.png" class="paper5-logo" style = "
+  width: clamp(30.1px, 5vw, 60px); 
+  height: auto;
+  margin-bottom: 9px;
+  "/>
+  <h1 class="header-padding-text" style="text-align: center; 
+    bottom: 1px;
+    font-size: clamp(16px, 3vw, 30px);
+    margin-top: 50px;
+    padding: 9px;
+    padding-bottom: 35px;
+    ">  
+    Bitcoin Cash (BCH) Paper Wallet</h1>
+</q-card-section>
+
 
     <p class="wallet-description">Wallet Generated</p>
 
@@ -89,6 +118,7 @@
           <h1 class="step-text">Step Two - Customize</h1>
         </div>
 
+        
         <div v-if="activeStep === 2" class="customization-section">
           <label class="custom">Custom BCH Amount:</label>
           <select v-model="paymentDetails" @change="updatePublicQRCodes" class="dropdown">
@@ -193,13 +223,18 @@
   class="bip38-label"
   style="
     position: absolute;
-    top: 68%;
+    top: 68.5%;
     left: 28.5%;
     height: 4%;
-    font-size: clamp(1px, 0.4vw, 24px);
+    font-size: clamp(1px, 0.5vw, 24px);
+    border: 1px solid #E2E8F0;
+    border-radius: 5px;
+    padding: 0.7em 0.5em;
     text-align: center;
     pointer-events: none;
     white-space: nowrap;
+    background-color: #E2E8F0; /* optional for visibility */
+    color: rgb(51, 65, 85);;
   ">
   <p>BIP38 ENCRYPTED</p>
 </q-card-section>
@@ -236,7 +271,7 @@
                             white-space: nowrap;
                             pointer-events: none;
                             ">
-                                    <p>{{ wallet.address }}</p>
+                                    <p :style="{color: selectedDesign?.addressColor || 'inherit'}">{{ wallet.address }}</p>
                 </q-card-section>
 
 
@@ -277,9 +312,8 @@
     white-space: nowrap;
     overflow: visible;
     text-overflow: ellipsis;
-  "
->
-  <p>{{ wallet.encryptedWIF ? wallet.encryptedWIF : wallet.wif }}</p>
+  ">
+  <p :style="{color: selectedDesign?.textColor || 'inherit', fontWeight: 'bold'}">{{ wallet.encryptedWIF ? wallet.encryptedWIF : wallet.wif }}</p>
 </q-card-section>
 
 
@@ -290,6 +324,8 @@
               </div>
             </div>
           </div>
+
+
         </div>
 
       <!-- Step Three - Print -->
@@ -349,16 +385,16 @@ export default {
       passphrase: '',
       //isEncrypted: false,
       designs: [
-        { id: 1, image: pw1, textColor: 'black' },
-        { id: 2, image: pw2, textColor: 'white' },
-        { id: 3, image: pw3, textColor: 'black' },
-        { id: 4, image: pw4, textColor: 'white' },
-        { id: 5, image: pw5, textColor: 'black' },
-        { id: 6, image: pw6, textColor: 'white' },
-        { id: 7, image: pw7, textColor: 'black' },
-        { id: 8, image: pw8, textColor: 'white' },
-        { id: 9, image: pw9, textColor: 'black' },
-        { id: 10, image: pw10, textColor: 'black' },
+        { id: 1, image: pw1, textColor: 'black', addressColor: 'white' },
+        { id: 2, image: pw2, textColor: 'white', addressColor: 'black' },
+        { id: 3, image: pw3, textColor: 'white', addressColor: 'black' },
+        { id: 4, image: pw4, textColor: 'white', addressColor: 'black' },
+        { id: 5, image: pw5, textColor: 'white', addressColor: 'black' },
+        { id: 6, image: pw6, textColor: 'white', addressColor: 'black' },
+        { id: 7, image: pw7, textColor: 'white', addressColor: 'black' },
+        { id: 8, image: pw8, textColor: 'white', addressColor: 'black' },
+        { id: 9, image: pw9, textColor: 'white', addressColor: 'black' },
+        { id: 10, image: pw10, textColor: 'white', addressColor: 'black' },
       ],
     };
   },
@@ -651,7 +687,9 @@ generateQRCode(address, amount) {
         <html>
           <head>
             <title>Print Wallet</title>
-            <style>body { text-align: center; margin: 0; padding: 0; } img { height: 100% width: 100%; max-width: 1000px; }</style>
+            <style>body { text-align: center; margin: 0; padding: 0; } img { height: 100% width: 100%; max-width: 1000px;}
+            
+            </style>
           </head>
           <body><img src="${imageData}" alt="Printed Wallet"></body>
         </html>
@@ -703,22 +741,21 @@ generateQRCode(address, amount) {
 
 
 <style scoped>
+@media print and (orientation: portrait) {
+  .wallet-padding {
+  margin-top: 1.7%;
+  margin-bottom: 1%;
+  padding-top: 0%;
+  padding: 0%;
+  padding-bottom: 0%;
+}
+}
 
 
 .bip38-label {
-  font-weight: bold;
-  font-size: clamp(0.5rem, 1vw, 0.5rem);
-  color: rgb(51, 65, 85);
   text-align: center;
   margin-bottom: 10px;
-  position: absolute;
-  bottom: 183px;
-  left: 220.9px;
   transform: translateX(-50%) rotate(-180deg);
-  border: 1.5px solid #E2E8F0;
-  padding: 5px 5px;
-  border-radius: 5px;
-  background-color: rgb(255, 255, 255);
 }
 
 .tooltip-container {
@@ -741,7 +778,7 @@ generateQRCode(address, amount) {
   z-index: 1;
   top: 125%;
   left: 50%;
-  transform: translateX(-50%);
+  transform: translateX(-50%)translateY(-130%);
   opacity: 0;
   transition: opacity 0.3s ease;
 }
@@ -1308,16 +1345,14 @@ font-family: 'Lexend';
 }
 
 .wallet-padding {
-  margin-top: 1%;
-  margin-bottom: 1%;
-  padding-top: 1%;
+  margin-top: 1.3%;
+  margin-bottom: 0%;
+  padding-top: 0%;
   padding: 0%;
   padding-bottom: 0%;
 }
 
 /*         Start Media            */
-
-
 /* 1440 above  */
 @media (max-width: 2560px) {
   .landing-container,
@@ -1381,19 +1416,6 @@ font-family: 'Lexend';
   .site-logo{
     height: 30px;
     width: 30px;
-  }
-  .header-padding {
-    padding-top: 5%;
-    padding-bottom: 20px;
-  }
-  .header-padding-text {
-    font-size: 1.7rem;
-    padding-bottom: 50px;
-  }
-  .paper5-logo{
-    width: 50px;
-    height: 50px;
-    margin-bottom: 57px;
   }
   .wallet-description {
     font-size: 1.6rem;
@@ -1525,10 +1547,6 @@ font-family: 'Lexend';
     height: 23px;
     width: 23px
   }
-  .header-padding-text {
-    font-size: 1.3rem;
-    padding-bottom: 30px;
-  }
   .paper5-logo{
     width: 30px;
     height: 30px;
@@ -1557,19 +1575,6 @@ font-family: 'Lexend';
     font-size: 15px;
     width: 30px;
     height: 30px;
-  }
-  .header-padding {
-    padding-top: 5%;
-    padding-bottom: 20px;
-  }
-  .header-padding-text {
-    font-size: 1rem;
-    padding-bottom: 20px;
-  }
-  .paper5-logo{
-    width: 30px;
-    height: 30px;
-    margin: 0;
   }
   .wallet-description {
     font-size: 1.2rem;
@@ -1633,20 +1638,6 @@ font-family: 'Lexend';
     font-size: 12px;
     width: 20px;
     height: 20px;
-  }
-  .header-padding {
-    padding-top: 5%;
-    padding-bottom: 10px;
-  }
-  .header-padding-text {
-    font-size: 1.1rem;
-    padding-bottom: 40px;
-  }
-  .paper5-logo{
-    width: 33px;
-    height: 33px;
-    margin-bottom: 25px;
-    margin-right: 2px;
   }
   .wallet-description {
     font-size: 1rem;
@@ -1727,7 +1718,7 @@ font-family: 'Lexend';
   }
 }
 
-@media (max-width: 600px) {
+@media (max-width: 622px) {
   .light-mode .landing-container,
   .light-mode .wallet-container
   .site-title {
@@ -1752,20 +1743,6 @@ font-family: 'Lexend';
     font-size: 12px;
     width: 20px;
     height: 20px;
-  }
-  .header-padding {
-    padding-top: 5%;
-    padding-bottom: 10px;
-  }
-  .header-padding-text {
-    font-size: 1.1rem;
-    padding-bottom: 40px;
-  }
-  .paper5-logo{
-    width: 33px;
-    height: 33px;
-    margin-bottom: 25px;
-    margin-right: 2px;
   }
   .wallet-description {
     font-size: 1rem;
@@ -1846,7 +1823,7 @@ font-family: 'Lexend';
   }
 }
 
-@media (max-width: 500px) {
+@media (max-width: 590px) {
   .light-mode .landing-container,
   .light-mode .wallet-container
   .site-title {
@@ -1872,19 +1849,112 @@ font-family: 'Lexend';
     width: 20px;
     height: 20px;
   }
-  .header-padding {
-    padding-top: 5%;
-    padding-bottom: 10px;
+  .wallet-description {
+    font-size: 1rem;
   }
-  .header-padding-text {
-    font-size: 1.1rem;
-    padding-bottom: 40px;
+  .wallet-container {
+    width: 80vw;
+    padding-right: 10px;
+    padding: 3px;
   }
-  .paper5-logo{
-    width: 33px;
-    height: 33px;
-    margin-bottom: 25px;
-    margin-right: 2px;
+  .step-label1 .step-text,
+  .step-label2 .step-text,
+  .step-label3 .step-text {
+    font-size: 0.8rem;
+  }
+  .selected-design .qr-code{
+    width: 2rem;
+    height: 2rem;
+  }
+  .private-qr{
+    margin-top: 2px;
+    margin-left: 0;
+  }
+  .public-qr{
+    margin-right: -17px;
+    margin-top: 2px;
+  }
+  .design-preview{
+    width: 110px;
+  }
+  .select-button {
+    font-size: 0.6rem;
+    line-height: 2%;
+    margin-bottom: 1%;
+    top: 40%;
+    width: 100px;
+    height: 1vh;
+  }
+  .customization-section .custom,
+  .customization-section .dropdown,
+  .customization-section .address,
+  .customization-section .input-bar,
+  .customization-section .encryption {
+    font-size: 0.8rem;
+  }
+  .dropdown-panel {
+    width: 54vw;
+    height: 38vh;
+  }
+  .dropdown-image {
+    width: 20px;
+    height: 20px;
+  }
+  .dropdown-panel .strong,
+  .dropdown-panel .advanced-settings-row {
+    font-size: 0.2rem;
+    bottom: 10%;
+  }
+  .generate-btn {
+    font-size: 0.5rem;
+  }
+  .selected-design .public-section {
+    right: 10.7% !important;
+    top: 9% !important;
+  }
+  .selected-design .private-section {
+    left: -4.7% !important;
+    top: -0.1% !important;
+  }
+  .private-key {
+    font-size: 0.18rem;
+    top: 22%;
+    margin-right: 1%;
+  }
+  .wallet-address {
+    margin-top: 1%;
+    right: -18px;
+    font-size: clamp(5px, 0.6vw, 20px)!important;
+  }
+}
+
+
+
+@media (max-width: 500px) {
+  .light-mode .landing-container,
+  .light-mode .wallet-container
+  .site-title {
+    width: 100% !important;
+  }
+  .wallet-description {
+    margin-bottom: 0;
+  }
+  .light-mode .landing-header,
+  .dark-mode .landing-header {
+    width: 100% !important;
+    padding: 7px;
+  }
+  .site-title{
+    font-size: 13px;
+  }
+  .site-logo{
+    height: 16px;
+    width: 16px;
+  }
+  .toggle-button{
+    font-size: 12px;
+    width: 20px;
+    height: 20px;
   }
   .wallet-description {
     font-size: 1rem;
@@ -1965,7 +2035,7 @@ font-family: 'Lexend';
   }
 }
 
-@media (max-width: 425px) {
+@media (max-width: 443px) {
   .light-mode .landing-container,
   .light-mode .wallet-container
   .site-title {
@@ -1990,19 +2060,6 @@ font-family: 'Lexend';
     font-size: 12px;
     width: 20px;
     height: 20px;
-  }
-  .header-padding {
-    padding-top: 5%;
-    padding-bottom: 10px;
-  }
-  .header-padding-text {
-    font-size: .9rem;
-    padding-bottom: 10px;
-  }
-  .paper5-logo{
-    width: 23px;
-    height: 23px;
-    margin-top: 28px;
   }
   .wallet-description {
     font-size: 1rem;
@@ -2090,7 +2147,131 @@ font-family: 'Lexend';
   .bch-amount {
     margin-bottom: 10%;
   }
-   
+  .bip38-label {
+    top: 70% !important;
+    padding: 0.5em 0.5em !important;
+  }
+}
+
+
+
+
+@media (max-width: 425px) {
+  .light-mode .landing-container,
+  .light-mode .wallet-container
+  .site-title {
+    width: 100% !important;
+  }
+  .wallet-description {
+    margin-bottom: 0;
+  }
+  .light-mode .landing-header,
+  .dark-mode .landing-header {
+    width: 100% !important;
+    padding: 7px;
+  }
+  .site-title{
+    font-size: 14px;
+  }
+  .site-logo{
+    height: 16px;
+    width: 16px;
+  }
+  .toggle-button{
+    font-size: 12px;
+    width: 20px;
+    height: 20px;
+  }
+  .wallet-description {
+    font-size: 1rem;
+  }
+  .wallet-container {
+    width: 80vw;
+    padding-right: 10px;
+    padding: 3px;
+  }
+  .step-label1 .step-text,
+  .step-label2 .step-text,
+  .step-label3 .step-text {
+    font-size: 0.8rem;
+  }
+  .selected-design .qr-code{
+    width: 2rem;
+    height: 2rem;
+  }
+  .private-qr{
+    margin-top: 2px;
+    margin-left: 0;
+  }
+  .public-qr{
+    margin-right: -17px;
+    margin-top: 2px;
+  }
+  .design-grid {
+    display: grid;
+    height: 100vh;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1px;
+  }
+  .design-preview{
+    width: 110px;
+  }
+  .select-button {
+    font-size: 0.6rem;
+    line-height: 2%;
+    margin-bottom: 1%;
+    top: 40%;
+    width: 100px;
+    height: 1vh;
+  }
+  .customization-section .custom,
+  .customization-section .dropdown,
+  .customization-section .address,
+  .customization-section .input-bar,
+  .customization-section .encryption {
+    font-size: 0.6rem;
+  }
+  .dropdown-panel {
+    width: 51vw;
+    height: 50vh;
+  }
+  .dropdown-image {
+    width: 20px;
+    height: 20px;
+  }
+  .dropdown-panel .strong,
+  .dropdown-panel .advanced-settings-row {
+    font-size: 0.2rem;
+    bottom: 10%;
+  }
+  .generate-btn {
+    font-size: 0.5rem;
+  }
+  .selected-design .public-section {
+    right: 13% !important;
+    top: 7.8% !important;
+  }
+  .selected-design .private-section {
+    left: -7% !important;
+    top: 0.1% !important;
+  }
+  .private-key {
+    font-size: 0.18rem;
+    top: 22%;
+    margin-right: 1%;
+  }
+  .wallet-address {
+    font-size: 3.2px !important;
+    margin-top: 0% !important;
+    right: -18px;
+  }
+  .bch-amount {
+    margin-bottom: 10%;
+  }
+  .bip38-label {
+    top: 70% !important;
+    padding: 0.5em 0.5em !important;
+  }
 }
 
 @media (max-width: 375px) {
@@ -2118,19 +2299,6 @@ font-family: 'Lexend';
     font-size: 12px;
     width: 20px;
     height: 20px;
-  }
-  .header-padding {
-    padding-top: 5%;
-    padding-bottom: 10px;
-  }
-  .header-padding-text {
-    font-size: .9rem;
-    padding-bottom: 10px;
-  }
-  .paper5-logo{
-    width: 23px;
-    height: 23px;
-    margin-top: 6.5px;
   }
   .wallet-description {
     font-size: 1rem;
@@ -2222,11 +2390,11 @@ font-family: 'Lexend';
   .bch-amount {
     margin-bottom: 13%;
   }
+  .bip38-label {
+    top: 70% !important;
+    padding: 0.5em 0.5em !important;
+  }
    
 }
-
-
-
-
 
 </style>
