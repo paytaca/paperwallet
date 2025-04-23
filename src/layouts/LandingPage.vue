@@ -2,7 +2,7 @@
   <div class="landing-container">
     <header class="landing-header">
       <img src="../assets/paytaca.jpg" alt="Paytaca Logo" class="site-logo">
-      <a href="https://www.paytaca.com/#home" target="_blank" class="site-title">Paytaca.com</a>
+      <a href="https://www.paytaca.com/#home" target="_blank" class="site-title">Paytaca</a>
 
       <!--Dark Mode Toggle Button-->
     <button class = "toggle-button" @click = "toggleDarkMode">

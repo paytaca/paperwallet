@@ -13,7 +13,7 @@
   style = "
   font-size: clamp(17px, 2vw, 20px);
   ">
-  Paytaca.com</a>
+  Paytaca</a>
 
   <!-- Dark Mode Toggle Button -->
   <button class="toggle-button" @click="toggleDarkMode" 
