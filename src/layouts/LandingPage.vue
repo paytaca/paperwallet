@@ -73,10 +73,7 @@ export default {
     };
   },
 
-  async created() {
-    document.body.classList.toggle("dark-mode", this.isdarkMode);
-    document.body.classList.toggle("light-mode", this.islightMode);
-  },
+
 
 
   mounted() {
@@ -103,7 +100,7 @@ export default {
         document.body.classList.remove("light-mode");
       }else{
         document.body.classList.add("light-mode");
-        document.body.classList.remove("light-mode");
+        document.body.classList.remove("dark-mode");
       }
     },
 
