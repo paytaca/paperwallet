@@ -121,14 +121,24 @@
         
         <div v-if="activeStep === 2" class="customization-section">
           <label class="custom">Custom BCH Amount:</label>
-          <select v-model="paymentDetails" @change="updatePublicQRCodes" class="dropdown">
-            <option disabled value="">Amount</option>
-            <option v-for="amount in [0.0001, 0.001, 0.005, 0.05, 0.1, 0.25, 0.5, 0.75, 1, 5, 10]" 
-                    :key="amount" 
-                    :value="amount">
-              {{ amount }} BCH
-            </option>
-          </select>
+<select
+  v-model="paymentDetails"
+  @change="updatePublicQRCodes"
+  class="dropdown"
+  :disabled="individualWalletOption"
+>
+  <option disabled value="">Amount</option>
+  <option
+    v-for="amount in [0.0001, 0.001, 0.005, 0.05, 0.1, 0.25, 0.5, 0.75, 1, 5, 10]"
+    :key="amount"
+    :value="amount"
+  >
+    {{ amount }} BCH
+  </option>
+</select>
+
+
+          
 
           <label class="address">Addresses to generate:</label>
           
@@ -139,7 +149,23 @@
                   {{ showAdvanceSettingdropdown ? 'Hide Advanced Settings' : 'Advance Settings' }}
             </button>
             </div>
-             
+
+            <div style="display: flex; align-items: center; gap: 0.6rem;">
+              <label class="token-option">Assets:</label>
+  
+  <select class="token-dropdown">
+    <option value="Bitcoin Cash">Bitcoin Cash</option>
+    <option value="Token">Token</option>
+  </select>
+
+
+              <label class="individual-custom-amount" style="display: flex; align-items: center;">
+    <input type="checkbox" v-model="individualWalletOption" style="margin-right: 0.1rem;" />
+    Enable Individual Custom Amount
+  </label>
+</div>
+
+
       
             <div class="dropdown-wrapper">
             <div v-if="showAdvanceSettingdropdown" class="dropdown-panel" style = "padding: 1rem;">
@@ -180,6 +206,9 @@
         </div>
           </div>
 
+        
+
+
 
 
           <!-- Paper Wallet Container -->
@@ -194,9 +223,23 @@
 
           <!-- Design Image Display -->
           <div v-if="generatedWallets.length" class="wallets-container" id="printable-wallet">
-            <div v-for="(wallet, index) in generatedWallets" :key="index" class="selected-design-container">
+              <div v-for="(wallet, index) in generatedWallets" :key="index" class="wallet">
+
+                <div v-if = "individualWalletOption" class="individual-wallet-section">
+                  <label class="custom">Custom BCH Amount:</label>
+          <select v-model.number="wallet.customAmount" @change="updateQrCodeForWallet(wallet)" class="wallet-amount-input">
+            <option disabled value="">Amount</option>
+            <option v-for="amount in [0.0001, 0.001, 0.005, 0.05, 0.1, 0.25, 0.5, 0.75, 1, 5, 10]" 
+                    :key="amount" 
+                    :value="amount">
+              {{ amount }} BCH
+            </option>
+          </select>
+  </div>
               <h3 class = "wallet-padding" v-if="index > 0"></h3>
               <div class="selected-design">
+
+                
                 <div class="design-image-container" :style="{ color: wallet.design.textColor }">
                   <img :src="wallet.design.image" alt="Selected Design" class="design-image" />
 
@@ -318,8 +361,11 @@
 
 
 
+
+
                   </div>
                   </div>
+
                 </div>
               </div>
             </div>
@@ -383,7 +429,10 @@ export default {
       showAdvanceSettingdropdown: false,
       encryptOption: false,
       passphrase: '',
-      //isEncrypted: false,
+      individualWalletOption: false,
+      wallet: {
+        customAmount: ""
+      },
       designs: [
         { id: 1, image: pw1, textColor: 'black', addressColor: 'white' },
         { id: 2, image: pw2, textColor: 'white', addressColor: 'black' },
@@ -670,11 +719,36 @@ export default {
     }
   }
 },
+
+async updateQRCodeForWallet(wallet) {
+  if (!wallet || !wallet.address) return;
+
+  const cleanAddress = wallet.address.replace(/^bitcoincash:/, '');
+  let qrDataPublic = `bitcoincash:${cleanAddress}`;
+
+  if (this.individualWalletOption && wallet.customAmount > 0) {
+    qrDataPublic += `?amount=${wallet.customAmount}`;
+  }
+
+  try {
+    wallet.qrCodePublic = await QRCode.toDataURL(qrDataPublic);
+  } catch (error) {
+    console.error(`Error updating QR code for ${wallet.address}:`, error);
+  }
+},
+
 generateQRCode(address, amount) {
     return `https://chart.googleapis.com/chart?chs=150x150&cht=qr&chl=bitcoincash:${address}?amount=${amount}`;
   },
+
+
     // Converts the wallet section into an image and opens a print window
     async printWallet() { 
+      this.individualWalletOption = false;
+
+      await this.$nextTick(); 
+
+
       const printable = document.getElementById("printable-wallet");
       if (!printable) {
         console.error("Printable wallet section not found!");
@@ -700,6 +774,7 @@ generateQRCode(address, amount) {
         printWindow.print();
         printWindow.close();
       }, 500);
+      this.individualWalletOption = true;
     },
 
     // Toggles dropdown for design selection
@@ -736,6 +811,7 @@ generateQRCode(address, amount) {
     },
   },
 };
+
 </script>
 
 
@@ -749,6 +825,45 @@ generateQRCode(address, amount) {
   padding: 0%;
   padding-bottom: 0%;
 }
+}
+.token-option {
+  font-size: 0.9rem;
+  font-weight: bold;
+}
+
+.token-dropdown {
+  margin-left: 1px;
+  width: 125px;
+  height: 23px;
+}
+
+
+
+.individual-wallet-section {
+  margin-left: 10px;
+  margin-top: 15px;
+}
+
+.individual-custom-amount {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  font-size: 0.8rem;
+  color: #333;
+  user-select: none;
+  margin: 0.5rem 0;
+}
+
+.individual-custom-amount input[type="checkbox"] {
+  width: 1rem;
+  height: 1rem;
+  accent-color: #3b82f6; /* Tailwind's blue-500 */
+  cursor: pointer;
+}
+
+.dark .individual-custom-amount {
+  color: #ddd;
 }
 
 
@@ -873,11 +988,7 @@ generateQRCode(address, amount) {
 
 .input-bar {
   width: 60px;
-  padding: 4px;
-  margin-top: 10px;
-}
-.input-bar {
-  width: 60px;
+  height: 23px;
   padding: 4px;
   margin-top: 10px;
 }
@@ -1353,6 +1464,11 @@ font-family: 'Lexend';
 }
 
 /*         Start Media            */
+
+
+
+
+
 /* 1440 above  */
 @media (max-width: 2560px) {
   .landing-container,
