@@ -166,11 +166,11 @@
   v-model="selectedToken"
 >
   <option value="" disabled selected>Select a Token</option>
-  <option value="Token1">Token 1</option>
-  <option value="Token2">Token 2</option>
-  <option value="Token3">Token 3</option>
-  <option value="Token4">Token 4</option>
-  <option value="Token5">Token 5</option>
+  <option value="Dogie Cash">Dogie Cash</option>
+  <option value="KathNiel">KathNiel</option>
+  <option value="Pighati">Pighati</option>
+  <option value="Nalolongkot">Nalolongkot</option>
+  <option value="Loha">Loha</option>
 </select>
 
 
@@ -249,10 +249,10 @@
 
           <select v-model.number="wallet.customAmount" @change="updateQrCodeForWallet(wallet)" class="wallet-amount-input">
             <option value="">Any Amount</option>
-            <option v-for="amount in [0.0001, 0.001, 0.005, 0.05, 0.1, 0.25, 0.5, 0.75, 1, 5, 10]" 
+            <option v-for="amount in availableAmounts" 
                     :key="amount" 
                     :value="amount">
-              {{ amount }} {{ selectedAsset === 'Token' ? 'Token' : 'BCH' }}
+              {{ amount }} {{ selectedAsset === 'Token' ? selectedToken || 'Token' : 'BCH' }}
             </option>
           </select>
   </div>
@@ -278,7 +278,7 @@
     
     ">
     <p v-if = "wallet.customAmount && wallet.customAmount > 0">
-      {{ wallet.customAmount }} BCH
+      {{ wallet.customAmount }} {{ selectedAsset === 'Token' ? selectedToken : 'BCH' }}
     </p>
   </q-card-section>
                   
@@ -457,6 +457,7 @@ export default {
       },
       selectedToken: '',
       selectedAsset: 'Bitcoin Cash',
+      suppressWatcher: false,
       designs: [
         { id: 1, image: pw1, textColor: 'black', addressColor: 'white' },
         { id: 2, image: pw2, textColor: 'white', addressColor: 'black' },
@@ -476,6 +477,17 @@ export default {
       document.body.classList.toggle("dark-mode", this.isDarkMode);
       document.body.classList.toggle("light-mode", this.isLightMode);
     },
+
+    computed: {
+  availableAmounts() {
+    if (this.selectedAsset === 'Token') {
+      return [0.25, 0.75, 1, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50]; 
+    } else {
+      return [0.0001, 0.001, 0.005, 0.05, 0.1, 0.25, 0.5, 0.75, 1, 5, 10];
+    }
+  }
+},
+
 
       methods: {
     // Toggles the dropdown for advanced settings
@@ -776,39 +788,54 @@ generateQRCode(address, amount) {
 
 
     // Converts the wallet section into an image and opens a print window
-    async printWallet() { 
-      this.individualWalletOption = false;
+    async printWallet() {
+  // Suppress the watcher so QR codes are not overwritten
+  this.suppressWatcher = true;
 
-      await this.$nextTick(); 
+  // Hide the UI toggle, but keep wallet data intact
+  this.individualWalletOption = false;
+
+  await this.$nextTick();
+  await new Promise(resolve => setTimeout(resolve, 200)); // Allow QR rendering
+
+  const printable = document.getElementById("printable-wallet");
+  if (!printable) {
+    console.error("Printable wallet section not found!");
+    this.suppressWatcher = false;
+    return;
+  }
+
+  const canvas = await html2canvas(printable, { scale: 2 });
+  const imageData = canvas.toDataURL("image/png");
+
+  const printWindow = window.open("", "_blank");
+  printWindow.document.write(`
+    <html>
+      <head>
+        <title>Print Wallet</title>
+        <style>
+          body { text-align: center; margin: 0; padding: 0; }
+          img { height: 100%; width: 100%; max-width: 1000px; }
+        </style>
+      </head>
+      <body><img src="${imageData}" alt="Printed Wallet"></body>
+    </html>
+  `);
+  printWindow.document.close();
+  printWindow.focus();
+
+  setTimeout(() => {
+    printWindow.print();
+    printWindow.close();
+  }, 500);
+
+  // Restore state
+  this.individualWalletOption = true;
+  this.suppressWatcher = false;
+},
 
 
-      const printable = document.getElementById("printable-wallet");
-      if (!printable) {
-        console.error("Printable wallet section not found!");
-        return;
-      }
-      const canvas = await html2canvas(printable, { scale: 2 });
-      const imageData = canvas.toDataURL("image/png");
-      const printWindow = window.open("", "_blank");
-      printWindow.document.write(`
-        <html>
-          <head>
-            <title>Print Wallet</title>
-            <style>body { text-align: center; margin: 0; padding: 0; } img { height: 100% width: 100%; max-width: 1000px;}
-            
-            </style>
-          </head>
-          <body><img src="${imageData}" alt="Printed Wallet"></body>
-        </html>
-      `);
-      printWindow.document.close();
-      printWindow.focus();
-      setTimeout(() => {
-        printWindow.print();
-        printWindow.close();
-      }, 500);
-      this.individualWalletOption = true;
-    },
+
 
     // Toggles dropdown for design selection
     toggleDropdown() {
@@ -846,22 +873,23 @@ generateQRCode(address, amount) {
 
   watch: {
   individualWalletOption(newVal) {
+    if (this.suppressWatcher) return;
+
     if (newVal) {
-      // Individual amounts enabled: clear all customAmount and QR codes
       this.generatedWallets.forEach(wallet => {
-        wallet.customAmount = ""; // Reset to "Any Amount"
-        this.updateQRCodeForWallet(wallet); // QR without ?amount
+        wallet.customAmount = ""; 
+        this.updateQRCodeForWallet(wallet); 
       });
     } else {
-      // Individual amounts disabled: apply global amount to all wallets
       const amount = this.paymentDetails ? parseFloat(this.paymentDetails) : 0;
       this.generatedWallets.forEach(wallet => {
         wallet.customAmount = amount;
-        this.updateQRCodeForWallet(wallet); // QR with global amount
+        this.updateQRCodeForWallet(wallet);
       });
     }
   }
 }
+
 
 
 };
