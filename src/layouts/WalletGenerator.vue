@@ -127,7 +127,7 @@
   class="dropdown"
   :disabled="individualWalletOption"
 >
-  <option disabled value="">Amount</option>
+  <option value="">Any Amount</option>
   <option
     v-for="amount in [0.0001, 0.001, 0.005, 0.05, 0.1, 0.25, 0.5, 0.75, 1, 5, 10]"
     :key="amount"
@@ -151,12 +151,28 @@
             </div>
 
             <div style="display: flex; align-items: center; gap: 0.6rem;">
-              <label class="token-option">Assets:</label>
-  
-  <select class="token-dropdown">
-    <option value="Bitcoin Cash">Bitcoin Cash</option>
-    <option value="Token">Token</option>
-  </select>
+
+              <label class="token-option">Assets:</label>  
+<select class="token-dropdown" v-model="selectedAsset">
+  <option value="Bitcoin Cash">Bitcoin Cash</option>
+  <option value="Token">Token</option>
+</select>
+
+<!-- Token selection appears only if 'Token' is selected -->
+<select
+  class="token-select"
+  v-show="selectedAsset === 'Token'"
+  style="margin-left: 10px;"
+  v-model="selectedToken"
+>
+  <option value="" disabled selected>Select a Token</option>
+  <option value="Token1">Token 1</option>
+  <option value="Token2">Token 2</option>
+  <option value="Token3">Token 3</option>
+  <option value="Token4">Token 4</option>
+  <option value="Token5">Token 5</option>
+</select>
+
 
 
               <label class="individual-custom-amount" style="display: flex; align-items: center;">
@@ -226,13 +242,17 @@
               <div v-for="(wallet, index) in generatedWallets" :key="index" class="wallet">
 
                 <div v-if = "individualWalletOption" class="individual-wallet-section">
-                  <label class="custom">Custom BCH Amount:</label>
+
+                  <label class = "custom">
+                    Custom {{ selectedAsset === 'Token' ? 'Token' : 'BCH' }} Amount:
+                  </label>
+
           <select v-model.number="wallet.customAmount" @change="updateQrCodeForWallet(wallet)" class="wallet-amount-input">
-            <option disabled value="">Amount</option>
+            <option value="">Any Amount</option>
             <option v-for="amount in [0.0001, 0.001, 0.005, 0.05, 0.1, 0.25, 0.5, 0.75, 1, 5, 10]" 
                     :key="amount" 
                     :value="amount">
-              {{ amount }} BCH
+              {{ amount }} {{ selectedAsset === 'Token' ? 'Token' : 'BCH' }}
             </option>
           </select>
   </div>
@@ -257,7 +277,9 @@
     text-overflow: ellipsis;
     
     ">
-    <p>{{ wallet.customAmount }} BCH</p>
+    <p v-if = "wallet.customAmount && wallet.customAmount > 0">
+      {{ wallet.customAmount }} BCH
+    </p>
   </q-card-section>
                   
 
@@ -433,6 +455,8 @@ export default {
       wallet: {
         customAmount: ""
       },
+      selectedToken: '',
+      selectedAsset: 'Bitcoin Cash',
       designs: [
         { id: 1, image: pw1, textColor: 'black', addressColor: 'white' },
         { id: 2, image: pw2, textColor: 'white', addressColor: 'black' },
@@ -638,7 +662,11 @@ export default {
         }
 
         try {
-            firstWallet.qrCodePublic = await QRCode.toDataURL(`${firstWallet.address}?amount=${this.customAmount}`);
+          const qrDataPublic = this.customAmount > 0
+  ? `${firstWallet.address}?amount=${this.customAmount}`
+  : firstWallet.address;
+firstWallet.qrCodePublic = await QRCode.toDataURL(qrDataPublic);
+
             firstWallet.qrCodePrivate = await QRCode.toDataURL(firstWallet.encryptedWIF ? firstWallet.encryptedWIF : firstWallet.wif);
         } catch (error) {
             console.error("QR Code generation failed for static wallet:", error);
@@ -674,7 +702,11 @@ export default {
         }
 
         try {
-            wallet.qrCodePublic = await QRCode.toDataURL(`${wallet.address}?amount=${this.customAmount}`);
+          const qrDataPublic = this.customAmount > 0
+  ? `${wallet.address}?amount=${this.customAmount}`
+  : wallet.address;
+wallet.qrCodePublic = await QRCode.toDataURL(qrDataPublic);
+
             wallet.qrCodePrivate = await QRCode.toDataURL(wallet.encryptedWIF ? wallet.encryptedWIF : wallet.wif);
         } catch (error) {
             console.error(`QR Code generation failed for wallet #${this.generatedWallets.length + 1}:`, error);
@@ -727,8 +759,9 @@ async updateQRCodeForWallet(wallet) {
   let qrDataPublic = `bitcoincash:${cleanAddress}`;
 
   if (this.individualWalletOption && wallet.customAmount > 0) {
-    qrDataPublic += `?amount=${wallet.customAmount}`;
-  }
+  qrDataPublic += `?amount=${wallet.customAmount}`;
+}
+
 
   try {
     wallet.qrCodePublic = await QRCode.toDataURL(qrDataPublic);
@@ -810,6 +843,27 @@ generateQRCode(address, amount) {
       this.generateMultipleKeys();
     },
   },
+
+  watch: {
+  individualWalletOption(newVal) {
+    if (newVal) {
+      // Individual amounts enabled: clear all customAmount and QR codes
+      this.generatedWallets.forEach(wallet => {
+        wallet.customAmount = ""; // Reset to "Any Amount"
+        this.updateQRCodeForWallet(wallet); // QR without ?amount
+      });
+    } else {
+      // Individual amounts disabled: apply global amount to all wallets
+      const amount = this.paymentDetails ? parseFloat(this.paymentDetails) : 0;
+      this.generatedWallets.forEach(wallet => {
+        wallet.customAmount = amount;
+        this.updateQRCodeForWallet(wallet); // QR with global amount
+      });
+    }
+  }
+}
+
+
 };
 
 </script>
@@ -975,9 +1029,7 @@ generateQRCode(address, amount) {
 .spinner {
   position: absolute;
   top: 40%;
-  left: 17%;
-  top: 40%;
-  left: 15%;
+  left: 18.5%;
   width: 18px;
   height: 18px;
   border: 2px solid #ccc;
