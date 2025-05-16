@@ -339,7 +339,6 @@
                             width: 60px;
                             height: 60px;
                             border-radius: 50%;
-                            border: 2px solid white;
                             box-shadow: 0 0 8px rgba(0, 0, 0, 0.3);
                             z-index: 10;
                           "
