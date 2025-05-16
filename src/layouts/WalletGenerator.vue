@@ -153,7 +153,8 @@
             <div style="display: flex; align-items: center; gap: 0.6rem;">
 
               <label class="token-option">Assets:</label>  
-<select class="token-dropdown" v-model="selectedAsset">
+<select class="token-dropdown" v-model="selectedAsset"
+@change="handleAssetChange">
   <option value="Bitcoin Cash">Bitcoin Cash</option>
   <option value="Token">Token</option>
 </select>
@@ -166,11 +167,13 @@
   v-model="selectedToken"
 >
   <option value="" disabled selected>Select a Token</option>
-  <option value="Dogie Cash">Dogie Cash</option>
-  <option value="KathNiel">KathNiel</option>
-  <option value="Pighati">Pighati</option>
-  <option value="Nalolongkot">Nalolongkot</option>
-  <option value="Loha">Loha</option>
+  <option
+    v-for="token in tokens"
+    :key="token.tokenId"
+    :value="token.name"
+>
+    {{ token.name }} ({{ token.symbol }})
+  </option>
 </select>
 
 
@@ -262,7 +265,7 @@
                 
                 <div class="design-image-container" :style="{ color: wallet.design.textColor }">
                   <img :src="wallet.design.image" alt="Selected Design" class="design-image" />
-
+                  
                   <div class = "qr-code-overlay">
                   <q-card-section
     class="bch-amount"
@@ -314,6 +317,7 @@
                       width: 18%;
                       height: auto;
                       pointer-events: none;
+                      gap: 10px;
                       ">
                           <img
                               :src="wallet.qrCodePublic"
@@ -321,6 +325,25 @@
                               class="qr-code public-qr"
                               style="width: clamp(21px, 7vw, 205px); height: auto;"
                               />
+
+                            <!-- Token logo on the left -->
+                                                  <img 
+                            v-if="selectedAsset === 'Token' && selectedTokenObject"
+                            :src="selectedTokenObject.image_url || 'default.png'" 
+                            alt="Token Logo" 
+                            style="
+                              position: absolute;
+                            top: 50%;
+                            left: -20%; 
+                            transform: translate(-50%, -50%);
+                            width: 60px;
+                            height: 60px;
+                            border-radius: 50%;
+                            border: 2px solid white;
+                            box-shadow: 0 0 8px rgba(0, 0, 0, 0.3);
+                            z-index: 10;
+                          "
+                          />
                 </q-card-section>
 
 
@@ -455,8 +478,10 @@ export default {
       wallet: {
         customAmount: ""
       },
-      selectedToken: '',
-      selectedAsset: 'Bitcoin Cash',
+     selectedAsset: 'Bitcoin Cash',
+    selectedToken: '',
+    tokens: [],
+    loadingTokens: true,
       suppressWatcher: false,
       designs: [
         { id: 1, image: pw1, textColor: 'black', addressColor: 'white' },
@@ -476,12 +501,27 @@ export default {
     async created() {
       document.body.classList.toggle("dark-mode", this.isDarkMode);
       document.body.classList.toggle("light-mode", this.isLightMode);
-    },
+    
+      try {
+    const res = await fetch("https://watchtower.cash/api/cashtokens/fungible/?limit=50&offset=1");
+    const data = await res.json();
+    // Filter only valid tokens (have both name and symbol)
+    this.tokens = data.results.filter(t => t.name && t.symbol);
+  } catch (err) {
+    console.error("Failed to fetch tokens from Watchtower:", err);
+  } finally {
+    this.loadingTokens = false;
+  }
+},
 
-    computed: {
+computed: {
+  selectedTokenObject() {
+    return this.tokens.find(token => token.name === this.selectedToken);
+  },
+
   availableAmounts() {
     if (this.selectedAsset === 'Token') {
-      return [0.25, 0.75, 1, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50]; 
+      return [0.25, 0.75, 1, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50];
     } else {
       return [0.0001, 0.001, 0.005, 0.05, 0.1, 0.25, 0.5, 0.75, 1, 5, 10];
     }
@@ -490,6 +530,14 @@ export default {
 
 
       methods: {
+
+        handleAssetChange() {
+      // Reset token selection when asset changes
+      if (this.selectedAsset !== 'Token') {
+        this.selectedToken = null;
+      }
+    },
+
     // Toggles the dropdown for advanced settings
       toggleAdvanceSettingdropdown() {
       this.showAdvanceSettingdropdown = !this.showAdvanceSettingdropdown;
