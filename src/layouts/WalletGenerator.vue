@@ -1,453 +1,372 @@
-<template>
-  <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  </head>
-  <div :class="{ 'dark-mode': isDarkMode }" class="landing-container">
-
+  <template>
+    <head>
+    <meta   name="viewport" 
+            content="width=device-width, initial-scale=1.0">
+    </head>
+    <div    :class="{ 'dark-mode': isDarkMode }" 
+            class="landing-container">
     <header class="landing-header">
-      <q-card-section class="landing-header" style = "
-      height: clamp(20px, 11vh, 70px);
-      ">
-  <img src="../assets/paytaca.jpg" alt="Paytaca Logo" class="site-logo" />
-  <a href="https://www.paytaca.com/#home" target="_blank" class="site-title" 
-  style = "
-  font-size: clamp(17px, 2vw, 20px);
-  ">
-  Paytaca</a>
+    <q-card-section 
+            class="landing-header" 
+            style = "height: clamp(20px, 11vh, 70px);">
+    <img    src="../assets/paytaca.jpg" 
+            alt="Paytaca Logo" 
+            class="site-logo" />
+    <a      href="https://www.paytaca.com/#home" 
+            target="_blank" 
+            class="site-title" 
+            style = "font-size: clamp(17px, 2vw, 20px);">
+            Paytaca
+    </a>
 
-  <!-- Dark Mode Toggle Button -->
-  <button class="toggle-button" @click="toggleDarkMode" 
-  style = "
-  z-index: 1000; 
-  position: sticky; 
-  margin-left: auto;
-  ">
-    <span v-if="isDarkMode">🌙</span>
-    <span v-else>🌞</span>
-  </button>
-</q-card-section>
-
-
+    <!-- Dark Mode Toggle Button -->
+    <button class="toggle-button" @click="toggleDarkMode" 
+            style = "z-index: 1000; position: sticky; margin-left: auto;">
+    <span   v-if="isDarkMode">🌙 </span>
+    <span   v-else>🌞 </span>
+    </button>
+    </q-card-section>
     </header>
 
-    <q-card-section class="header-padding" style = "
-    margin: 70px; 
-    height: 100px;">
-  <img src="../assets/paper5.png" class="paper5-logo" style = "
-  width: clamp(30.1px, 5vw, 60px); 
-  height: auto;
-  margin-bottom: 9px;
-  "/>
-  <h1 class="header-padding-text" style="text-align: center; 
-    bottom: 1px;
-    font-size: clamp(16px, 3vw, 30px);
-    margin-top: 50px;
-    padding: 9px;
-    padding-bottom: 35px;
-    ">  
-    Bitcoin Cash (BCH) Paper Wallet</h1>
-</q-card-section>
+    <q-card-section class="header-padding" 
+                    style = "margin: 70px; height: 100px;">
+    <img  src="../assets/paper5.png" 
+          class="paper5-logo" 
+          style = "width: clamp(30.1px, 5vw, 60px); height: auto; margin-bottom: 9px;"/>
+    <h1   class="header-padding-text" 
+          style="text-align: center; bottom: 1px; font-size: clamp(16px, 3vw, 30px); margin-top: 50px; 
+                  padding: 9px; padding-bottom: 35px;">  
+          Bitcoin Cash (BCH) Paper Wallet
+    </h1>
+    </q-card-section>
 
-
-    <p class="wallet-description">Wallet Generated</p>
-
-    <div class="wallet-container">
-      <!-- Step One - Choose Your Design -->
-      <div class="step-container">
-        <div class="step-label1" @click="toggleDropdown">
-          <img src="../assets/dropdown.png" alt="dropdown" class="dropdown-image" />
-          <h1 class="step-text">Step One - Choose Your Design</h1>
-        </div>
-
-        <div v-if="dropdownOpen" class="design-grid">
-          <div v-for="design in designs" :key="design.id" class="design-preview"
-          style="
-          position: relative;
-          overflow: hidden;
-          border-radius: 10px;
-          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-          transition: transform 0.2s ease;
-          grid-template-columns: repeat(2, 1fr);
-          margin-top: 10%;
-          ">
-            <img :src="design.image" :alt="'Design ' + design.id" class="design-image" 
-            style="
-            width: 100%;
-            height: auto;
-            display: block;
-          "/>
-
-
-            <div class="overlay" 
-            style="
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.3);
-      "></div>
-
-
-            <button class="select-button" @click="proceedToCustomization(design)"
-            style="
-        position: absolute;
-        bottom: 51%;
-        left: 50%;
-        transform: translateX(-50%);
-        padding: 0.5rem 1rem;
-        border: none;
-        border-radius: 8px;
-        cursor: pointer;
-        font-size: 1rem;
-        z-index: 2;
-              ">
-              Select and Continue
-            </button>
-
-
-          </div>
-        </div>
-
-      </div>
-
-      <!-- Step Two - Customization -->
-      <div v-if="selectedDesign" class="step-container">
-        <div class="step-label2" @click="toggleStep(2)">
-          <img src="../assets/dropdown.png" alt="dropdown" class="dropdown-image" />
-          <h1 class="step-text">Step Two - Customize</h1>
-        </div>
-
-        
-        <div v-if="activeStep === 2" class="customization-section">
-          <label class="custom">Custom BCH Amount:</label>
-<select
-  v-model="paymentDetails"
-  @change="updatePublicQRCodes"
-  class="dropdown"
-  :disabled="individualWalletOption"
->
-  <option value="">Any Amount</option>
-  <option
-    v-for="amount in [0.0001, 0.001, 0.005, 0.05, 0.1, 0.25, 0.5, 0.75, 1, 5, 10]"
-    :key="amount"
-    :value="amount"
-  >
-    {{ amount }} BCH
-  </option>
-</select>
-
-
-          
-
-          <label class="address">Addresses to generate:</label>
-          
-          <div class="loader-wrapper">
-            <div v-if="loading" class="spinner"></div>
-              <input class="input-bar" type="text" v-model.number="addressCount" @keyup.enter="generateMultipleKeys" />
-             <button class="encryption" @click="toggleAdvanceSettingdropdown">
-                  {{ showAdvanceSettingdropdown ? 'Hide Advanced Settings' : 'Advance Settings' }}
-            </button>
-            </div>
-
-            <div style="display: flex; align-items: center; gap: 0.6rem;">
-
-              <label class="token-option">Assets:</label>  
-<select class="token-dropdown" v-model="selectedAsset"
-@change="handleAssetChange">
-  <option value="Bitcoin Cash">Bitcoin Cash</option>
-  <option value="Token">Token</option>
-</select>
-
-<!-- Token selection appears only if 'Token' is selected -->
-<select
-  class="token-select"
-  v-show="selectedAsset === 'Token'"
-  style="margin-left: 10px;"
-  v-model="selectedToken"
->
-  <option value="" disabled selected>Select a Token</option>
-  <option
-    v-for="token in tokens"
-    :key="token.tokenId"
-    :value="token.name"
->
-    {{ token.name }} ({{ token.symbol }})
-  </option>
-</select>
-
-
-
-              <label class="individual-custom-amount" style="display: flex; align-items: center;">
-    <input type="checkbox" v-model="individualWalletOption" style="margin-right: 0.1rem;" />
-    Enable Individual Custom Amount
-  </label>
-</div>
-
-
-      
-            <div class="dropdown-wrapper">
-            <div v-if="showAdvanceSettingdropdown" class="dropdown-panel" style = "padding: 1rem;">
-            <p style = "font-size: 0.8rem; line-height: 1.5;"><strong>Check the BIP38 option, enter a passphrase, and click "Generate" to create an encrypted wallet</strong></p>
-
-            <!-- BIP38 Checkbox & Link -->
-
-            <div class="advanced-settings-row" style = "display: flex; flex-wrap: wrap; align-items: center; gap: 1rem; font-size: 0.95rem;">
-            <!-- BIP38 Checkbox -->
-            <input type="checkbox" v-model="encryptOption" id="bip38" />
-
-            <!-- Label + Link -->
-            <label for="bip38">
-              BIP38 Encrypt?
-              <span class = "tooltip-container" style = "position: relative;">
-              <a class="what-is-this" href="#" style = "margin-left: 4px;">(What's this?)</a>
-              <span class="tooltip-text">
-              Selecting this option allows you to encrypt your wallet with a password you choose.
-              You will not be able to spend from the wallet without this password. The benefit is
-              additional security, but be careful — there is no way to recover your password if you forget it!
-            </span>
-          </span>
-            </label>
-            <!-- Passphrase -->
-            <label for="passphrase" class="passphrase-label" style="display: block;">Passphrase:</label>
-            <input id="passphrase" type="text" v-model="passphrase" class="passphrase-input" 
-            style="
-          width: 40%;
-          padding: 0.2rem;
-          font-size: 0.9rem;
-          border: 1px solid #ccc;
-          border-radius: 5px;
-        "/>
-
-            <!-- Generate Button -->
-            <button v-if="encryptOption" @click="generateMultipleKeys()" class="generate-btn">Generate</button>
-          </div>
-        </div>
-          </div>
-
-        
-
-
-
-
-          <!-- Paper Wallet Container -->
-          <div v-if="customAmount && addressCount" class="paper-wallet-container">
-            <div class="paper-wallet">
-              <div class="paper-wallet-content">
-                <div class="generated-addresses">
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Design Image Display -->
-          <div v-if="generatedWallets.length" class="wallets-container" id="printable-wallet">
-              <div v-for="(wallet, index) in generatedWallets" :key="index" class="wallet">
-
-                <div v-if = "individualWalletOption" class="individual-wallet-section">
-
-                  <label class = "custom">
-                    Custom {{ selectedAsset === 'Token' ? 'Token' : 'BCH' }} Amount:
-                  </label>
-
-          <select v-model.number="wallet.customAmount" @change="updateQrCodeForWallet(wallet)" class="wallet-amount-input">
-            <option value="">Any Amount</option>
-            <option v-for="amount in availableAmounts" 
-                    :key="amount" 
-                    :value="amount">
-              {{ amount }} {{ selectedAsset === 'Token' ? selectedToken || 'Token' : 'BCH' }}
-            </option>
-          </select>
-  </div>
-              <h3 class = "wallet-padding" v-if="index > 0"></h3>
-              <div class="selected-design">
-
-                
-                <div class="design-image-container" :style="{ color: wallet.design.textColor }">
-                  <img :src="wallet.design.image" alt="Selected Design" class="design-image" />
-                  
-                  <div class = "qr-code-overlay">
-                  <q-card-section
-    class="bch-amount"
-    style="
-    top: 17%; 
-    left: 11%; 
-    transform: translateX(-50%) rotate(-180deg); 
-    font-size: 1.2vw;  
-    text-align: center; 
-    pointer-events: none;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    
-    ">
-    <p v-if = "wallet.customAmount && wallet.customAmount > 0">
-      {{ wallet.customAmount }} {{ selectedAsset === 'Token' ? selectedToken : 'BCH' }}
+    <p    class="wallet-description">
+          Wallet Generated
     </p>
-  </q-card-section>
-                  
+    <div  class="wallet-container">
 
-  <q-card-section 
-  v-if="bip38Enabled"
-  class="bip38-label"
-  style="
-    position: absolute;
-    top: 68.5%;
-    left: 28.5%;
-    height: 4%;
-    font-size: clamp(1px, 0.5vw, 24px);
-    border: 1px solid #E2E8F0;
-    border-radius: 5px;
-    padding: 0.7em 0.5em;
-    text-align: center;
-    pointer-events: none;
-    white-space: nowrap;
-    background-color: #E2E8F0; /* optional for visibility */
-    color: rgb(51, 65, 85);;
-  ">
-  <p>BIP38 ENCRYPTED</p>
-</q-card-section>
-
-                    <!-- Public Address QR -->
-                <q-card-section
-                      class="qr-section public-section"
-                      style="
-                      position: absolute;
-                      top: 13%;
-                      right: 5.3%;
-                      width: 18%;
-                      height: auto;
-                      pointer-events: none;
-                      gap: 10px;
-                      ">
-                          <img
-                              :src="wallet.qrCodePublic"
-                              alt="Public QR Code"
-                              class="qr-code public-qr"
-                              style="width: clamp(21px, 7vw, 205px); height: auto;"
-                              />
-
-                            <!-- Token logo on the left -->
-                                                  <img 
-                            v-if="selectedAsset === 'Token' && selectedTokenObject"
-                            :src="selectedTokenObject.image_url || 'default.png'" 
-                            alt="Token Logo" 
-                            style="
-                              position: absolute;
-                            top: 50%;
-                            left: -20%; 
-                            transform: translate(-50%, -50%);
-                            width: 60px;
-                            height: 60px;
-                            border-radius: 50%;
-                            box-shadow: 0 0 8px rgba(0, 0, 0, 0.3);
-                            z-index: 10;
-                          "
-                          />
-                </q-card-section>
-
-
-                <q-card-section
-                            class="wallet-address"
-                            style="
-                            position: absolute;
-                            top: 2%;
-                            left: 57%;
-                            width: 25%;
-                            font-size: clamp(1px, 0.9vw, 20px);
-                            text-align: center;
-                            white-space: nowrap;
-                            pointer-events: none;
-                            ">
-                                    <p :style="{color: selectedDesign?.addressColor || 'inherit'}">{{ wallet.address }}</p>
-                </q-card-section>
-
-
-                    <!-- Private Key QR -->
-                    <q-card-section
-  class="qr-section private-section"
-  style="
-    position: absolute;
-    top: 3.8%;
-    left: 0.2%;
-    width: 18%;
-    height: auto;
-    pointer-events: none;
-    
-    ">
-  <img
-    :src="wallet.qrCodePrivate"
-    alt="Private QR Code"
-    class="qr-code private-qr"
-    style="width: clamp(21px, 7vw, 205px); height: auto;"
-  />
-</q-card-section>
-
-
-
-<q-card-section
-  class="private-key"
-  style="
-    position: absolute;
-    transform: translateX(-53%) translateY(-8%) rotate(-45.7deg);
-    bottom: 80%;
-    left: 16%;
-    top: 25%;
-    width: 50%;
-    font-size: min(max(2px, 0.6vw), 20px);
-    text-align: center;
-    pointer-events: none;
-    white-space: nowrap;
-    overflow: visible;
-    text-overflow: ellipsis;
-  ">
-  <p :style="{color: selectedDesign?.textColor || 'inherit', fontWeight: 'bold'}">{{ wallet.encryptedWIF ? wallet.encryptedWIF : wallet.wif }}</p>
-</q-card-section>
-
-
-
-
-
-                  </div>
-                  </div>
-
-                </div>
-              </div>
-            </div>
-          </div>
-
-
-        </div>
-
-      <!-- Step Three - Print -->
-      <div v-if="selectedDesign" class="step-container">
-        <div class="step-label3" @click="printWallet(3)">
-          <img src="../assets/dropdown.png" alt="dropdown" class="dropdown-image" />
-          <h1 class="step-text">Step Three - Print</h1>
-        </div>
-      </div>
+    <!-- Step One - Choose Your Design -->
+    <div  class="step-container">
+    <div  class="step-label1" @click="toggleDropdown">
+    <img  src="../assets/dropdown.png" 
+          alt="dropdown" 
+          class="dropdown-image" />
+    <h1   class="step-text">
+          Step One - Choose Your Design
+    </h1>
     </div>
-  </div>
+    <div    v-if="dropdownOpen" 
+            class="design-grid">
+    <div    v-for="design in designs" 
+            :key="design.id" 
+            class="design-preview"
+            style="position: relative; overflow: hidden; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+                    transition: transform 0.2s ease; grid-template-columns: repeat(2, 1fr); margin-top: 10%;">
+    <img    :src="design.image"   
+            :alt="'Design ' + design.id" 
+            class="design-image" 
+            style="width: 100%; height: auto; display: block;"/>
+    <div    class="overlay" 
+            style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.3);">
+    </div>
+    <button class="select-button" @click="proceedToCustomization(design)"
+            style="position: absolute; bottom: 51%; left: 50%; transform: translateX(-50%); padding: 0.5rem 1rem;
+                    border: none; border-radius: 8px; cursor: pointer; font-size: 1rem; z-index: 2;">
+            Select and Continue
+    </button>
+    </div>
+    </div>
+    </div>
+
+    <!-- Step Two - Customization -->
+    <div    v-if="selectedDesign" 
+            class="step-container">
+    <div    class="step-label2" @click="toggleStep(2)">
+    <img    src="../assets/dropdown.png" 
+            alt="dropdown" 
+            class="dropdown-image" />
+    <h1     class="step-text">
+            Step Two - Customize
+    </h1>
+    </div>
+    <div    v-if="activeStep === 2" 
+            class="customization-section">
+    <label  class="custom">
+            Custom BCH Amount:
+    </label>
+    <select v-model="paymentDetails" @change="updatePublicQRCodes"
+            class="dropdown"
+            :disabled="individualWalletOption">
+    <option value="">
+            Any Amount
+    </option>
+    <option v-for="amount in [0.0001, 0.001, 0.005, 0.05, 0.1, 0.25, 0.5, 0.75, 1, 5, 10]"
+            :key="amount"
+            :value="amount">
+            {{ amount }} BCH
+    </option>
+    </select>
+    <label  class="address">
+            Addresses to generate:
+    </label>      
+    <div    class="loader-wrapper">
+    <div    v-if="loading" 
+            class="spinner">
+    </div>
+    <input  class="input-bar" 
+            type="text" 
+            v-model.number="addressCount" @keyup.enter="generateMultipleKeys" />
+    <button class="encryption" @click="toggleAdvanceSettingdropdown">
+            {{ showAdvanceSettingdropdown ? 'Hide Advanced Settings' : 'Advance Settings' }}
+    </button>
+    </div>
+    <div    style="display: flex; align-items: center; gap: 0.6rem;">
+    <label  class="token-option"> 
+            Assets:
+    </label>  
+    <select class="token-dropdown" 
+            v-model="selectedAsset" @change="handleAssetChange">
+    <option value="Bitcoin Cash">
+            Bitcoin Cash
+    </option>
+    <option value="Token">
+            Token
+    </option>
+    </select>
+
+    <!-- Token selection appears only if 'Token' is selected -->
+    <select class="token-select"
+            v-show="selectedAsset === 'Token'"
+            style="margin-left: 10px;"
+            v-model="selectedToken">
+    <option value="" disabled selected>
+            Select a Token
+    </option>
+    <option v-for="token in tokens"
+            :key="token.tokenId"
+            :value="token.name">
+            {{ token.name }} ({{ token.symbol }})
+    </option>
+    </select>
+    <label  class="individual-custom-amount" 
+            style="display: flex; align-items: center;">
+    <input  type="checkbox" 
+            v-model="individualWalletOption" 
+            style="margin-right: 0.1rem;" />
+            Enable Individual Custom Amount
+    </label>
+    </div>
+    <div    class="dropdown-wrapper">
+    <div    v-if="showAdvanceSettingdropdown" 
+            class="dropdown-panel" 
+            style = "padding: 1rem;">
+    <p      style = "font-size: 0.8rem; line-height: 1.5;">
+    <strong>
+            Check the BIP38 option, enter a passphrase, and click "Generate" to create an encrypted wallet
+    </strong>
+    </p>
+
+    <!-- BIP38 Checkbox & Link -->
+    <div    class="advanced-settings-row" 
+            style = "display: flex; flex-wrap: wrap; align-items: center; gap: 1rem; font-size: 0.95rem;">
+
+    <!-- BIP38 Checkbox -->
+    <input  type="checkbox" 
+            v-model="encryptOption" 
+            id="bip38" />
+
+    <!-- Label + Link -->
+    <label  for="bip38">
+            BIP38 Encrypt?
+    <span   class = "tooltip-container" 
+            style = "position: relative;">
+    <a      class="what-is-this" 
+            href="#" 
+            style = "margin-left: 4px;">(What's this?)
+    </a>
+    <span   class="tooltip-text">
+            Selecting this option allows you to encrypt your wallet with a password you choose.
+            You will not be able to spend from the wallet without this password. The benefit is
+            additional security, but be careful — there is no way to recover your password if you forget it!
+    </span>
+    </span>
+    </label>
+
+    <!-- Passphrase -->
+    <label  for="passphrase" 
+            class="passphrase-label" 
+            style="display: block;">Passphrase:
+    </label>
+    <input  id="passphrase" 
+            type="text" 
+            v-model="passphrase" 
+            class="passphrase-input" 
+            style="width: 40%; padding: 0.2rem; font-size: 0.9rem; border: 1px solid #ccc; border-radius: 5px;"/>
+
+    <!-- Generate Button -->
+    <button v-if="encryptOption" @click="generateMultipleKeys()" 
+            class="generate-btn">
+            Generate
+    </button>
+    </div>
+    </div>
+    </div>
+
+    <!-- Paper Wallet Container -->
+    <div    v-if="customAmount && addressCount" 
+            class="paper-wallet-container">
+    <div    class="paper-wallet">
+    <div    class="paper-wallet-content">
+    <div    class="generated-addresses">
+    </div>
+    </div>
+    </div>
+    </div>
+
+    <!-- Design Image Display -->
+    <div    v-if="generatedWallets.length" 
+            class="wallets-container" 
+            id="printable-wallet">
+    <div    v-for="(wallet, index) in generatedWallets" :key="index" 
+            class="wallet">
+    <div    v-if = "individualWalletOption" 
+            class="individual-wallet-section">
+    <label  class = "custom">
+            Custom 
+            {{ selectedAsset === 'Token' ? 'Token' : 'BCH' }} Amount:
+    </label>
+    <select v-model.number="wallet.customAmount" @change="updateQrCodeForWallet(wallet)" 
+            class="wallet-amount-input">
+    <option value="">
+            Any Amount
+    </option>
+    <option v-for="amount in availableAmounts" 
+            :key="amount" 
+            :value="amount">
+            {{ amount }} {{ selectedAsset === 'Token' ? selectedToken || 'Token' : 'BCH' }}
+    </option>
+    </select>
+    </div>
+    <h3     class = "wallet-padding" 
+            v-if="index > 0">
+    </h3>
+    <div    class="selected-design">
+    <div    class="design-image-container" 
+            :style="{ color: wallet.design.textColor }">
+    <img    :src="wallet.design.image" 
+            alt="Selected Design" 
+            class="design-image" />
+    <div    class = "qr-code-overlay">
+    <q-card-section class="bch-amount"
+                    style="top: 17%; left: 11%; transform: translateX(-50%) rotate(-180deg); 
+                            font-size: 1.2vw; text-align: center; pointer-events: none; 
+                            white-space: nowrap; text-overflow: ellipsis;">
+    <p      v-if = "wallet.customAmount && wallet.customAmount > 0">
+            {{ wallet.customAmount }} 
+            {{ selectedAsset === 'Token' ? selectedToken : 'BCH' }}
+    </p>
+    </q-card-section>              
+    <q-card-section v-if="bip38Enabled"
+                    class="bip38-label"
+                    style="position: absolute; top: 68.5%; left: 28.5%; height: 4%; 
+                            font-size: clamp(1px, 0.5vw, 24px); border: 1px solid #E2E8F0; 
+                            border-radius: 5px; padding: 0.7em 0.5em; text-align: center;
+                            pointer-events: none; white-space: nowrap; background-color: #E2E8F0; 
+                            color: rgb(51, 65, 85);;">
+    <p>      BIP38 ENCRYPTED  
+    </p>
+    </q-card-section>
+
+    <!-- Public Address QR -->
+    <q-card-section class="qr-section public-section"
+                    style="position: absolute; top: 13%; right: 5.3%; width: 18%; height: auto; 
+                            pointer-events: none; gap: 10px;">
+    <img    :src="wallet.qrCodePublic"
+            alt="Public QR Code"
+            class="qr-code public-qr"
+            style="width: clamp(21px, 7vw, 205px); height: auto;"/>
+
+    <!-- Token logo on the left -->
+    <img    v-if="selectedAsset === 'Token' && selectedTokenObject"
+            :src="selectedTokenObject.image_url || 'default.png'" 
+            alt="Token Logo" 
+            style="position: absolute;top: 50%; left: -20%; transform: translate(-50%, -50%); 
+                    width: 60px; height: 60px; border-radius: 50%; z-index: 10;"/>
+    </q-card-section>
+    <q-card-section class="wallet-address"
+                    style="position: absolute; top: 2%; left: 57%; width: 25%; font-size: clamp(1px, 0.9vw, 20px); 
+                            text-align: center; white-space: nowrap; pointer-events: none;">
+    <p      :style="{color: selectedDesign?.addressColor || 'inherit'}">
+            {{ wallet.address }}</p>
+    </q-card-section>
+
+
+    <!-- Private Key QR -->
+    <q-card-section class="qr-section private-section"
+                    style="position: absolute; top: 3.8%; left: 0.2%; width: 18%; height: auto;
+                            pointer-events: none;">
+    <img    :src="wallet.qrCodePrivate"
+            alt="Private QR Code"
+            class="qr-code private-qr"
+            style="width: clamp(21px, 7vw, 205px); height: auto;"/>
+    </q-card-section>
+    <q-card-section class="private-key"
+                    style="position: absolute; transform: translateX(-53%) translateY(-8%) rotate(-45.7deg);
+                            bottom: 80%; left: 16%; top: 25%; width: 50%; font-size: min(max(2px, 0.6vw), 20px);
+                            text-align: center; pointer-events: none; white-space: nowrap; overflow: visible;
+                            text-overflow: ellipsis;">
+    <p      :style="{color: selectedDesign?.textColor || 'inherit', fontWeight: 'bold'}">
+            {{ wallet.encryptedWIF ? wallet.encryptedWIF : wallet.wif }}</p>
+    </q-card-section>
+    </div>
+    </div>
+    </div>
+    </div>
+    </div>
+    </div>
+    </div>
+
+    <!-- Step Three - Print -->
+    <div   v-if="selectedDesign" 
+          class="step-container">
+    <div  class="step-label3" @click="printWallet(3)">
+    <img  src="../assets/dropdown.png" 
+          alt="dropdown" 
+          class="dropdown-image" />
+    <h1   class="step-text">
+          Step Three - Print
+    </h1>
+    </div>
+    </div>
+    </div>
+    </div>
 </template>
 
 <script>
-import CryptoJS from 'crypto-js';
-import QRCode from "qrcode";
-import { Buffer } from 'buffer/';
-import secp256k1 from 'secp256k1';
-import bs58 from "bs58";
-import cashaddr from "cashaddrjs";
-import html2canvas from 'html2canvas';
-import bip38 from '@asoltys/bip38'
-import pw1 from 'src/assets/pw1.png';
-import pw2 from 'src/assets/pw2.png';
-import pw3 from 'src/assets/pw3.png';
-import pw4 from 'src/assets/pw4.png';
-import pw5 from 'src/assets/pw5.png';
-import pw6 from 'src/assets/pw6.png';
-import pw7 from 'src/assets/pw7.png';
-import pw8 from 'src/assets/pw8.png';
-import pw9 from 'src/assets/pw9.png';
-import pw10 from 'src/assets/pw10.png';
+    import CryptoJS from 'crypto-js';
+    import QRCode from "qrcode";
+    import { Buffer } from 'buffer/';
+    import secp256k1 from 'secp256k1';
+    import bs58 from "bs58";
+    import cashaddr from "cashaddrjs";
+    import html2canvas from 'html2canvas';
+    import bip38 from '@asoltys/bip38'
+    import pw1 from 'src/assets/pw1.png';
+    import pw2 from 'src/assets/pw2.png';
+    import pw3 from 'src/assets/pw3.png';
+    import pw4 from 'src/assets/pw4.png';
+    import pw5 from 'src/assets/pw5.png';
+    import pw6 from 'src/assets/pw6.png';
+    import pw7 from 'src/assets/pw7.png';
+    import pw8 from 'src/assets/pw8.png';
+    import pw9 from 'src/assets/pw9.png';
+    import pw10 from 'src/assets/pw10.png';
+  
+
+    const tokenImages = import.meta.glob('/@assets/tokens/*.png', {
+  eager: true,
+  import: 'default',
+});
 
 export default {
   data() {
@@ -474,13 +393,11 @@ export default {
       encryptOption: false,
       passphrase: '',
       individualWalletOption: false,
-      wallet: {
-        customAmount: ""
-      },
-     selectedAsset: 'Bitcoin Cash',
-    selectedToken: '',
-    tokens: [],
-    loadingTokens: true,
+      wallet: {customAmount: ""},
+      selectedAsset: 'Bitcoin Cash',
+      selectedToken: '',
+      tokens: [],
+      loadingTokens: true,
       suppressWatcher: false,
       designs: [
         { id: 1, image: pw1, textColor: 'black', addressColor: 'white' },
@@ -500,26 +417,28 @@ export default {
     async created() {
       document.body.classList.toggle("dark-mode", this.isDarkMode);
       document.body.classList.toggle("light-mode", this.isLightMode);
-    
-      try {
-    const res = await fetch("https://watchtower.cash/api/cashtokens/fungible/?limit=50&offset=1");
-    const data = await res.json();
-    // Filter only valid tokens (have both name and symbol)
-    this.tokens = data.results.filter(t => t.name && t.symbol);
-  } catch (err) {
-    console.error("Failed to fetch tokens from Watchtower:", err);
-  } finally {
-    this.loadingTokens = false;
-  }
-},
+  
+    try {
+      const res = await fetch("https://watchtower.cash/api/cashtokens/fungible/?limit=50&offset=1");
+      const data = await res.json();
 
-computed: {
-  selectedTokenObject() {
-    return this.tokens.find(token => token.name === this.selectedToken);
+    // Filter only valid tokens (have both name and symbol)
+      this.tokens = data.results.filter(t => t.name && t.symbol);
+    } catch (err) {
+      console.error("Failed to fetch tokens from Watchtower:", err);
+    } finally {
+      this.loadingTokens = false;
+    }
   },
 
-  availableAmounts() {
-    if (this.selectedAsset === 'Token') {
+      computed: {
+      selectedTokenObject() {
+    return this.tokens.find(token => token.name === this.selectedToken);
+    },
+
+      availableAmounts() {
+    if (this.selectedAsset === 'Token') 
+    {
       return [0.25, 0.75, 1, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50];
     } else {
       return [0.0001, 0.001, 0.005, 0.05, 0.1, 0.25, 0.5, 0.75, 1, 5, 10];
@@ -527,108 +446,130 @@ computed: {
   }
 },
 
-
       methods: {
+        getLocalTokenImage(tokenCategory) {
+  const matchKey = Object.keys(tokenImages).find((key) =>
+    key.includes(tokenCategory)
+  );
+  return matchKey ? tokenImages[matchKey] : null;
+},
 
-        handleAssetChange() {
-      // Reset token selection when asset changes
-      if (this.selectedAsset !== 'Token') {
-        this.selectedToken = null;
+      handleAssetChange() {
+        // Reset token selection when asset changes
+      if (this.selectedAsset !== 'Token') 
+      {
+          this.selectedToken = null;
       }
     },
 
-    // Toggles the dropdown for advanced settings
+        // Toggles the dropdown for advanced settings
       toggleAdvanceSettingdropdown() {
-      this.showAdvanceSettingdropdown = !this.showAdvanceSettingdropdown;
-
-      if (this.showAdvanceSettingdropdown) {
-        this.generatedWallets = [];
-        this.firstWallet = [];  // Clear existing wallets (including the static one)
-      }else{
-        this.resetWallet();  // Call the method to regenerate wallet without encryption
+          this.showAdvanceSettingdropdown = !this.showAdvanceSettingdropdown;
+      if (this.showAdvanceSettingdropdown) 
+      {
+          this.generatedWallets = [];
+          this.firstWallet = [];  
+        // Clear existing wallets (including the static one)
+      } else  {
+          this.resetWallet();  
+        // Call the method to regenerate wallet without encryption
       }
     },
-    resetWallet() {
-      this.showAdvanceSettingdropdown = false;  // Close advanced settings
-      this.encryptOption = false;  // Uncheck encryption
-      this.passphrase = '';  // Clear passphrase
-      this.encryptedWIF = null;  // Reset encrypted WIF
-      this.originalWIF = null;  // Ensure original WIF is reset
-      this.generatedWallets = [];  // Clear generated wallets
 
-      // Re-generate the original WIF
-      this.generateMultipleKeys();  // Call the method to regenerate wallet without encryption
+      resetWallet() {
+          this.showAdvanceSettingdropdown = false;  
+        // Close advanced settings
+          this.encryptOption = false;  
+        // Uncheck encryption
+          this.passphrase = '';  
+        // Clear passphrase
+          this.encryptedWIF = null;  
+        // Reset encrypted WIF
+          this.originalWIF = null;  
+        // Ensure original WIF is reset
+          this.generatedWallets = [];  
+        // Clear generated wallets
+        // Re-generate the original WIF
+          this.generateMultipleKeys();  
+        // Call the method to regenerate wallet without encryption
     },
-    //Dark Mode Method
-    toggleDarkMode() {
-      this.isDarkMode = !this.isDarkMode;
-      this.isLightMode = !this.isLightMode; // Ensure only one mode is active
-
-      // Save the mode in local storage
-      localStorage.setItem("darkMode", this.isDarkMode);
-      localStorage.setItem("lightMode", this.isLightMode);
-
-      // Remove both modes first, then apply the correct one
-      document.body.classList.remove("light-mode", "dark-mode");
-      if (this.isDarkMode) {
-        document.body.classList.add("dark-mode");
-        document.body.classList.remove("light-mode");
+        //Dark Mode Method
+      toggleDarkMode() {
+          this.isDarkMode = !this.isDarkMode;
+          this.isLightMode = !this.isLightMode; 
+          // Ensure only one mode is active
+          // Save the mode in local storage
+          localStorage.setItem("darkMode", this.isDarkMode);
+          localStorage.setItem("lightMode", this.isLightMode);
+          // Remove both modes first, then apply the correct one
+          document.body.classList.remove("light-mode", "dark-mode");
+      if (this.isDarkMode) 
+      {
+          document.body.classList.add("dark-mode");
+          document.body.classList.remove("light-mode");
       } else {
         document.body.classList.add("light-mode");
         document.body.classList.remove("light-mode");
       }
     },
-    // Computes SHA-256 hash for a given data input
-    async sha256(data = '', encoding = 'utf8') {
+          // Computes SHA-256 hash for a given data input
+    async sha256(data = '', encoding = 'utf8') 
+    {
       let buffer;
-
-      if (data instanceof Uint8Array) {
+      if (data instanceof Uint8Array) 
+      {
         buffer = data;
-      } else if (encoding === 'utf8') {
+      } else if (encoding === 'utf8') 
+      {
         buffer = new TextEncoder().encode(data);
-      } else if (encoding === 'hex') {
+      } else if (encoding === 'hex') 
+      {
         buffer = this.hexToBin(data);
       } else {
         throw new Error('Unsupported encoding type');
       }
 
-      // Use window.crypto.subtle explicitly
+          // Use window.crypto.subtle explicitly
       const hashBuffer = await window.crypto.subtle.digest('SHA-256', buffer);
       return this.binToHex(new Uint8Array(hashBuffer));
     },
-    binToHex(uint8Array) {
+        binToHex(uint8Array) 
+    {
       return Array.from(uint8Array)
         .map(byte => byte.toString(16).padStart(2, '0'))
         .join('');
     },
 
-    // Convert Hex to Uint8Array
-    hexToBin(hex) {
+          // Convert Hex to Uint8Array
+        hexToBin(hex) {
       return new Uint8Array(
         hex.match(/.{1,2}/g).map(byte => parseInt(byte, 16))
       );
     },
 
-    // Convert Uint8Array to Base58 (if needed for WIF key)
-    binToBase58(uint8Array) {
-      return bs58.encode(uint8Array); // Requires 'bs58' library
+          // Convert Uint8Array to Base58 (if needed for WIF key)
+        binToBase58(uint8Array) 
+    {
+      return bs58.encode(uint8Array); 
+          // Requires 'bs58' library
     },
 
-    ripemd160(buffer) {
+        ripemd160(buffer) 
+    {
       return new Uint8Array(
         CryptoJS.RIPEMD160(CryptoJS.enc.Hex.parse(this.binToHex(buffer)))
-          .toString(CryptoJS.enc.Hex)
-          .match(/.{1,2}/g)
-          .map(byte => parseInt(byte, 16))
+        .toString(CryptoJS.enc.Hex)
+        .match(/.{1,2}/g)
+        .map(byte => parseInt(byte, 16))
       );
     },
 
-    
-    encodeCashAddress({ prefix, type, payload }) {
+        encodeCashAddress({ prefix, type, payload }) 
+    {
       return cashaddr.encode(prefix, type.toUpperCase(), payload);
     },
 
-    // Generates new private and public keys, WIF, and Bitcoin Cash address
+          // Generates new private and public keys, WIF, and Bitcoin Cash address
     async generateNewKeys() {
       const privateKey = await this.generatePrivateKey();
       this.privateKeyWIF = privateKey.wif;
@@ -636,25 +577,28 @@ computed: {
       this.bitcoinCashAddress = privateKey.address;
       await this.generatePublicQRCodes();
     },
-    generatePublicKey(privateKeyHex) {
+        generatePublicKey(privateKeyHex) {
       const privateKey = Buffer.from(privateKeyHex, 'hex');
-      const publicKey = secp256k1.getPublicKey(privateKey, true);  // 'true' for compressed public key
+      const publicKey = secp256k1.getPublicKey(privateKey, true);  
+          // 'true' for compressed public key
       return publicKey.toString('hex');
     },
 
-    // Generate BCH address with proper format
-    generateBCHAddress(publicKeyHex) {
-      const publicKeyHash = this.ripemd160(this.sha256(publicKeyHex));  // Perform RIPEMD-160 on SHA-256 hash of public key
-      return `bitcoincash:${publicKeyHash}`;  // BCH address should have 'bitcoincash:' prefix
+          // Generate BCH address with proper format
+        generateBCHAddress(publicKeyHex) {
+      const publicKeyHash = this.ripemd160(this.sha256(publicKeyHex));  
+          // Perform RIPEMD-160 on SHA-256 hash of public key
+      return `bitcoincash:${publicKeyHash}`;  
+          // BCH address should have 'bitcoincash:' prefix
     },
 
-    // Generates a private key, derives public key and Bitcoin Cash address
+          // Generates a private key, derives public key and Bitcoin Cash address
     async generatePrivateKey() {
-      // Generate a 32-byte private key using browser crypto API
+          // Generate a 32-byte private key using browser crypto API
       const privateKey = new Uint8Array(32);
-      window.crypto.getRandomValues(privateKey);
+        window.crypto.getRandomValues(privateKey);
 
-      // Generate compressed public key
+          // Generate compressed public key
       const publicKey = secp256k1.publicKeyCreate(privateKey, true);
 
       const privateKeyHex = this.binToHex(privateKey);
@@ -663,7 +607,7 @@ computed: {
       const sha256Hash = await this.sha256(publicKeyHex, 'hex');
       const ripemdHash = this.ripemd160(this.hexToBin(sha256Hash));
 
-      // Generate WIF format (for non-encrypted use)
+          // Generate WIF format (for non-encrypted use)
       const extendedKey = new Uint8Array([0x80, ...privateKey, 0x01]); // 0x01 for compressed flag
       const hashWif1 = await this.sha256(extendedKey, 'hex');
       const hashWif2 = await this.sha256(this.hexToBin(hashWif1), 'hex');
@@ -673,7 +617,8 @@ computed: {
 
       let encryptedWIF = null;
 
-      if (this.encryptOption && this.passphrase) {
+      if (this.encryptOption && this.passphrase) 
+      {
         encryptedWIF = bip38.encrypt(Buffer.from(privateKey), true, this.passphrase);
         console.log("Encrypted WIF:", encryptedWIF);
       }
@@ -690,41 +635,47 @@ computed: {
         encryptedWIF: encryptedWIF || null,
       };
     },
-    // Generates multiple Bitcoin Cash addresses based on user input
-    async generateMultipleKeys() {
+        // Generates multiple Bitcoin Cash addresses based on user input
+    async generateMultipleKeys() 
+    {
       this.loading = true;
-      if (this.encryptOption) {
-        this.wallets = [];
-        this.bip38Enabled = true;
-      }else{
-        this.bip38Enabled = false;
-      }
-    const MAX_WALLETS = 10; // Set your desired wallet limit
+      if (this.encryptOption) 
+    {
+      this.wallets = [];
+      this.bip38Enabled = true;
+    } else {
+      this.bip38Enabled = false;
+    }
+      const MAX_WALLETS = 10; // Set your desired wallet limit
 
-    // Ensure addressCount starts at 1
-    if (!this.addressCount || this.addressCount < 1) {
+        // Ensure addressCount starts at 1
+      if (!this.addressCount || this.addressCount < 1) 
+    {
         this.addressCount = 0;
     }
 
-    // If no design is selected, prevent wallet generation
-    if (!this.selectedDesign) {
+        // If no design is selected, prevent wallet generation
+      if (!this.selectedDesign) 
+    {
         return;
     }
 
-    this.customAmount = this.paymentDetails ? parseFloat(this.paymentDetails) : 0;
+        this.customAmount = this.paymentDetails ? parseFloat(this.paymentDetails) : 0;
 
-    // If no wallets exist, create the first static wallet
-    if (this.generatedWallets.length === 0) {
-        const firstWallet = await this.generatePrivateKey();
-        if (!firstWallet || !firstWallet.address || !firstWallet.wif) {
-            return;
-        }
+        // If no wallets exist, create the first static wallet
+      if (this.generatedWallets.length === 0) 
+    {
+      const firstWallet = await this.generatePrivateKey();
+      if (!firstWallet || !firstWallet.address || !firstWallet.wif) 
+    {
+        return;
+    }
 
-        try {
+      try {
           const qrDataPublic = this.customAmount > 0
-  ? `${firstWallet.address}?amount=${this.customAmount}`
-  : firstWallet.address;
-firstWallet.qrCodePublic = await QRCode.toDataURL(qrDataPublic);
+            ? `${firstWallet.address}?amount=${this.customAmount}`
+            : firstWallet.address;
+            firstWallet.qrCodePublic = await QRCode.toDataURL(qrDataPublic);
 
             firstWallet.qrCodePrivate = await QRCode.toDataURL(firstWallet.encryptedWIF ? firstWallet.encryptedWIF : firstWallet.wif);
         } catch (error) {
@@ -736,127 +687,123 @@ firstWallet.qrCodePublic = await QRCode.toDataURL(qrDataPublic);
         this.generatedWallets.push(firstWallet);
     }
 
-    // Ensure address count does not exceed MAX_WALLETS
-    this.addressCount = Math.min(Math.max(this.addressCount, 0), MAX_WALLETS);
+        // Ensure address count does not exceed MAX_WALLETS
+        this.addressCount = Math.min(Math.max(this.addressCount, 0), MAX_WALLETS);
 
-    // Remove excess wallets while keeping the first one static
-    if (this.generatedWallets.length > this.addressCount) {
-          // Keep the first wallet, remove others
+        // Remove excess wallets while keeping the first one static
+      if (this.generatedWallets.length > this.addressCount) {
+        // Keep the first wallet, remove others
         this.generatedWallets = [this.generatedWallets[0], ...this.generatedWallets.slice(1, this.addressCount)];
     }
 
-    // Generate additional wallets (excluding the static one)
-    while (this.generatedWallets.length < this.addressCount) {
-        if (this.generatedWallets.length >= MAX_WALLETS) {
-            console.warn(`Wallet generation limit reached! Max allowed: ${MAX_WALLETS}`);
-            break;
-        }
+        // Generate additional wallets (excluding the static one)
+      while (this.generatedWallets.length < this.addressCount) {
+      if (this.generatedWallets.length >= MAX_WALLETS) {
+        console.warn(`Wallet generation limit reached! Max allowed: ${MAX_WALLETS}`);
+          break;
+      }
 
-        await new Promise(resolve => setTimeout(resolve, 500)); // 500ms delay
+      await new Promise(resolve => setTimeout(resolve, 500)); 
+        // 500ms delay
 
-        const wallet = await this.generatePrivateKey();
-        if (!wallet || !wallet.address || !wallet.wif) {
-            console.error(`Wallet #${this.generatedWallets.length + 1} generation failed!`);
-            continue;
-        }
+      const wallet = await this.generatePrivateKey();
+      if (!wallet || !wallet.address || !wallet.wif) {
+        console.error(`Wallet #${this.generatedWallets.length + 1} generation failed!`);
+          continue;
+      }
 
-        try {
-          const qrDataPublic = this.customAmount > 0
-  ? `${wallet.address}?amount=${this.customAmount}`
-  : wallet.address;
-wallet.qrCodePublic = await QRCode.toDataURL(qrDataPublic);
+      try {
+        const qrDataPublic = this.customAmount > 0
+        ? `${wallet.address}?amount=${this.customAmount}`
+        : wallet.address;
+        wallet.qrCodePublic = await QRCode.toDataURL(qrDataPublic);
 
-            wallet.qrCodePrivate = await QRCode.toDataURL(wallet.encryptedWIF ? wallet.encryptedWIF : wallet.wif);
-        } catch (error) {
-            console.error(`QR Code generation failed for wallet #${this.generatedWallets.length + 1}:`, error);
-        }
+        wallet.qrCodePrivate = await QRCode.toDataURL(wallet.encryptedWIF ? wallet.encryptedWIF : wallet.wif);
+    } catch (error) {
+        console.error(`QR Code generation failed for wallet #${this.generatedWallets.length + 1}:`, error);
+    }
 
         wallet.customAmount = this.customAmount;
         wallet.design = { ...this.selectedDesign };
 
         this.generatedWallets.push(wallet);
     }
-    this.loading = false; // Stop loader after generation
-},
+        this.loading = false; // Stop loader after generation
+    },
 
-    // Updates the public QR code with a payment amount
-    async updatePublicQRCodes() {
-  if (!this.generatedWallets.length) {
-    console.error("No generated wallets found!");
-    return;
-  }
+        // Updates the public QR code with a payment amount
+      async updatePublicQRCodes() {
+      if (!this.generatedWallets.length) {
+          console.error("No generated wallets found!");
+          return;
+    }   
 
-  const amount = this.paymentDetails ? parseFloat(this.paymentDetails) : 0;
+      const amount = this.paymentDetails ? parseFloat(this.paymentDetails) : 0;
 
-  for (const wallet of this.generatedWallets) {
-    wallet.customAmount = amount; // Assign amount to each wallet
+      for (const wallet of this.generatedWallets) {
+      wallet.customAmount = amount; // Assign amount to each wallet
 
-    // Ensure we don't duplicate "bitcoincash:" in the address
-    const cleanAddress = wallet.address.replace(/^bitcoincash:/, '');
+       // Ensure we don't duplicate "bitcoincash:" in the address
+      const cleanAddress = wallet.address.replace(/^bitcoincash:/, '');
 
-    // Construct QR code data with the specified amount
-    let qrDataPublic = `bitcoincash:${cleanAddress}`;
-    if (amount > 0) {
+      // Construct QR code data with the specified amount
+      let qrDataPublic = `bitcoincash:${cleanAddress}`;
+      if (amount > 0) {
       qrDataPublic += `?amount=${amount}`;
     }
 
-    try {
-      wallet.qrCodePublic = await QRCode.toDataURL(qrDataPublic, {
+      try {
+        wallet.qrCodePublic = await QRCode.toDataURL(qrDataPublic, {
         errorCorrectionLevel: 'L', 
-      });
-      console.log(`QR Code updated for ${cleanAddress}:`, wallet.qrCodePublic);
+    });
+        console.log(`QR Code updated for ${cleanAddress}:`, wallet.qrCodePublic);
     } catch (error) {
-      console.error(`Error generating QR code for ${cleanAddress}:`, error);
+        console.error(`Error generating QR code for ${cleanAddress}:`, error);
     }
   }
 },
+      async updateQRCodeForWallet(wallet) {
+      if (!wallet || !wallet.address) return;
 
-async updateQRCodeForWallet(wallet) {
-  if (!wallet || !wallet.address) return;
+      const cleanAddress = wallet.address.replace(/^bitcoincash:/, '');
+      let qrDataPublic = `bitcoincash:${cleanAddress}`;
 
-  const cleanAddress = wallet.address.replace(/^bitcoincash:/, '');
-  let qrDataPublic = `bitcoincash:${cleanAddress}`;
-
-  if (this.individualWalletOption && wallet.customAmount > 0) {
-  qrDataPublic += `?amount=${wallet.customAmount}`;
-}
-
-
-  try {
-    wallet.qrCodePublic = await QRCode.toDataURL(qrDataPublic);
+      if (this.individualWalletOption && wallet.customAmount > 0) {
+      qrDataPublic += `?amount=${wallet.customAmount}`;
+    }
+    try {
+      wallet.qrCodePublic = await QRCode.toDataURL(qrDataPublic);
   } catch (error) {
-    console.error(`Error updating QR code for ${wallet.address}:`, error);
+      console.error(`Error updating QR code for ${wallet.address}:`, error);
   }
 },
 
-generateQRCode(address, amount) {
+      generateQRCode(address, amount) {
     return `https://chart.googleapis.com/chart?chs=150x150&cht=qr&chl=bitcoincash:${address}?amount=${amount}`;
   },
-
-
-    // Converts the wallet section into an image and opens a print window
+      // Converts the wallet section into an image and opens a print window
     async printWallet() {
-  // Suppress the watcher so QR codes are not overwritten
-  this.suppressWatcher = true;
+      // Suppress the watcher so QR codes are not overwritten
+    this.suppressWatcher = true;
 
-  // Hide the UI toggle, but keep wallet data intact
-  this.individualWalletOption = false;
+      // Hide the UI toggle, but keep wallet data intact
+    this.individualWalletOption = false;
 
-  await this.$nextTick();
-  await new Promise(resolve => setTimeout(resolve, 200)); // Allow QR rendering
+    await this.$nextTick();
+    await new Promise(resolve => setTimeout(resolve, 200)); 
+      // Allow QR rendering
 
-  const printable = document.getElementById("printable-wallet");
-  if (!printable) {
-    console.error("Printable wallet section not found!");
+    const printable = document.getElementById("printable-wallet");
+    if (!printable) {
+      console.error("Printable wallet section not found!");
     this.suppressWatcher = false;
-    return;
+      return;
   }
 
-  const canvas = await html2canvas(printable, { scale: 2 });
-  const imageData = canvas.toDataURL("image/png");
-
-  const printWindow = window.open("", "_blank");
-  printWindow.document.write(`
+    const canvas = await html2canvas(printable, { scale: 2, useCORS: true });
+    const imageData = canvas.toDataURL("image/png");
+    const printWindow = window.open("", "_blank");
+      printWindow.document.write(`
     <html>
       <head>
         <title>Print Wallet</title>
@@ -865,48 +812,49 @@ generateQRCode(address, amount) {
           img { height: 100%; width: 100%; max-width: 1000px; }
         </style>
       </head>
-      <body><img src="${imageData}" alt="Printed Wallet"></body>
+      <body>
+    <img src="${imageData}" 
+          alt="Printed Wallet">
+    </body>
     </html>
   `);
-  printWindow.document.close();
-  printWindow.focus();
+      printWindow.document.close();
+      printWindow.focus();
+  
 
-  setTimeout(() => {
-    printWindow.print();
-    printWindow.close();
-  }, 500);
+      setTimeout(() => {
+        printWindow.print();
+        printWindow.close();
+    }, 500);
 
-  // Restore state
-  this.individualWalletOption = true;
-  this.suppressWatcher = false;
+        // Restore state
+    this.individualWalletOption = true;
+    this.suppressWatcher = false;
 },
 
+        // Toggles dropdown for design selection
+      toggleDropdown() {
+    this.dropdownOpen = !this.dropdownOpen;
+    if (!this.dropdownOpen) {
+      this.selectedDesign = true;
+      this.activeStep = 2;
+    }
+  },
 
-
-
-    // Toggles dropdown for design selection
-    toggleDropdown() {
-      this.dropdownOpen = !this.dropdownOpen;
-      if (!this.dropdownOpen) {
-        this.selectedDesign = true;
-        this.activeStep = 2;
-      }
-    },
-
-    // Sets the selected design and updates UI state
-    selectDesign(design) {
+      // Sets the selected design and updates UI state
+      selectDesign(design) {
       this.selectedDesign = design;
       this.dropdownOpen = false;
       this.activeStep = 2;
-    },
+  },
 
-    // Toggles step visibility in UI
-    toggleStep(step) {
+       // Toggles step visibility in UI
+      toggleStep(step) {
       this.activeStep = this.activeStep === step ? null : step;
-    },
+  },
 
-    // Moves to customization step after design selection
-    proceedToCustomization(design) {
+      // Moves to customization step after design selection
+      proceedToCustomization(design) {
       this.selectedDesign = design;
       this.generatedWallets.forEach(wallet => {
       wallet.design = { ...design };
@@ -918,8 +866,8 @@ generateQRCode(address, amount) {
     },
   },
 
-  watch: {
-  individualWalletOption(newVal) {
+    watch: {
+      individualWalletOption(newVal) {
     if (this.suppressWatcher) return;
 
     if (newVal) {
@@ -935,39 +883,13 @@ generateQRCode(address, amount) {
       });
     }
   }
-}
-
-
-
-};
-
+  }
+  };
 </script>
 
 
 
 <style scoped>
-@media print and (orientation: portrait) {
-  .wallet-padding {
-  margin-top: 1.7%;
-  margin-bottom: 1%;
-  padding-top: 0%;
-  padding: 0%;
-  padding-bottom: 0%;
-}
-}
-.token-option {
-  font-size: 0.9rem;
-  font-weight: bold;
-}
-
-.token-dropdown {
-  margin-left: 1px;
-  width: 125px;
-  height: 23px;
-}
-
-
-
 .individual-wallet-section {
   margin-left: 10px;
   margin-top: 15px;
