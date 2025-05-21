@@ -121,27 +121,25 @@
         
         <div v-if="activeStep === 2" class="customization-section">
           <label class="custom">Custom BCH Amount:</label>
-<select
-  v-model="paymentDetails"
-  @change="updatePublicQRCodes"
-  class="dropdown"
-  :disabled="individualWalletOption"
->
-  <option disabled value="">Amount</option>
-  <option
-    v-for="amount in [0.0001, 0.001, 0.005, 0.05, 0.1, 0.25, 0.5, 0.75, 1, 5, 10]"
-    :key="amount"
-    :value="amount"
-  >
-    {{ amount }} BCH
-  </option>
-</select>
+        <select
+          v-model="paymentDetails"
+          @change="updatePublicQRCodes"
+          class="dropdown"
+          :disabled="individualWalletOption"
+        >
+          <option disabled value="">Amount</option>
+          <option
+            v-for="amount in [0.0001, 0.001, 0.005, 0.05, 0.1, 0.25, 0.5, 0.75, 1, 5, 10]"
+            :key="amount"
+            :value="amount"
+          >
+            {{ amount }} BCH
+          </option>
+        </select>
 
-
-          
 
           <label class="address">Addresses to generate:</label>
-          
+
           <div class="loader-wrapper">
             <div v-if="loading" class="spinner"></div>
               <input class="input-bar" type="text" v-model.number="addressCount" @keyup.enter="generateMultipleKeys" />
@@ -153,17 +151,17 @@
             <div style="display: flex; align-items: center; gap: 0.6rem;">
               <label class="token-option">Assets:</label>
   
-  <select class="token-dropdown">
-    <option value="Bitcoin Cash">Bitcoin Cash</option>
-    <option value="Token">Token</option>
-  </select>
+            <select class="token-dropdown" v-model="selectedAsset" @change="handleAssetChange">
+              <option value="Bitcoin Cash">Bitcoin Cash</option>
+              <option value="Token">Token</option>
+            </select>
 
 
-              <label class="individual-custom-amount" style="display: flex; align-items: center;">
-    <input type="checkbox" v-model="individualWalletOption" style="margin-right: 0.1rem;" />
-    Enable Individual Custom Amount
-  </label>
-</div>
+                        <label class="individual-custom-amount" style="display: flex; align-items: center;">
+              <input type="checkbox" v-model="individualWalletOption" style="margin-right: 0.1rem;" />
+              Enable Individual Custom Amount
+            </label>
+          </div>
 
 
       
@@ -318,50 +316,46 @@
                 </q-card-section>
 
 
-                    <!-- Private Key QR -->
-                    <q-card-section
-  class="qr-section private-section"
-  style="
-    position: absolute;
-    top: 3.8%;
-    left: 0.2%;
-    width: 18%;
-    height: auto;
-    pointer-events: none;
-    
-    ">
-  <img
-    :src="wallet.qrCodePrivate"
-    alt="Private QR Code"
-    class="qr-code private-qr"
-    style="width: clamp(21px, 7vw, 205px); height: auto;"
-  />
-</q-card-section>
+                            <!-- Private Key QR -->
+                            <q-card-section
+          class="qr-section private-section"
+          style="
+            position: absolute;
+            top: 3.8%;
+            left: 0.2%;
+            width: 18%;
+            height: auto;
+            pointer-events: none;
+            
+            ">
+          <img
+            :src="wallet.qrCodePrivate"
+            alt="Private QR Code"
+            class="qr-code private-qr"
+            style="width: clamp(21px, 7vw, 205px); height: auto;"
+          />
+        </q-card-section>
 
 
 
-<q-card-section
-  class="private-key"
-  style="
-    position: absolute;
-    transform: translateX(-53%) translateY(-8%) rotate(-45.7deg);
-    bottom: 80%;
-    left: 16%;
-    top: 25%;
-    width: 50%;
-    font-size: min(max(2px, 0.6vw), 20px);
-    text-align: center;
-    pointer-events: none;
-    white-space: nowrap;
-    overflow: visible;
-    text-overflow: ellipsis;
-  ">
-  <p :style="{color: selectedDesign?.textColor || 'inherit', fontWeight: 'bold'}">{{ wallet.encryptedWIF ? wallet.encryptedWIF : wallet.wif }}</p>
-</q-card-section>
-
-
-
-
+      <q-card-section
+        class="private-key"
+        style="
+          position: absolute;
+          transform: translateX(-53%) translateY(-8%) rotate(-45.7deg);
+          bottom: 80%;
+          left: 16%;
+          top: 25%;
+          width: 50%;
+          font-size: min(max(2px, 0.6vw), 20px);
+          text-align: center;
+          pointer-events: none;
+          white-space: nowrap;
+          overflow: visible;
+          text-overflow: ellipsis;
+        ">
+        <p :style="{color: selectedDesign?.textColor || 'inherit', fontWeight: 'bold'}">{{ wallet.encryptedWIF ? wallet.encryptedWIF : wallet.wif }}</p>
+      </q-card-section>
 
                   </div>
                   </div>
@@ -404,6 +398,14 @@ import pw7 from 'src/assets/pw7.png';
 import pw8 from 'src/assets/pw8.png';
 import pw9 from 'src/assets/pw9.png';
 import pw10 from 'src/assets/pw10.png';
+import {
+  decodeCashAddress,
+  encodeCashAddress,
+  CashAddressNetworkPrefix,
+  CashAddressType,
+} from '@bitauth/libauth';
+
+
 
 export default {
   data() {
@@ -433,6 +435,7 @@ export default {
       wallet: {
         customAmount: ""
       },
+      selectedAsset: 'Bitcoin Cash',
       designs: [
         { id: 1, image: pw1, textColor: 'black', addressColor: 'white' },
         { id: 2, image: pw2, textColor: 'white', addressColor: 'black' },
@@ -809,6 +812,32 @@ generateQRCode(address, amount) {
       this.addressCount = 1; 
       this.generateMultipleKeys();
     },
+
+     async handleAssetChange() {
+      const input = document.getElementById('bch-address').value.trim()
+      const dropdown = document.getElementById('address-type').value
+      const isToken = dropdown === 'Token'
+      const converted = CashAddressType(input, isToken, false) 
+      document.getElementById('converted-address').textContent = converted || 'Invalid address'
+    },
+
+    async convertCashAddressType(address, toTokenFormat = true, isTestnet = false) {
+    try {
+      const decoded = decodeCashAddress(address)
+      const prefix = isTestnet
+        ? CashAddressNetworkPrefix.testnet
+        : CashAddressNetworkPrefix.mainnet
+
+      const addressType = toTokenFormat
+        ? CashAddressType.p2pkhWithTokens
+        : CashAddressType.p2pkh
+
+      return encodeCashAddress(prefix, addressType, decoded.payload)
+    } catch (err) {
+      console.error('Invalid BCH address:', err)
+      return null
+    }
+  }
   },
 };
 
@@ -2260,13 +2289,6 @@ font-family: 'Lexend';
     margin-top: 0% !important;
     right: -18px;
   }
-  .bch-amount {
-    margin-bottom: 10%;
-  }
-  .bip38-label {
-    top: 70% !important;
-    padding: 0.5em 0.5em !important;
-  }
 }
 
 
@@ -2381,13 +2403,6 @@ font-family: 'Lexend';
     margin-top: 0% !important;
     right: -18px;
   }
-  .bch-amount {
-    margin-bottom: 10%;
-  }
-  .bip38-label {
-    top: 70% !important;
-    padding: 0.5em 0.5em !important;
-  }
 }
 
 @media (max-width: 375px) {
@@ -2433,58 +2448,6 @@ font-family: 'Lexend';
     width: 2rem;
     height: 2rem;
   }
-  .private-qr{
-    margin-top: 2px;
-    margin-left: 0;
-  }
-  .public-qr{
-    margin-right: -17px;
-    margin-top: 2px;
-  }
-  .design-grid {
-    display: grid;
-    height: 100vh;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1px;
-  }
-  .design-preview{
-    width: 110px;
-  }
-  .select-button {
-    font-size: 0.6rem;
-    line-height: 2%;
-    margin-bottom: 1%;
-    top: 40%;
-    width: 100px;
-    height: 1vh;
-  }
-  .customization-section .custom,
-  .customization-section .dropdown,
-  .customization-section .address,
-  .customization-section .input-bar,
-  .customization-section .encryption {
-    font-size: 0.3rem;
-  }
-  .dropdown-panel {
-    width: 51vw;
-    height: 55vh;
-  }
-  .dropdown-image {
-    width: 20px;
-    height: 20px;
-  }
-  .dropdown-panel .strong,
-  .dropdown-panel .advanced-settings-row {
-    font-size: 0.2rem;
-    bottom: 10%;
-  }
-  .generate-btn {
-    font-size: 0.5rem;
-  }
-  .selected-design .qr-code {
-  width: 1.4rem !important;
-  height: 1.4rem !important;
-}
   .selected-design .public-section {
     right: 13% !important;
     top: 7% !important;
@@ -2510,7 +2473,6 @@ font-family: 'Lexend';
     top: 70% !important;
     padding: 0.5em 0.5em !important;
   }
-   
 }
 
 </style>

@@ -12,11 +12,21 @@ export default defineConfig(() => {
       'material-icons',
     ],
     preFetch: true,
+     eslint: {
+   // fix: true, 
+   // include: [],
+   // exclude: [],
+   // cache: false,
+   // rawEsbuildEslintOptions: {},
+  //rawWebpackEslintPluginOptions: {}, 
+   warnings: true,
+   errors: false
+ },
     build: {
-      target: {
-        browser: [ 'es2022', 'firefox115', 'chrome115', 'safari14' ],
-        node: 'node20'
-      },
+      esbuildTarget: {
+    browser: [ 'es2022', 'firefox115', 'chrome115', 'safari14' ],
+    node: 'node20'
+  },
       chainWebpack(cfg) {
         // Ensure images are properly handled
         cfg.module
@@ -104,7 +114,25 @@ export default defineConfig(() => {
       polyfillModulePreload: true
     },
     devServer: {
-      open: true
+       server: {
+      type: 'http'
+      },
+      port: 8080,
+      open: true,
+      // https: false,
+      // historyApiFallback: true,
+      // hot: true,
+      // // watchOptions: {
+      // //   poll: 1000,
+      // //   ignored: /node_modules/
+      // // },
+      // proxy: {
+      //   '/api': {
+      //     target: 'http://localhost:3000',
+      //     changeOrigin: true,
+      //     pathRewrite: { '^/api': '' }
+      //   }
+      // }         
     },
     framework: {
       config: {},
@@ -148,5 +176,8 @@ export default defineConfig(() => {
     bex: {
       extraScripts: []
     },
+    sourceFiles: {
+ indexHtmlTemplate: 'index.html'
+},
   }
 })
