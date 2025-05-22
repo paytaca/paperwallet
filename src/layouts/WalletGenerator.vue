@@ -259,15 +259,18 @@
     <img    :src="wallet.design.image" 
             alt="Selected Design" 
             class="design-image" />
+
     <div    class = "qr-code-overlay">
     <q-card-section class="bch-amount"
-                    style="top: 17%; left: 11%; transform: translateX(-50%) rotate(-180deg); 
-                            font-size: 1.2vw; text-align: center; pointer-events: none; 
-                            white-space: nowrap; text-overflow: ellipsis;">
-    <p      v-if = "wallet.customAmount && wallet.customAmount > 0">
-            {{ wallet.customAmount }} 
-            {{ selectedAsset === 'Token' ? selectedToken : 'BCH' }}
-    </p>
+  style="top: 20%; left: 12.4%; transform: translateX(-50%) rotate(-180deg); 
+         font-size: 1.2vw; text-align: center; pointer-events: none; 
+         white-space: nowrap; text-overflow: ellipsis;">
+  
+  <div v-if="wallet.customAmount && wallet.customAmount > 0">
+    <div>{{ wallet.customAmount }}</div>
+    <div>{{ selectedAsset === 'Token' ? selectedToken : 'BCH' }}</div>
+  </div>
+
     </q-card-section>              
     <q-card-section v-if="bip38Enabled"
                     class="bip38-label"
