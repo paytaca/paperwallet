@@ -91,21 +91,22 @@
     </div>
     <div    v-if="activeStep === 2" 
             class="customization-section">
-    <label  class="custom">
-            Custom BCH Amount:
-    </label>
-    <select v-model="paymentDetails" @change="updatePublicQRCodes"
-            class="dropdown"
-            :disabled="individualWalletOption">
-    <option value="">
-            Any Amount
-    </option>
-    <option v-for="amount in [0.0001, 0.001, 0.005, 0.05, 0.1, 0.25, 0.5, 0.75, 1, 5, 10]"
-            :key="amount"
-            :value="amount">
-            {{ amount }} BCH
-    </option>
-    </select>
+            <label class="custom">
+  Custom {{ selectedAsset === 'Token' ? 'Token' : 'BCH' }} Amount:
+</label>
+<select v-model="paymentDetails" @change="updatePublicQRCodes"
+        class="dropdown"
+        :disabled="individualWalletOption">
+  <option value="">
+    Any Amount
+  </option>
+  <option v-for="amount in customAmountOptions"
+          :key="amount"
+          :value="amount">
+    {{ amount }} {{ selectedAsset === 'Token' ? 'Tokens' : 'BCH' }}
+  </option>
+</select>
+
     <label  class="address">
             Addresses to generate:
     </label>      
@@ -148,6 +149,8 @@
             {{ token.name }} ({{ token.symbol }})
     </option>
     </select>
+
+
     <label  class="individual-custom-amount" 
             style="display: flex; align-items: center;">
     <input  type="checkbox" 
@@ -256,15 +259,18 @@
     <img    :src="wallet.design.image" 
             alt="Selected Design" 
             class="design-image" />
+
     <div    class = "qr-code-overlay">
     <q-card-section class="bch-amount"
-                    style="top: 17%; left: 11%; transform: translateX(-50%) rotate(-180deg); 
-                            font-size: 1.2vw; text-align: center; pointer-events: none; 
-                            white-space: nowrap; text-overflow: ellipsis;">
-    <p      v-if = "wallet.customAmount && wallet.customAmount > 0">
-            {{ wallet.customAmount }} 
-            {{ selectedAsset === 'Token' ? selectedToken : 'BCH' }}
-    </p>
+  style="top: 20%; left: 12.4%; transform: translateX(-50%) rotate(-180deg); 
+         font-size: 1.2vw; text-align: center; pointer-events: none; 
+         white-space: nowrap; text-overflow: ellipsis;">
+  
+  <div v-if="wallet.customAmount && wallet.customAmount > 0">
+    <div>{{ wallet.customAmount }}</div>
+    <div>{{ selectedAsset === 'Token' ? selectedToken : 'BCH' }}</div>
+  </div>
+
     </q-card-section>              
     <q-card-section v-if="bip38Enabled"
                     class="bip38-label"
@@ -439,7 +445,17 @@ export default {
     } else {
       return [0.0001, 0.001, 0.005, 0.05, 0.1, 0.25, 0.5, 0.75, 1, 5, 10];
     }
+  },
+
+  customAmountOptions() {
+  if (this.selectedAsset === 'Token') {
+    return [0.25, 0.75, 1, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50];
+  } else {
+    return [0.0001, 0.001, 0.005, 0.05, 0.1, 0.25, 0.5, 0.75, 1, 5, 10];
   }
+},
+
+
 },
 
       methods: {
@@ -770,56 +786,60 @@ export default {
       generateQRCode(address, amount) {
     return `https://chart.googleapis.com/chart?chs=150x150&cht=qr&chl=bitcoincash:${address}?amount=${amount}`;
   },
+
+
       // Converts the wallet section into an image and opens a print window
-    async printWallet() {
-      // Suppress the watcher so QR codes are not overwritten
-    this.suppressWatcher = true;
+      async printWallet() {
+  
+  const originalIndividualWalletOption = this.individualWalletOption;
+  const originalSuppressWatcher = this.suppressWatcher;
 
-      // Hide the UI toggle, but keep wallet data intact
-    this.individualWalletOption = false;
+  this.suppressWatcher = true;
+  this.individualWalletOption = false;
 
-    await this.$nextTick();
-    await new Promise(resolve => setTimeout(resolve, 200)); 
-      // Allow QR rendering
+  await this.$nextTick();
+  await new Promise(resolve => setTimeout(resolve, 200)); 
 
-    const printable = document.getElementById("printable-wallet");
-    if (!printable) {
-      console.error("Printable wallet section not found!");
-    this.suppressWatcher = false;
-      return;
+  const printable = document.getElementById("printable-wallet");
+  if (!printable) {
+    console.error("Printable wallet section not found!");
+    return;
   }
 
-    const canvas = await html2canvas(printable, { scale: 2, useCORS: true });
-    const imageData = canvas.toDataURL("image/png");
-    const printWindow = window.open("", "_blank");
-      printWindow.document.write(`
+  const canvas = await html2canvas(printable, { scale: 2, useCORS: true });
+  const imageData = canvas.toDataURL("image/png");
+  const printWindow = window.open("", "_blank");
+
+  printWindow.document.write(`
     <html>
       <head>
         <title>Print Wallet</title>
         <style>
           body { text-align: center; margin: 0; padding: 0; }
-          img { height: 100%; width: 100%; max-width: 1000px; }
+          img { height: auto; width: auto; max-width: 1000px; }
         </style>
       </head>
       <body>
-    <img src="${imageData}" 
-          alt="Printed Wallet">
-    </body>
+        <img src="${imageData}" alt="Printed Wallet">
+      </body>
     </html>
   `);
-      printWindow.document.close();
-      printWindow.focus();
-  
+  printWindow.document.close();
+  printWindow.focus();
 
-      setTimeout(() => {
-        printWindow.print();
-        printWindow.close();
+  setTimeout(() => {
+    printWindow.print();
+    
+  setTimeout(() => {
+    printWindow.close();
+      
+      this.individualWalletOption = originalIndividualWalletOption;
+      this.suppressWatcher = originalSuppressWatcher;
+      
     }, 500);
-
-        // Restore state
-    this.individualWalletOption = true;
-    this.suppressWatcher = false;
+  }, 100);
 },
+
 
         // Toggles dropdown for design selection
       toggleDropdown() {
@@ -872,7 +892,7 @@ export default {
       });
     }
   }
-  }
+  } 
   };
 </script>
 
@@ -1494,8 +1514,8 @@ font-family: 'Lexend';
 }
 
 .wallet-padding {
-  margin-top: 1.3%;
-  margin-bottom: 0%;
+  margin-top: 2.2%;
+  margin-bottom: 2.2%;
   padding-top: 0%;
   padding: 0%;
   padding-bottom: 0%;
