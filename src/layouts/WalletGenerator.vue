@@ -361,12 +361,6 @@
     import pw8 from 'src/assets/pw8.png';
     import pw9 from 'src/assets/pw9.png';
     import pw10 from 'src/assets/pw10.png';
-  
-
-    const tokenImages = import.meta.glob('/@assets/tokens/*.png', {
-  eager: true,
-  import: 'default',
-});
 
 export default {
   data() {
@@ -397,7 +391,7 @@ export default {
       selectedAsset: 'Bitcoin Cash',
       selectedToken: '',
       tokens: [],
-      loadingTokens: true,
+      loadingTokens: false,
       suppressWatcher: false,
       designs: [
         { id: 1, image: pw1, textColor: 'black', addressColor: 'white' },
@@ -417,13 +411,15 @@ export default {
     async created() {
       document.body.classList.toggle("dark-mode", this.isDarkMode);
       document.body.classList.toggle("light-mode", this.isLightMode);
-  
+      
     try {
-      const res = await fetch("https://watchtower.cash/api/cashtokens/fungible/?limit=50&offset=1");
+      const res = await fetch("https://watchtower.cash/api/cashtokens/fungible/?limit=100&offset=1");
       const data = await res.json();
 
     // Filter only valid tokens (have both name and symbol)
-      this.tokens = data.results.filter(t => t.name && t.symbol);
+      this.tokens = data.results.filter(t => 
+      t.name && t.symbol && t.image_url &&
+      !t.image_url.startsWith('ipfs://') && !t.image_url.includes("ipfs.dweb.link"));
     } catch (err) {
       console.error("Failed to fetch tokens from Watchtower:", err);
     } finally {
@@ -447,13 +443,6 @@ export default {
 },
 
       methods: {
-        getLocalTokenImage(tokenCategory) {
-  const matchKey = Object.keys(tokenImages).find((key) =>
-    key.includes(tokenCategory)
-  );
-  return matchKey ? tokenImages[matchKey] : null;
-},
-
       handleAssetChange() {
         // Reset token selection when asset changes
       if (this.selectedAsset !== 'Token') 
