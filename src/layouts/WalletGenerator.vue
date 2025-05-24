@@ -145,7 +145,7 @@
     </option>
     <option v-for="token in tokens"
             :key="token.tokenId"
-            :value="token.name">
+            :value="token.symbol">
             {{ token.name }} ({{ token.symbol }})
     </option>
     </select>
