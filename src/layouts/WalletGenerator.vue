@@ -432,7 +432,7 @@ export default {
       encryptOption: false,
       passphrase: '',
       individualWalletOption: false,
-      wallet: {
+      wallet: { 
         customAmount: ""
       },
       selectedAsset: 'Bitcoin Cash',
