@@ -423,9 +423,22 @@ export default {
       const data = await res.json();
 
     // Filter only valid tokens (have both name and symbol)
-      this.tokens = data.results.filter(t => 
+      const validTokens = data.results
+    .filter(t =>
       t.name && t.symbol && t.image_url &&
       !t.image_url.startsWith('ipfs://') && !t.image_url.includes("ipfs.dweb.link"));
+    
+    // Prepend a generic "Any CashToken" option
+  this.tokens = [
+    {
+      name: "Any CashToken",
+      symbol: "CT",
+      image_url: "https://paytaca.github.io/assets/img/token-placeholder.png",
+    },
+    ...validTokens
+  ];
+
+    
     } catch (err) {
       console.error("Failed to fetch tokens from Watchtower:", err);
     } finally {
