@@ -19,7 +19,7 @@
             Paytaca
     </a>
 
-    <!-- Dark Mode Toggle Button -->
+    
     <button class="toggle-button" @click="toggleDarkMode" 
             style = "z-index: 1000; position: sticky; margin-left: auto;">
     <span   v-if="isDarkMode">🌙 </span>
@@ -131,11 +131,11 @@
             Bitcoin Cash
     </option>
     <option value="Token">
-            Token
+            CashToken
     </option>
     </select>
 
-    <!-- Token selection appears only if 'Token' is selected -->
+    
     <select class="token-select"
             v-show="selectedAsset === 'Token'"
             style="margin-left: 10px;"
@@ -169,16 +169,16 @@
     </strong>
     </p>
 
-    <!-- BIP38 Checkbox & Link -->
+    
     <div    class="advanced-settings-row" 
             style = "display: flex; flex-wrap: wrap; align-items: center; gap: 1rem; font-size: 0.95rem;">
 
-    <!-- BIP38 Checkbox -->
+    
     <input  type="checkbox" 
             v-model="encryptOption" 
             id="bip38" />
 
-    <!-- Label + Link -->
+    
     <label  for="bip38">
             BIP38 Encrypt?
     <span   class = "tooltip-container" 
@@ -215,7 +215,7 @@
     </div>
     </div>
 
-    <!-- Paper Wallet Container -->
+    
     <div    v-if="customAmount && addressCount" 
             class="paper-wallet-container">
     <div    class="paper-wallet">
@@ -473,53 +473,42 @@ export default {
 
       methods: {
       handleAssetChange() {
-        // Reset token selection when asset changes
       if (this.selectedAsset !== 'Token') 
       {
           this.selectedToken = null;
       }
     },
 
-        // Toggles the dropdown for advanced settings
+        
       toggleAdvanceSettingdropdown() {
           this.showAdvanceSettingdropdown = !this.showAdvanceSettingdropdown;
       if (this.showAdvanceSettingdropdown) 
       {
           this.generatedWallets = [];
           this.firstWallet = [];  
-        // Clear existing wallets (including the static one)
       } else  {
           this.resetWallet();  
-        // Call the method to regenerate wallet without encryption
       }
     },
 
       resetWallet() {
-          this.showAdvanceSettingdropdown = false;  
-        // Close advanced settings
-          this.encryptOption = false;  
-        // Uncheck encryption
+          this.showAdvanceSettingdropdown = false; 
+          this.encryptOption = false; 
           this.passphrase = '';  
-        // Clear passphrase
-          this.encryptedWIF = null;  
-        // Reset encrypted WIF
+          this.encryptedWIF = null; 
           this.originalWIF = null;  
-        // Ensure original WIF is reset
           this.generatedWallets = [];  
-        // Clear generated wallets
-        // Re-generate the original WIF
           this.generateMultipleKeys();  
-        // Call the method to regenerate wallet without encryption
     },
-        //Dark Mode Method
+        
+
       toggleDarkMode() {
           this.isDarkMode = !this.isDarkMode;
           this.isLightMode = !this.isLightMode; 
-          // Ensure only one mode is active
-          // Save the mode in local storage
+          
           localStorage.setItem("darkMode", this.isDarkMode);
           localStorage.setItem("lightMode", this.isLightMode);
-          // Remove both modes first, then apply the correct one
+          
           document.body.classList.remove("light-mode", "dark-mode");
       if (this.isDarkMode) 
       {
@@ -530,7 +519,7 @@ export default {
         document.body.classList.remove("light-mode");
       }
     },
-          // Computes SHA-256 hash for a given data input
+          
     async sha256(data = '', encoding = 'utf8') 
     {
       let buffer;
@@ -547,7 +536,7 @@ export default {
         throw new Error('Unsupported encoding type');
       }
 
-          // Use window.crypto.subtle explicitly
+          
       const hashBuffer = await window.crypto.subtle.digest('SHA-256', buffer);
       return this.binToHex(new Uint8Array(hashBuffer));
     },
@@ -558,18 +547,18 @@ export default {
         .join('');
     },
 
-          // Convert Hex to Uint8Array
+          
         hexToBin(hex) {
       return new Uint8Array(
         hex.match(/.{1,2}/g).map(byte => parseInt(byte, 16))
       );
     },
 
-          // Convert Uint8Array to Base58 (if needed for WIF key)
+          
         binToBase58(uint8Array) 
     {
       return bs58.encode(uint8Array); 
-          // Requires 'bs58' library
+          
     },
 
         ripemd160(buffer) 
@@ -587,7 +576,7 @@ export default {
       return cashaddr.encode(prefix, type.toUpperCase(), payload);
     },
 
-          // Generates new private and public keys, WIF, and Bitcoin Cash address
+          
     async generateNewKeys() {
       const privateKey = await this.generatePrivateKey();
       this.privateKeyWIF = privateKey.wif;
@@ -598,25 +587,25 @@ export default {
         generatePublicKey(privateKeyHex) {
       const privateKey = Buffer.from(privateKeyHex, 'hex');
       const publicKey = secp256k1.getPublicKey(privateKey, true);  
-          // 'true' for compressed public key
+          
       return publicKey.toString('hex');
     },
 
-          // Generate BCH address with proper format
+          
         generateBCHAddress(publicKeyHex) {
       const publicKeyHash = this.ripemd160(this.sha256(publicKeyHex));  
-          // Perform RIPEMD-160 on SHA-256 hash of public key
+          
       return `bitcoincash:${publicKeyHash}`;  
-          // BCH address should have 'bitcoincash:' prefix
+          
     },
 
-          // Generates a private key, derives public key and Bitcoin Cash address
+          
     async generatePrivateKey() {
-          // Generate a 32-byte private key using browser crypto API
+          
       const privateKey = new Uint8Array(32);
         window.crypto.getRandomValues(privateKey);
 
-          // Generate compressed public key
+          
       const publicKey = secp256k1.publicKeyCreate(privateKey, true);
 
       const privateKeyHex = this.binToHex(privateKey);
@@ -625,8 +614,8 @@ export default {
       const sha256Hash = await this.sha256(publicKeyHex, 'hex');
       const ripemdHash = this.ripemd160(this.hexToBin(sha256Hash));
 
-          // Generate WIF format (for non-encrypted use)
-      const extendedKey = new Uint8Array([0x80, ...privateKey, 0x01]); // 0x01 for compressed flag
+          
+      const extendedKey = new Uint8Array([0x80, ...privateKey, 0x01]); 
       const hashWif1 = await this.sha256(extendedKey, 'hex');
       const hashWif2 = await this.sha256(this.hexToBin(hashWif1), 'hex');
       const checksumWif = this.hexToBin(hashWif2).slice(0, 4);
@@ -653,7 +642,8 @@ export default {
         encryptedWIF: encryptedWIF || null,
       };
     },
-        // Generates multiple Bitcoin Cash addresses based on user input
+        
+
     async generateMultipleKeys() 
     {
       this.loading = true;
@@ -664,15 +654,15 @@ export default {
     } else {
       this.bip38Enabled = false;
     }
-      const MAX_WALLETS = 10; // Set your desired wallet limit
+      const MAX_WALLETS = 10; 
 
-        // Ensure addressCount starts at 1
+        
       if (!this.addressCount || this.addressCount < 1) 
     {
         this.addressCount = 0;
     }
 
-        // If no design is selected, prevent wallet generation
+        
       if (!this.selectedDesign) 
     {
         return;
@@ -680,7 +670,7 @@ export default {
 
         this.customAmount = this.paymentDetails ? parseFloat(this.paymentDetails) : 0;
 
-        // If no wallets exist, create the first static wallet
+        
       if (this.generatedWallets.length === 0) 
     {
       const firstWallet = await this.generatePrivateKey();
@@ -705,16 +695,16 @@ export default {
         this.generatedWallets.push(firstWallet);
     }
 
-        // Ensure address count does not exceed MAX_WALLETS
+        
         this.addressCount = Math.min(Math.max(this.addressCount, 0), MAX_WALLETS);
 
-        // Remove excess wallets while keeping the first one static
+        
       if (this.generatedWallets.length > this.addressCount) {
-        // Keep the first wallet, remove others
+        
         this.generatedWallets = [this.generatedWallets[0], ...this.generatedWallets.slice(1, this.addressCount)];
     }
 
-        // Generate additional wallets (excluding the static one)
+        
       while (this.generatedWallets.length < this.addressCount) {
       if (this.generatedWallets.length >= MAX_WALLETS) {
         console.warn(`Wallet generation limit reached! Max allowed: ${MAX_WALLETS}`);
@@ -722,7 +712,7 @@ export default {
       }
 
       await new Promise(resolve => setTimeout(resolve, 500)); 
-        // 500ms delay
+        
 
       const wallet = await this.generatePrivateKey();
       if (!wallet || !wallet.address || !wallet.wif) {
@@ -746,10 +736,10 @@ export default {
 
         this.generatedWallets.push(wallet);
     }
-        this.loading = false; // Stop loader after generation
+        this.loading = false; 
     },
 
-        // Updates the public QR code with a payment amount
+        
       async updatePublicQRCodes() {
       if (!this.generatedWallets.length) {
           console.error("No generated wallets found!");
@@ -759,12 +749,12 @@ export default {
       const amount = this.paymentDetails ? parseFloat(this.paymentDetails) : 0;
 
       for (const wallet of this.generatedWallets) {
-      wallet.customAmount = amount; // Assign amount to each wallet
+      wallet.customAmount = amount; 
 
-       // Ensure we don't duplicate "bitcoincash:" in the address
+       
       const cleanAddress = wallet.address.replace(/^bitcoincash:/, '');
 
-      // Construct QR code data with the specified amount
+      
       let qrDataPublic = `bitcoincash:${cleanAddress}`;
       if (amount > 0) {
       qrDataPublic += `?amount=${amount}`;
@@ -801,7 +791,7 @@ export default {
   },
 
 
-      // Converts the wallet section into an image and opens a print window
+      
       async printWallet() {
   
   const originalIndividualWalletOption = this.individualWalletOption;
@@ -854,7 +844,7 @@ export default {
 },
 
 
-        // Toggles dropdown for design selection
+        
       toggleDropdown() {
     this.dropdownOpen = !this.dropdownOpen;
     if (!this.dropdownOpen) {
@@ -863,19 +853,19 @@ export default {
     }
   },
 
-      // Sets the selected design and updates UI state
+      
       selectDesign(design) {
       this.selectedDesign = design;
       this.dropdownOpen = false;
       this.activeStep = 2;
   },
 
-       // Toggles step visibility in UI
+       
       toggleStep(step) {
       this.activeStep = this.activeStep === step ? null : step;
   },
 
-      // Moves to customization step after design selection
+      
       proceedToCustomization(design) {
       this.selectedDesign = design;
       this.generatedWallets.forEach(wallet => {
