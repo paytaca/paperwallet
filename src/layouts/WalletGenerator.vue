@@ -287,13 +287,13 @@
     <q-card-section class="qr-section public-section"
                     style="position: absolute; top: 13%; right: 5.3%; width: 18%; height: auto; 
                             pointer-events: none; gap: 10px;">
-    <img    :src="wallet.qrCodePublic"
+    <img :src="wallet.qrCodePublic"
             alt="Public QR Code"
             class="qr-code public-qr"
             style="width: clamp(21px, 7vw, 205px); height: auto;"/>
 
     <!-- Token logo on the left -->
-    <img    v-if="selectedAsset === 'Token' && selectedTokenObject"
+    <img v-if="selectedAsset === 'Token' && selectedTokenObject"
             :src="selectedTokenObject.image_url || 'default.png'" 
             alt="Token Logo" 
             style="position: absolute;top: 50%; left: -20%; transform: translate(-50%, -50%); 
@@ -302,8 +302,8 @@
     <q-card-section class="wallet-address"
                     style="position: absolute; top: 2%; left: 57%; width: 25%; font-size: clamp(1px, 0.9vw, 20px); 
                             text-align: center; white-space: nowrap; pointer-events: none;">
-    <p      :style="{color: selectedDesign?.addressColor || 'inherit'}">
-            {{ wallet.address }}</p>
+    <p :style="{color: selectedDesign?.addressColor || 'inherit'}">
+            {{ selectedAsset === 'Token' ? wallet.displayAddress : wallet.address }}</p> 
     </q-card-section>
 
 
@@ -367,11 +367,11 @@
     import pw8 from 'src/assets/pw8.png';
     import pw9 from 'src/assets/pw9.png';
     import pw10 from 'src/assets/pw10.png';
-
+    import { decodeCashAddress, encodeCashAddress, CashAddressNetworkPrefix, CashAddressType } from '@bitauth/libauth'
 export default {
   data() {
     return {
-      paymentDetails: "",
+      paymentDetails: "",   
       privateKeyWIF: "",
       publicKeyHex: "",
       encryptedWIF: "",
@@ -399,6 +399,7 @@ export default {
       tokens: [],
       loadingTokens: false,
       suppressWatcher: false,
+      isTestNet: false,
       designs: [
         { id: 1, image: pw1, textColor: 'black', addressColor: 'white' },
         { id: 2, image: pw2, textColor: 'white', addressColor: 'black' },
@@ -468,28 +469,69 @@ export default {
   }
 },
 
+  displayedAddress() {
+      if (this.selectedAsset === 'Token') {
+        try {
+          const decodedAddress = decodeCashAddress(this.generatedWallets[0].address)
+          const prefix = CashAddressNetworkPrefix.mainnet
+          const addressType = CashAddressType.p2pkhWithTokens  // convert to token type
+          const tokenAddress = encodeCashAddress({
+              payload: decodedAddress.payload,
+              prefix,
+              throwErrors: false,
+              type: addressType
+            })
+          return tokenAddress.address
+        } catch (e) {
+          console.warn('Failed to convert BCH to CashToken address:', e)
+          return this.wallet.address
+        }
+      }
+      return this.wallet.address
+    }
+  },
+  
+  
+  methods: {
 
-},
-
-      methods: {
       handleAssetChange() {
-      if (this.selectedAsset !== 'Token') 
-      {
-          this.selectedToken = null;
-      }
-    },
-
-        
-      toggleAdvanceSettingdropdown() {
-          this.showAdvanceSettingdropdown = !this.showAdvanceSettingdropdown;
-      if (this.showAdvanceSettingdropdown) 
-      {
-          this.generatedWallets = [];
-          this.firstWallet = [];  
-      } else  {
-          this.resetWallet();  
-      }
-    },
+            if (this.selectedAsset === 'Token') {
+              for(let i = 0; i < this.generatedWallets.length; i++) {
+                const converted = this.convertCashAddress(this.generatedWallets[i].address)
+                // console.log('converted', converted)
+                // this.displayAddress = converted.address || this.generatedWallets[i].address
+                this.generatedWallets[i].displayAddress = converted.address || this.generatedWallets[i].address
+              }
+              // Convert BCH address to CashToken address
+            } else {
+              // Show original BCH address
+              this.displayAddress = this.generatedWallets[0].address
+            }
+            this.updatePublicQRCodes()
+          },
+          // Call this once on mounted to initialize displayedAddress
+          initializeAddress() {
+            this.displayAddress = this.generatedWallets[0].address
+          },
+     
+      convertCashAddress(address) {
+          
+          try {
+            const decodedAddress = decodeCashAddress(address)
+            console.log('decodedAddress', decodedAddress)
+            const prefix = CashAddressNetworkPrefix.mainnet
+            const addressType = CashAddressType.p2pkhWithTokens
+            return encodeCashAddress({
+              payload: decodedAddress.payload,
+              prefix,
+              throwErrors: false,
+              type: addressType
+            })
+          } catch (e) {
+            console.error('Address conversion error:', e)
+            return address // fallback to original
+          }
+        },
 
       resetWallet() {
           this.showAdvanceSettingdropdown = false; 
@@ -740,51 +782,82 @@ export default {
     },
 
         
-      async updatePublicQRCodes() {
-      if (!this.generatedWallets.length) {
-          console.error("No generated wallets found!");
-          return;
-    }   
-
-      const amount = this.paymentDetails ? parseFloat(this.paymentDetails) : 0;
-
-      for (const wallet of this.generatedWallets) {
-      wallet.customAmount = amount; 
-
-       
-      const cleanAddress = wallet.address.replace(/^bitcoincash:/, '');
-
-      
-      let qrDataPublic = `bitcoincash:${cleanAddress}`;
-      if (amount > 0) {
-      qrDataPublic += `?amount=${amount}`;
+  async updatePublicQRCodes() {
+    if (!this.generatedWallets.length) {
+      console.error("No generated wallets found!");
+      return;
     }
+
+    const amount = this.paymentDetails ? parseFloat(this.paymentDetails) : 0;
+
+    console.log('updatePublicQRCodes')
+    for (const wallet of this.generatedWallets) {
+      wallet.customAmount = amount;
+
+      // Default address and prefix for BCH
+      let selectedAddress = wallet.address;
+      let uriPrefix = 'bitcoincash:';
+
+      // Switch to CashToken address and prefix if selected
+      console.log('displayAddress', wallet.displayAddress)
+      console.log(this.displayAddress)
+      if (this.selectedAsset === 'Token' && wallet.displayAddress) {
+        selectedAddress = wallet.displayAddress;
+        uriPrefix = 'bitcoincash:';  // <-- Correct prefix for CashToken
+      }
+
+      // Remove any existing prefix from address to avoid duplicates
+      const cleanAddress = selectedAddress.replace(/^(bitcoincash:)/, '');
+
+      let qrDataPublic = `${uriPrefix}${cleanAddress}`;
+      if (amount > 0) {
+        qrDataPublic += `?amount=${amount}`;
+      }
 
       try {
         wallet.qrCodePublic = await QRCode.toDataURL(qrDataPublic, {
-        errorCorrectionLevel: 'L', 
-    });
+          errorCorrectionLevel: 'L',
+        });
         console.log(`QR Code updated for ${cleanAddress}:`, wallet.qrCodePublic);
-    } catch (error) {
+      } catch (error) {
         console.error(`Error generating QR code for ${cleanAddress}:`, error);
+      }
     }
-  }
-},
-      async updateQRCodeForWallet(wallet) {
-      if (!wallet || !wallet.address) return;
+  },
 
-      const cleanAddress = wallet.address.replace(/^bitcoincash:/, '');
-      let qrDataPublic = `bitcoincash:${cleanAddress}`;
+  async updateQRCodeForWallet(wallet) {
+    if (!wallet) return;
 
-      if (this.individualWalletOption && wallet.customAmount > 0) {
+    // Default BCH address and prefix
+    let selectedAddress = wallet.address;
+    let uriPrefix = 'bitcoincash:';
+
+    // Use CashToken address and prefix if option is set
+    console.log('úpdateQRCodeForWallet')
+    console.log('displayAddress', wallet.displayAddress)
+    if (this.displayAddress === 'Token' && wallet.displayAddress) {
+      selectedAddress = wallet.displayAddress;
+      uriPrefix = 'bitcoincash:'; // <-- Correct prefix for CashToken
+    }
+
+    // Clean address by removing any prefix
+    const cleanAddress = selectedAddress.replace(/^(bitcoincash:)/, '');
+
+    let qrDataPublic = `${uriPrefix}${cleanAddress}`;
+
+    if (this.individualWalletOption && wallet.customAmount > 0) {
       qrDataPublic += `?amount=${wallet.customAmount}`;
     }
+
     try {
       wallet.qrCodePublic = await QRCode.toDataURL(qrDataPublic);
-  } catch (error) {
-      console.error(`Error updating QR code for ${wallet.address}:`, error);
-  }
-},
+    } catch (error) {
+      console.error(`Error updating QR code for ${selectedAddress}:`, error);
+    }
+  },
+
+
+
 
       generateQRCode(address, amount) {
     return `https://chart.googleapis.com/chart?chs=150x150&cht=qr&chl=bitcoincash:${address}?amount=${amount}`;
