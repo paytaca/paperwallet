@@ -1,382 +1,558 @@
-  <template>
-    <head>
-    <meta   name="viewport" 
-            content="width=device-width, initial-scale=1.0">
-    </head>
-    <div    :class="{ 'dark-mode': isDarkMode }" 
-            class="landing-container">
+<template>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  </head>
+  <div :class="{ 'dark-mode': isDarkMode }" class="landing-container">
     <header class="landing-header">
-    <q-card-section 
-            class="landing-header" 
-            style = "height: clamp(20px, 11vh, 70px);">
-    <img    src="../assets/paytaca.jpg" 
-            alt="Paytaca Logo" 
-            class="site-logo" />
-    <a      href="https://www.paytaca.com/#home" 
-            target="_blank" 
-            class="site-title" 
-            style = "font-size: clamp(17px, 2vw, 20px);">
-            Paytaca
-    </a>
+      <q-card-section
+        class="landing-header"
+        style="height: clamp(20px, 11vh, 70px)"
+      >
+        <img src="../assets/paytaca.jpg" alt="Paytaca Logo" class="site-logo" />
+        <a
+          href="https://www.paytaca.com/#home"
+          target="_blank"
+          class="site-title"
+          style="font-size: clamp(17px, 2vw, 20px)"
+        >
+          Paytaca
+        </a>
 
-    
-    <button class="toggle-button" @click="toggleDarkMode" 
-            style = "z-index: 1000; position: sticky; margin-left: auto;">
-    <span   v-if="isDarkMode">🌙 </span>
-    <span   v-else>🌞 </span>
-    </button>
-    </q-card-section>
+        <button
+          class="toggle-button"
+          @click="toggleDarkMode"
+          style="z-index: 1000; position: sticky; margin-left: auto"
+        >
+          <span v-if="isDarkMode">🌙 </span>
+          <span v-else>🌞 </span>
+        </button>
+      </q-card-section>
     </header>
 
-    <q-card-section class="header-padding" 
-                    style = "margin: 70px; height: 100px;">
-    <img  src="../assets/paper5.png" 
-          class="paper5-logo" 
-          style = "width: clamp(30.1px, 5vw, 60px); height: auto; margin-bottom: 9px;"/>
-    <h1   class="header-padding-text" 
-          style="text-align: center; bottom: 1px; font-size: clamp(16px, 3vw, 30px); margin-top: 50px; 
-                  padding: 9px; padding-bottom: 35px;">  
-          Bitcoin Cash (BCH) Paper Wallet
-    </h1>
+    <q-card-section class="header-padding" style="margin: 70px; height: 100px">
+      <img
+        src="../assets/paper5.png"
+        class="paper5-logo"
+        style="
+          width: clamp(30.1px, 5vw, 60px);
+          height: auto;
+          margin-bottom: 9px;
+        "
+      />
+      <h1
+        class="header-padding-text"
+        style="
+          text-align: center;
+          bottom: 1px;
+          font-size: clamp(16px, 3vw, 30px);
+          margin-top: 50px;
+          padding: 9px;
+          padding-bottom: 35px;
+        "
+      >
+        Bitcoin Cash (BCH) Paper Wallet
+      </h1>
     </q-card-section>
 
-    <p    class="wallet-description">
-          Wallet Generated
-    </p>
-    <div  class="wallet-container">
-
-    <!-- Step One - Choose Your Design -->
-    <div  class="step-container">
-    <div  class="step-label1" @click="toggleDropdown">
-    <img  src="../assets/dropdown.png" 
-          alt="dropdown" 
-          class="dropdown-image" />
-    <h1   class="step-text">
-          Step One - Choose Your Design
-    </h1>
-    </div>
-    <div    v-if="dropdownOpen" 
-            class="design-grid">
-    <div    v-for="design in designs" 
-            :key="design.id" 
+    <p class="wallet-description">Wallet Generated</p>
+    <div class="wallet-container">
+      <!-- Step One - Choose Your Design -->
+      <div class="step-container">
+        <div class="step-label1" @click="toggleDropdown">
+          <img
+            src="../assets/dropdown.png"
+            alt="dropdown"
+            class="dropdown-image"
+          />
+          <h1 class="step-text">Step One - Choose Your Design</h1>
+        </div>
+        <div v-if="dropdownOpen" class="design-grid">
+          <div
+            v-for="design in designs"
+            :key="design.id"
             class="design-preview"
-            style="position: relative; overflow: hidden; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-                    transition: transform 0.2s ease; grid-template-columns: repeat(2, 1fr); margin-top: 10%;">
-    <img    :src="design.image"   
-            :alt="'Design ' + design.id" 
-            class="design-image" 
-            style="width: 100%; height: auto; display: block;"/>
-    <div    class="overlay" 
-            style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.3);">
-    </div>
-    <button class="select-button" @click="proceedToCustomization(design)"
-            style="position: absolute; bottom: 51%; left: 50%; transform: translateX(-50%); padding: 0.5rem 1rem;
-                    border: none; border-radius: 8px; cursor: pointer; font-size: 1rem; z-index: 2;">
-            Select and Continue
-    </button>
-    </div>
-    </div>
-    </div>
+            style="
+              position: relative;
+              overflow: hidden;
+              border-radius: 10px;
+              box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+              transition: transform 0.2s ease;
+              grid-template-columns: repeat(2, 1fr);
+              margin-top: 10%;
+            "
+          >
+            <img
+              :src="design.image"
+              :alt="'Design ' + design.id"
+              class="design-image"
+              style="width: 100%; height: auto; display: block"
+            />
+            <div
+              class="overlay"
+              style="
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.3);
+              "
+            ></div>
+            <button
+              class="select-button"
+              @click="proceedToCustomization(design)"
+              style="
+                position: absolute;
+                bottom: 51%;
+                left: 50%;
+                transform: translateX(-50%);
+                padding: 0.5rem 1rem;
+                border: none;
+                border-radius: 8px;
+                cursor: pointer;
+                font-size: 1rem;
+                z-index: 2;
+              "
+            >
+              Select and Continue
+            </button>
+          </div>
+        </div>
+      </div>
 
-    <!-- Step Two - Customization -->
-    <div    v-if="selectedDesign" 
-            class="step-container">
-    <div    class="step-label2" @click="toggleStep(2)">
-    <img    src="../assets/dropdown.png" 
-            alt="dropdown" 
-            class="dropdown-image" />
-    <h1     class="step-text">
-            Step Two - Customize
-    </h1>
-    </div>
-    <div    v-if="activeStep === 2" 
-            class="customization-section">
-            <label class="custom">
-  Custom {{ selectedAsset === 'Token' ? 'Token' : 'BCH' }} Amount:
-</label>
-<select v-model="paymentDetails" @change="updatePublicQRCodes"
-        class="dropdown"
-        :disabled="individualWalletOption">
-  <option value="">
-    Any Amount
-  </option>
-  <option v-for="amount in customAmountOptions"
-          :key="amount"
-          :value="amount">
-    {{ amount }} {{ selectedAsset === 'Token' ? 'Tokens' : 'BCH' }}
-  </option>
-</select>
+      <!-- Step Two - Customization -->
+      <div v-if="selectedDesign" class="step-container">
+        <div class="step-label2" @click="toggleStep(2)">
+          <img
+            src="../assets/dropdown.png"
+            alt="dropdown"
+            class="dropdown-image"
+          />
+          <h1 class="step-text">Step Two - Customize</h1>
+        </div>
+        <div v-if="activeStep === 2" class="customization-section">
+          <label class="custom">
+            Custom {{ selectedAsset === "Token" ? "Token" : "BCH" }} Amount:
+          </label>
+          <select
+            v-model="paymentDetails"
+            @change="updatePublicQRCodes"
+            class="dropdown"
+            :disabled="individualWalletOption"
+          >
+            <option value="">Any Amount</option>
+            <option
+              v-for="amount in customAmountOptions"
+              :key="amount"
+              :value="amount"
+            >
+              {{ amount }} {{ selectedAsset === "Token" ? "Tokens" : "BCH" }}
+            </option>
+          </select>
 
-    <label  class="address">
-            Addresses to generate:
-    </label>      
-    <div    class="loader-wrapper">
-    <div    v-if="loading" 
-            class="spinner">
-    </div>
-    <input  class="input-bar" 
-            type="text" 
-            v-model.number="addressCount" @keyup.enter="generateMultipleKeys" />
-    <button class="encryption" @click="toggleAdvanceSettingdropdown">
-            {{ showAdvanceSettingdropdown ? 'Hide Advanced Settings' : 'Advance Settings' }}
-    </button>
-    </div>
-    <div    style="display: flex; align-items: center; gap: 0.6rem;">
-    <label  class="token-option"> 
-            Assets:
-    </label>  
-    <select class="token-dropdown" 
-            v-model="selectedAsset" @change="handleAssetChange">
-    <option value="Bitcoin Cash">
-            Bitcoin Cash
-    </option>
-    <option value="Token">
-            CashToken
-    </option>
-    </select>
+          <label class="address"> Addresses to generate: </label>
+          <div class="loader-wrapper">
+            <div v-if="loading" class="spinner"></div>
+            <input
+              class="input-bar"
+              type="text"
+              v-model.number="addressCount"
+              @keyup.enter="generateMultipleKeys"
+            />
+            <button class="encryption" @click="toggleAdvanceSettingdropdown">
+              {{
+                showAdvanceSettingdropdown
+                  ? "Hide Advanced Settings"
+                  : "Advance Settings"
+              }}
+            </button>
+          </div>
+          <div style="display: flex; align-items: center; gap: 0.6rem">
+            <label class="token-option"> Assets: </label>
+            <select
+              class="token-dropdown"
+              v-model="selectedAsset"
+              @change="handleAssetChange"
+            >
+              <option value="Bitcoin Cash">Bitcoin Cash</option>
+              <option value="Token">CashToken</option>
+            </select>
 
-    
-    <select class="token-select"
-            v-show="selectedAsset === 'Token'"
-            style="margin-left: 10px;"
-            v-model="selectedToken">
-    <option value="" disabled selected>
-            Select a Token
-    </option>
-    <option v-for="token in tokens"
-            :key="token.tokenId"
-            :value="token.symbol">
-            {{ token.name }} ({{ token.symbol }})
-    </option>
-    </select>
+            <select
+              class="token-select"
+              v-show="selectedAsset === 'Token'"
+              style="margin-left: 10px"
+              v-model="selectedToken"
+            >
+              <option value="" disabled selected>Select a Token</option>
+              <option
+                v-for="token in tokens"
+                :key="token.tokenId"
+                :value="token.symbol"
+              >
+                {{ token.name }} ({{ token.symbol }})
+              </option>
+            </select>
 
+            <label
+              class="individual-custom-amount"
+              style="display: flex; align-items: center"
+            >
+              <input
+                type="checkbox"
+                v-model="individualWalletOption"
+                style="margin-right: 0.1rem"
+              />
+              Enable Individual Custom Amount
+            </label>
+          </div>
+          <div class="dropdown-wrapper">
+            <div
+              v-if="showAdvanceSettingdropdown"
+              class="dropdown-panel"
+              style="padding: 1rem"
+            >
+              <p style="font-size: 0.8rem; line-height: 1.5">
+                <strong>
+                  Check the BIP38 option, enter a passphrase, and click
+                  "Generate" to create an encrypted wallet
+                </strong>
+              </p>
 
-    <label  class="individual-custom-amount" 
-            style="display: flex; align-items: center;">
-    <input  type="checkbox" 
-            v-model="individualWalletOption" 
-            style="margin-right: 0.1rem;" />
-            Enable Individual Custom Amount
-    </label>
+              <div
+                class="advanced-settings-row"
+                style="
+                  display: flex;
+                  flex-wrap: wrap;
+                  align-items: center;
+                  gap: 1rem;
+                  font-size: 0.95rem;
+                "
+              >
+                <input type="checkbox" v-model="encryptOption" id="bip38" />
+
+                <label for="bip38">
+                  BIP38 Encrypt?
+                  <span class="tooltip-container" style="position: relative">
+                    <a class="what-is-this" href="#" style="margin-left: 4px"
+                      >(What's this?)
+                    </a>
+                    <span class="tooltip-text">
+                      Selecting this option allows you to encrypt your wallet
+                      with a password you choose. You will not be able to spend
+                      from the wallet without this password. The benefit is
+                      additional security, but be careful — there is no way to
+                      recover your password if you forget it!
+                    </span>
+                  </span>
+                </label>
+
+                <!-- Passphrase -->
+                <label
+                  for="passphrase"
+                  class="passphrase-label"
+                  style="display: block"
+                  >Passphrase:
+                </label>
+                <input
+                  id="passphrase"
+                  type="text"
+                  v-model="passphrase"
+                  class="passphrase-input"
+                  style="
+                    width: 40%;
+                    padding: 0.2rem;
+                    font-size: 0.9rem;
+                    border: 1px solid #ccc;
+                    border-radius: 5px;
+                  "
+                />
+
+                <!-- Generate Button -->
+                <button
+                  v-if="encryptOption"
+                  @click="generateMultipleKeys()"
+                  class="generate-btn"
+                >
+                  Generate
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div
+            v-if="customAmount && addressCount"
+            class="paper-wallet-container"
+          >
+            <div class="paper-wallet">
+              <div class="paper-wallet-content">
+                <div class="generated-addresses"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Design Image Display -->
+          <div
+            v-if="generatedWallets.length"
+            class="wallets-container"
+            id="printable-wallet"
+          >
+            <div
+              v-for="(wallet, index) in generatedWallets"
+              :key="index"
+              class="wallet"
+            >
+              <div
+                v-if="individualWalletOption"
+                class="individual-wallet-section"
+              >
+                <label class="custom">
+                  Custom
+                  {{ selectedAsset === "Token" ? "Token" : "BCH" }} Amount:
+                </label>
+                <select
+                  v-model.number="wallet.customAmount"
+                  @change="updateQrCodeForWallet(wallet)"
+                  class="wallet-amount-input"
+                >
+                  <option value="">Any Amount</option>
+                  <option
+                    v-for="amount in availableAmounts"
+                    :key="amount"
+                    :value="amount"
+                  >
+                    {{ amount }}
+                    {{
+                      selectedAsset === "Token"
+                        ? selectedToken || "Token"
+                        : "BCH"
+                    }}
+                  </option>
+                </select>
+              </div>
+              <h3 class="wallet-padding" v-if="index > 0"></h3>
+              <div class="selected-design">
+                <div
+                  class="design-image-container"
+                  :style="{ color: wallet.design.textColor }"
+                >
+                  <img
+                    :src="wallet.design.image"
+                    alt="Selected Design"
+                    class="design-image"
+                  />
+
+                  <div class="qr-code-overlay">
+                    <q-card-section
+                      class="bch-amount"
+                      style="
+                        top: 20%;
+                        left: 12.4%;
+                        transform: translateX(-50%) rotate(-180deg);
+                        font-size: 1.2vw;
+                        text-align: center;
+                        pointer-events: none;
+                        white-space: nowrap;
+                        text-overflow: ellipsis;
+                      "
+                    >
+                      <div
+                        v-if="wallet.customAmount && wallet.customAmount > 0"
+                      >
+                        <div>{{ wallet.customAmount }}</div>
+                        <div>
+                          {{
+                            selectedAsset === "Token" ? selectedToken : "BCH"
+                          }}
+                        </div>
+                      </div>
+                    </q-card-section>
+                    <q-card-section
+                      v-if="bip38Enabled"
+                      class="bip38-label"
+                      style="
+                        position: absolute;
+                        top: 68.5%;
+                        left: 28.5%;
+                        height: 4%;
+                        font-size: clamp(1px, 0.5vw, 24px);
+                        border: 1px solid #e2e8f0;
+                        border-radius: 5px;
+                        padding: 0.7em 0.5em;
+                        text-align: center;
+                        pointer-events: none;
+                        white-space: nowrap;
+                        background-color: #e2e8f0;
+                        color: rgb(51, 65, 85);
+                      "
+                    >
+                      <p>BIP38 ENCRYPTED</p>
+                    </q-card-section>
+
+                    <!-- Public Address QR -->
+                    <q-card-section
+                      class="qr-section public-section"
+                      style="
+                        position: absolute;
+                        top: 13%;
+                        right: 5.3%;
+                        width: 18%;
+                        height: auto;
+                        pointer-events: none;
+                        gap: 10px;
+                      "
+                    >
+                      <img
+                        :src="wallet.qrCodePublic"
+                        alt="Public QR Code"
+                        class="qr-code public-qr"
+                        style="width: clamp(21px, 7vw, 205px); height: auto"
+                      />
+
+                      <!-- Token logo on the left -->
+                      <img
+                        v-if="selectedAsset === 'Token' && selectedTokenObject"
+                        :src="selectedTokenObject.image_url || 'default.png'"
+                        alt="Token Logo"
+                        style="
+                          position: absolute;
+                          top: 50%;
+                          left: -20%;
+                          transform: translate(-50%, -50%);
+                          width: 60px;
+                          height: 60px;
+                          border-radius: 50%;
+                          z-index: 10;
+                        "
+                      />
+                    </q-card-section>
+                    <q-card-section
+                      class="wallet-address"
+                      style="
+                        position: absolute;
+                        top: 2%;
+                        left: 57%;
+                        width: 25%;
+                        font-size: clamp(1px, 0.9vw, 20px);
+                        text-align: center;
+                        white-space: nowrap;
+                        pointer-events: none;
+                      "
+                    >
+                      <p
+                        :style="{
+                          color: selectedDesign?.addressColor || 'inherit',
+                        }"
+                      >
+                        {{
+                          selectedAsset === "Token"
+                            ? wallet.displayAddress
+                            : wallet.address
+                        }}
+                      </p>
+                    </q-card-section>
+
+                    <!-- Private Key QR -->
+                    <q-card-section
+                      class="qr-section private-section"
+                      style="
+                        position: absolute;
+                        top: 3.8%;
+                        left: 0.2%;
+                        width: 18%;
+                        height: auto;
+                        pointer-events: none;
+                      "
+                    >
+                      <img
+                        :src="wallet.qrCodePrivate"
+                        alt="Private QR Code"
+                        class="qr-code private-qr"
+                        style="width: clamp(21px, 7vw, 205px); height: auto"
+                      />
+                    </q-card-section>
+                    <q-card-section
+                      class="private-key"
+                      style="
+                        position: absolute;
+                        transform: translateX(-53%) translateY(-8%)
+                          rotate(-45.7deg);
+                        bottom: 80%;
+                        left: 16%;
+                        top: 25%;
+                        width: 50%;
+                        font-size: min(max(2px, 0.6vw), 20px);
+                        text-align: center;
+                        pointer-events: none;
+                        white-space: nowrap;
+                        overflow: visible;
+                        text-overflow: ellipsis;
+                      "
+                    >
+                      <p
+                        :style="{
+                          color: selectedDesign?.textColor || 'inherit',
+                          fontWeight: 'bold',
+                        }"
+                      >
+                        {{
+                          wallet.encryptedWIF ? wallet.encryptedWIF : wallet.wif
+                        }}
+                      </p>
+                    </q-card-section>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step Three - Print -->
+      <div v-if="selectedDesign" class="step-container">
+        <div class="step-label3" @click="printWallet(3)">
+          <img
+            src="../assets/dropdown.png"
+            alt="dropdown"
+            class="dropdown-image"
+          />
+          <h1 class="step-text">Step Three - Print</h1>
+        </div>
+      </div>
     </div>
-    <div    class="dropdown-wrapper">
-    <div    v-if="showAdvanceSettingdropdown" 
-            class="dropdown-panel" 
-            style = "padding: 1rem;">
-    <p      style = "font-size: 0.8rem; line-height: 1.5;">
-    <strong>
-            Check the BIP38 option, enter a passphrase, and click "Generate" to create an encrypted wallet
-    </strong>
-    </p>
-
-    
-    <div    class="advanced-settings-row" 
-            style = "display: flex; flex-wrap: wrap; align-items: center; gap: 1rem; font-size: 0.95rem;">
-
-    
-    <input  type="checkbox" 
-            v-model="encryptOption" 
-            id="bip38" />
-
-    
-    <label  for="bip38">
-            BIP38 Encrypt?
-    <span   class = "tooltip-container" 
-            style = "position: relative;">
-    <a      class="what-is-this" 
-            href="#" 
-            style = "margin-left: 4px;">(What's this?)
-    </a>
-    <span   class="tooltip-text">
-            Selecting this option allows you to encrypt your wallet with a password you choose.
-            You will not be able to spend from the wallet without this password. The benefit is
-            additional security, but be careful — there is no way to recover your password if you forget it!
-    </span>
-    </span>
-    </label>
-
-    <!-- Passphrase -->
-    <label  for="passphrase" 
-            class="passphrase-label" 
-            style="display: block;">Passphrase:
-    </label>
-    <input  id="passphrase" 
-            type="text" 
-            v-model="passphrase" 
-            class="passphrase-input" 
-            style="width: 40%; padding: 0.2rem; font-size: 0.9rem; border: 1px solid #ccc; border-radius: 5px;"/>
-
-    <!-- Generate Button -->
-    <button v-if="encryptOption" @click="generateMultipleKeys()" 
-            class="generate-btn">
-            Generate
-    </button>
-    </div>
-    </div>
-    </div>
-
-    
-    <div    v-if="customAmount && addressCount" 
-            class="paper-wallet-container">
-    <div    class="paper-wallet">
-    <div    class="paper-wallet-content">
-    <div    class="generated-addresses">
-    </div>
-    </div>
-    </div>
-    </div>
-
-    <!-- Design Image Display -->
-    <div    v-if="generatedWallets.length" 
-            class="wallets-container" 
-            id="printable-wallet">
-    <div    v-for="(wallet, index) in generatedWallets" :key="index" 
-            class="wallet">
-    <div    v-if = "individualWalletOption" 
-            class="individual-wallet-section">
-    <label  class = "custom">
-            Custom 
-            {{ selectedAsset === 'Token' ? 'Token' : 'BCH' }} Amount:
-    </label>
-    <select v-model.number="wallet.customAmount" @change="updateQrCodeForWallet(wallet)" 
-            class="wallet-amount-input">
-    <option value="">
-            Any Amount
-    </option>
-    <option v-for="amount in availableAmounts" 
-            :key="amount" 
-            :value="amount">
-            {{ amount }} {{ selectedAsset === 'Token' ? selectedToken || 'Token' : 'BCH' }}
-    </option>
-    </select>
-    </div>
-    <h3     class = "wallet-padding" 
-            v-if="index > 0">
-    </h3>
-    <div    class="selected-design">
-    <div    class="design-image-container" 
-            :style="{ color: wallet.design.textColor }">
-    <img    :src="wallet.design.image" 
-            alt="Selected Design" 
-            class="design-image" />
-
-    <div    class = "qr-code-overlay">
-    <q-card-section class="bch-amount"
-  style="top: 20%; left: 12.4%; transform: translateX(-50%) rotate(-180deg); 
-         font-size: 1.2vw; text-align: center; pointer-events: none; 
-         white-space: nowrap; text-overflow: ellipsis;">
-  
-  <div v-if="wallet.customAmount && wallet.customAmount > 0">
-    <div>{{ wallet.customAmount }}</div>
-    <div>{{ selectedAsset === 'Token' ? selectedToken : 'BCH' }}</div>
   </div>
-
-    </q-card-section>              
-    <q-card-section v-if="bip38Enabled"
-                    class="bip38-label"
-                    style="position: absolute; top: 68.5%; left: 28.5%; height: 4%; 
-                            font-size: clamp(1px, 0.5vw, 24px); border: 1px solid #E2E8F0; 
-                            border-radius: 5px; padding: 0.7em 0.5em; text-align: center;
-                            pointer-events: none; white-space: nowrap; background-color: #E2E8F0; 
-                            color: rgb(51, 65, 85);;">
-    <p>      BIP38 ENCRYPTED  
-    </p>
-    </q-card-section>
-
-    <!-- Public Address QR -->
-    <q-card-section class="qr-section public-section"
-                    style="position: absolute; top: 13%; right: 5.3%; width: 18%; height: auto; 
-                            pointer-events: none; gap: 10px;">
-    <img    :src="wallet.qrCodePublic"
-            alt="Public QR Code"
-            class="qr-code public-qr"
-            style="width: clamp(21px, 7vw, 205px); height: auto;"/>
-
-    <!-- Token logo on the left -->
-    <img    v-if="selectedAsset === 'Token' && selectedTokenObject"
-            :src="selectedTokenObject.image_url || 'default.png'" 
-            alt="Token Logo" 
-            style="position: absolute;top: 50%; left: -20%; transform: translate(-50%, -50%); 
-                    width: 60px; height: 60px; border-radius: 50%; z-index: 10;"/>
-    </q-card-section>
-    <q-card-section class="wallet-address"
-                    style="position: absolute; top: 2%; left: 57%; width: 25%; font-size: clamp(1px, 0.9vw, 20px); 
-                            text-align: center; white-space: nowrap; pointer-events: none;">
-    <p      :style="{color: selectedDesign?.addressColor || 'inherit'}">
-            {{ selectedAsset === 'Token' ? wallet.displayAddress : wallet.address }}</p> 
-    </q-card-section>
-
-
-    <!-- Private Key QR -->
-    <q-card-section class="qr-section private-section"
-                    style="position: absolute; top: 3.8%; left: 0.2%; width: 18%; height: auto;
-                            pointer-events: none;">
-    <img    :src="wallet.qrCodePrivate"
-            alt="Private QR Code"
-            class="qr-code private-qr"
-            style="width: clamp(21px, 7vw, 205px); height: auto;"/>
-    </q-card-section>
-    <q-card-section class="private-key"
-                    style="position: absolute; transform: translateX(-53%) translateY(-8%) rotate(-45.7deg);
-                            bottom: 80%; left: 16%; top: 25%; width: 50%; font-size: min(max(2px, 0.6vw), 20px);
-                            text-align: center; pointer-events: none; white-space: nowrap; overflow: visible;
-                            text-overflow: ellipsis;">
-    <p      :style="{color: selectedDesign?.textColor || 'inherit', fontWeight: 'bold'}">
-            {{ wallet.encryptedWIF ? wallet.encryptedWIF : wallet.wif }}</p>
-    </q-card-section>
-    </div>
-    </div>
-    </div>
-    </div>
-    </div>
-    </div>
-    </div>
-
-    <!-- Step Three - Print -->
-    <div   v-if="selectedDesign" 
-          class="step-container">
-    <div  class="step-label3" @click="printWallet(3)">
-    <img  src="../assets/dropdown.png" 
-          alt="dropdown" 
-          class="dropdown-image" />
-    <h1   class="step-text">
-          Step Three - Print
-    </h1>
-    </div>
-    </div>
-    </div>
-    </div>
 </template>
 
 <script>
-import CryptoJS from 'crypto-js';
+import CryptoJS from "crypto-js";
 import QRCode from "qrcode";
-import { Buffer } from 'buffer/';
-import secp256k1 from 'secp256k1';
+import { Buffer } from "buffer/";
+import secp256k1 from "secp256k1";
 import bs58 from "bs58";
 import cashaddr from "cashaddrjs";
-import html2canvas from 'html2canvas';
-import bip38 from '@asoltys/bip38'
-import pw1 from 'src/assets/pw1.png';
-import pw2 from 'src/assets/pw2.png';
-import pw3 from 'src/assets/pw3.png';
-import pw4 from 'src/assets/pw4.png';
-import pw5 from 'src/assets/pw5.png';
-import pw6 from 'src/assets/pw6.png';
-import pw7 from 'src/assets/pw7.png';
-import pw8 from 'src/assets/pw8.png';
-import pw9 from 'src/assets/pw9.png';
-import pw10 from 'src/assets/pw10.png';
-import { decodeCashAddress,
-         encodeCashAddress,
-         CashAddressNetworkPrefix,
-         CashAddressType } 
-         from '@bitauth/libauth'
+import html2canvas from "html2canvas";
+import bip38 from "@asoltys/bip38";
+import pw1 from "src/assets/pw1.png";
+import pw2 from "src/assets/pw2.png";
+import pw3 from "src/assets/pw3.png";
+import pw4 from "src/assets/pw4.png";
+import pw5 from "src/assets/pw5.png";
+import pw6 from "src/assets/pw6.png";
+import pw7 from "src/assets/pw7.png";
+import pw8 from "src/assets/pw8.png";
+import pw9 from "src/assets/pw9.png";
+import pw10 from "src/assets/pw10.png";
+import {
+  decodeCashAddress,
+  encodeCashAddress,
+  CashAddressNetworkPrefix,
+  CashAddressType,
+} from "@bitauth/libauth";
 
 export default {
   data() {
     return {
-      paymentDetails: "",   
+      paymentDetails: "",
       privateKeyWIF: "",
       publicKeyHex: "",
       encryptedWIF: "",
@@ -391,60 +567,69 @@ export default {
       customAmount: null,
       addressCount: 1,
       generatedWallets: [],
-      isLightMode: localStorage.getItem("lightMode") === "true" || localStorage.getItem("lightMode"),
-      isDarkMode: localStorage.getItem("darkMode") === "true" && localStorage.getItem("darkMode") !== "true",
+      isLightMode:
+        localStorage.getItem("lightMode") === "true" ||
+        localStorage.getItem("lightMode"),
+      isDarkMode:
+        localStorage.getItem("darkMode") === "true" &&
+        localStorage.getItem("darkMode") !== "true",
       loading: false,
       showAdvanceSettingdropdown: false,
       encryptOption: false,
-      passphrase: '',
+      passphrase: "",
       individualWalletOption: false,
-      wallet: {customAmount: ""},
-      selectedAsset: 'Bitcoin Cash',
-      selectedToken: '',
+      wallet: { customAmount: "" },
+      selectedAsset: "Bitcoin Cash",
+      selectedToken: "",
       tokens: [],
       loadingTokens: false,
       suppressWatcher: false,
       isTestNet: false,
       designs: [
-        { id: 1, image: pw1, textColor: 'black', addressColor: 'white' },
-        { id: 2, image: pw2, textColor: 'white', addressColor: 'black' },
-        { id: 3, image: pw3, textColor: 'white', addressColor: 'black' },
-        { id: 4, image: pw4, textColor: 'white', addressColor: 'black' },
-        { id: 5, image: pw5, textColor: 'white', addressColor: 'black' },
-        { id: 6, image: pw6, textColor: 'white', addressColor: 'black' },
-        { id: 7, image: pw7, textColor: 'white', addressColor: 'black' },
-        { id: 8, image: pw8, textColor: 'white', addressColor: 'black' },
-        { id: 9, image: pw9, textColor: 'white', addressColor: 'black' },
-        { id: 10, image: pw10, textColor: 'white', addressColor: 'black' },
+        { id: 1, image: pw1, textColor: "black", addressColor: "white" },
+        { id: 2, image: pw2, textColor: "white", addressColor: "black" },
+        { id: 3, image: pw3, textColor: "white", addressColor: "black" },
+        { id: 4, image: pw4, textColor: "white", addressColor: "black" },
+        { id: 5, image: pw5, textColor: "white", addressColor: "black" },
+        { id: 6, image: pw6, textColor: "white", addressColor: "black" },
+        { id: 7, image: pw7, textColor: "white", addressColor: "black" },
+        { id: 8, image: pw8, textColor: "white", addressColor: "black" },
+        { id: 9, image: pw9, textColor: "white", addressColor: "black" },
+        { id: 10, image: pw10, textColor: "white", addressColor: "black" },
       ],
     };
   },
 
-    async created() {
-      document.body.classList.toggle("dark-mode", this.isDarkMode);
-      document.body.classList.toggle("light-mode", this.isLightMode);
-      
+  async created() {
+    document.body.classList.toggle("dark-mode", this.isDarkMode);
+    document.body.classList.toggle("light-mode", this.isLightMode);
+
     try {
-      const res = await fetch("https://watchtower.cash/api/cashtokens/fungible/?limit=100&offset=1");
+      const res = await fetch(
+        "https://watchtower.cash/api/cashtokens/fungible/?limit=100&offset=1"
+      );
       const data = await res.json();
 
-    // Filter only valid tokens (have both name and symbol)
-      const validTokens = data.results
-    .filter(t =>
-      t.name && t.symbol && t.image_url &&
-      !t.image_url.startsWith('ipfs://') && !t.image_url.includes("ipfs.dweb.link"));
-    
-    // Prepend a generic "Any CashToken" option
-  this.tokens = [
-    {
-      name: "Any CashToken",
-      symbol: "CT",
-      image_url: "https://paytaca.github.io/assets/img/token-placeholder.png",
-    },
-    ...validTokens
-  ];
+      // Filter only valid tokens (have both name and symbol)
+      const validTokens = data.results.filter(
+        (t) =>
+          t.name &&
+          t.symbol &&
+          t.image_url &&
+          !t.image_url.startsWith("ipfs://") &&
+          !t.image_url.includes("ipfs.dweb.link")
+      );
 
-    
+      // Prepend a generic "Any CashToken" option
+      this.tokens = [
+        {
+          name: "Any CashToken",
+          symbol: "CT",
+          image_url:
+            "https://paytaca.github.io/assets/img/token-placeholder.png",
+        },
+        ...validTokens,
+      ];
     } catch (err) {
       console.error("Failed to fetch tokens from Watchtower:", err);
     } finally {
@@ -452,191 +637,176 @@ export default {
     }
   },
 
-      computed: {
-      selectedTokenObject() {
-    return this.tokens.find(token => token.name === this.selectedToken);
+  computed: {
+    selectedTokenObject() {
+      return this.tokens.find((token) => token.name === this.selectedToken);
     },
 
-      availableAmounts() {
-    if (this.selectedAsset === 'Token') 
-    {
-      return [0.25, 0.75, 1, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50];
-    } else {
-      return [0.0001, 0.001, 0.005, 0.05, 0.1, 0.25, 0.5, 0.75, 1, 5, 10];
-    }
-  },
+    availableAmounts() {
+      if (this.selectedAsset === "Token") {
+        return [0.25, 0.75, 1, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50];
+      } else {
+        return [0.0001, 0.001, 0.005, 0.05, 0.1, 0.25, 0.5, 0.75, 1, 5, 10];
+      }
+    },
 
-  customAmountOptions() {
-  if (this.selectedAsset === 'Token') {
-    return [0.25, 0.75, 1, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50];
-  } else {
-    return [0.0001, 0.001, 0.005, 0.05, 0.1, 0.25, 0.5, 0.75, 1, 5, 10];
-  }
-},
+    customAmountOptions() {
+      if (this.selectedAsset === "Token") {
+        return [0.25, 0.75, 1, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50];
+      } else {
+        return [0.0001, 0.001, 0.005, 0.05, 0.1, 0.25, 0.5, 0.75, 1, 5, 10];
+      }
+    },
 
-  displayedAddress() {
-      if (this.selectedAsset === 'Token') {
+    displayedAddress() {
+      if (this.selectedAsset === "Token") {
         try {
-          const decodedAddress = decodeCashAddress(this.generatedWallets[0].address)
-          const prefix = CashAddressNetworkPrefix.mainnet
-          const addressType = CashAddressType.p2pkhWithTokens  // convert to token type
+          const decodedAddress = decodeCashAddress(
+            this.generatedWallets[0].address
+          );
+          const prefix = CashAddressNetworkPrefix.mainnet;
+          const addressType = CashAddressType.p2pkhWithTokens; // convert to token type
           const tokenAddress = encodeCashAddress({
-              payload: decodedAddress.payload,
-              prefix,
-              throwErrors: false,
-              type: addressType
-            })
-          return tokenAddress.address
+            payload: decodedAddress.payload,
+            prefix,
+            throwErrors: false,
+            type: addressType,
+          });
+          return tokenAddress.address;
         } catch (e) {
-          console.warn('Failed to convert BCH to CashToken address:', e)
-          return this.wallet.address
+          console.warn("Failed to convert BCH to CashToken address:", e);
+          return this.wallet.address;
         }
       }
-      return this.wallet.address
-    }
-  },
-  
-  
-  methods: {
-
-      handleAssetChange() {
-            if (this.selectedAsset === 'Token') {
-              for(let i = 0; i < this.generatedWallets.length; i++) {
-                const converted = this.convertCashAddress(this.generatedWallets[i].address)
-                // console.log('converted', converted)
-                // this.displayAddress = converted.address || this.generatedWallets[i].address
-                this.generatedWallets[i].displayAddress = converted.address || this.generatedWallets[i].address
-              }
-              // Convert BCH address to CashToken address
-            } else {
-              // Show original BCH address
-              this.displayAddress = this.generatedWallets[0].address
-            }
-            this.updatePublicQRCodes()
-          },
-          // Call this once on mounted to initialize displayedAddress
-          initializeAddress() {
-            this.displayAddress = this.generatedWallets[0].address
-          },
-     
-      convertCashAddress(address) {
-          
-          try {
-            const decodedAddress = decodeCashAddress(address)
-            console.log('decodedAddress', decodedAddress)
-            const prefix = CashAddressNetworkPrefix.mainnet
-            const addressType = CashAddressType.p2pkhWithTokens
-            return encodeCashAddress({
-              payload: decodedAddress.payload,
-              prefix,
-              throwErrors: false,
-              type: addressType
-            })
-          } catch (e) {
-            console.error('Address conversion error:', e)
-            return address // fallback to original
-          }
-        },
-
-      resetWallet() {
-          this.showAdvanceSettingdropdown = false; 
-          this.encryptOption = false; 
-          this.passphrase = '';  
-          this.encryptedWIF = null; 
-          this.originalWIF = null;  
-          this.generatedWallets = [];  
-          this.generateMultipleKeys();  
+      return this.wallet.address;
     },
-    
-      toggleAdvanceSettingdropdown() {
-            this.showAdvanceSettingdropdown = !this.showAdvanceSettingdropdown;
-        if (this.showAdvanceSettingdropdown) 
-        {
-            this.generatedWallets = [];
-            this.firstWallet = [];  
-          // Clear existing wallets (including the static one)
-        } else  {
-            this.resetWallet();  
-          // Call the method to regenerate wallet without encryption
-        }
-      },
-        
+  },
 
-      toggleDarkMode() {
-          this.isDarkMode = !this.isDarkMode;
-          this.isLightMode = !this.isLightMode; 
-          
-          localStorage.setItem("darkMode", this.isDarkMode);
-          localStorage.setItem("lightMode", this.isLightMode);
-          
-          document.body.classList.remove("light-mode", "dark-mode");
-      if (this.isDarkMode) 
-      {
-          document.body.classList.add("dark-mode");
-          document.body.classList.remove("light-mode");
+  methods: {
+    handleAssetChange() {
+      if (this.selectedAsset === "Token") {
+        for (let i = 0; i < this.generatedWallets.length; i++) {
+          const converted = this.convertCashAddress(
+            this.generatedWallets[i].address
+          );
+          // console.log('converted', converted)
+          // this.displayAddress = converted.address || this.generatedWallets[i].address
+          this.generatedWallets[i].displayAddress =
+            converted.address || this.generatedWallets[i].address;
+        }
+        // Convert BCH address to CashToken address
+      } else {
+        // Show original BCH address
+        this.displayAddress = this.generatedWallets[0].address;
+      }
+      this.updatePublicQRCodes();
+    },
+    // Call this once on mounted to initialize displayedAddress
+    initializeAddress() {
+      this.displayAddress = this.generatedWallets[0].address;
+    },
+
+    convertCashAddress(address) {
+      try {
+        const decodedAddress = decodeCashAddress(address);
+        console.log("decodedAddress", decodedAddress);
+        const prefix = CashAddressNetworkPrefix.mainnet;
+        const addressType = CashAddressType.p2pkhWithTokens;
+        return encodeCashAddress({
+          payload: decodedAddress.payload,
+          prefix,
+          throwErrors: false,
+          type: addressType,
+        });
+      } catch (e) {
+        console.error("Address conversion error:", e);
+        return address; // fallback to original
+      }
+    },
+
+    resetWallet() {
+      this.showAdvanceSettingdropdown = false;
+      this.encryptOption = false;
+      this.passphrase = "";
+      this.encryptedWIF = null;
+      this.originalWIF = null;
+      this.generatedWallets = [];
+      this.generateMultipleKeys();
+    },
+
+    toggleAdvanceSettingdropdown() {
+      this.showAdvanceSettingdropdown = !this.showAdvanceSettingdropdown;
+      if (this.showAdvanceSettingdropdown) {
+        this.generatedWallets = [];
+        this.firstWallet = [];
+        // Clear existing wallets (including the static one)
+      } else {
+        this.resetWallet();
+        // Call the method to regenerate wallet without encryption
+      }
+    },
+
+    toggleDarkMode() {
+      this.isDarkMode = !this.isDarkMode;
+      this.isLightMode = !this.isLightMode;
+
+      localStorage.setItem("darkMode", this.isDarkMode);
+      localStorage.setItem("lightMode", this.isLightMode);
+
+      document.body.classList.remove("light-mode", "dark-mode");
+      if (this.isDarkMode) {
+        document.body.classList.add("dark-mode");
+        document.body.classList.remove("light-mode");
       } else {
         document.body.classList.add("light-mode");
         document.body.classList.remove("light-mode");
       }
     },
-          
-    async sha256(data = '', encoding = 'utf8') 
-    {
+
+    async sha256(data = "", encoding = "utf8") {
       let buffer;
-      if (data instanceof Uint8Array) 
-      {
+      if (data instanceof Uint8Array) {
         buffer = data;
-      } else if (encoding === 'utf8') 
-      {
+      } else if (encoding === "utf8") {
         buffer = new TextEncoder().encode(data);
-      } else if (encoding === 'hex') 
-      {
+      } else if (encoding === "hex") {
         buffer = this.hexToBin(data);
       } else {
-        throw new Error('Unsupported encoding type');
+        throw new Error("Unsupported encoding type");
       }
 
-          
-      const hashBuffer = await window.crypto.subtle.digest('SHA-256', buffer);
+      const hashBuffer = await window.crypto.subtle.digest("SHA-256", buffer);
       return this.binToHex(new Uint8Array(hashBuffer));
     },
-        binToHex(uint8Array) 
-    {
+    binToHex(uint8Array) {
       return Array.from(uint8Array)
-        .map(byte => byte.toString(16).padStart(2, '0'))
-        .join('');
+        .map((byte) => byte.toString(16).padStart(2, "0"))
+        .join("");
     },
 
-          
-        hexToBin(hex) {
+    hexToBin(hex) {
       return new Uint8Array(
-        hex.match(/.{1,2}/g).map(byte => parseInt(byte, 16))
+        hex.match(/.{1,2}/g).map((byte) => parseInt(byte, 16))
       );
     },
 
-          
-        binToBase58(uint8Array) 
-    {
-      return bs58.encode(uint8Array); 
-          
+    binToBase58(uint8Array) {
+      return bs58.encode(uint8Array);
     },
 
-        ripemd160(buffer) 
-    {
+    ripemd160(buffer) {
       return new Uint8Array(
         CryptoJS.RIPEMD160(CryptoJS.enc.Hex.parse(this.binToHex(buffer)))
-        .toString(CryptoJS.enc.Hex)
-        .match(/.{1,2}/g)
-        .map(byte => parseInt(byte, 16))
+          .toString(CryptoJS.enc.Hex)
+          .match(/.{1,2}/g)
+          .map((byte) => parseInt(byte, 16))
       );
     },
 
-        encodeCashAddress({ prefix, type, payload }) 
-    {
+    encodeCashAddress({ prefix, type, payload }) {
       return cashaddr.encode(prefix, type.toUpperCase(), payload);
     },
 
-          
     async generateNewKeys() {
       const privateKey = await this.generatePrivateKey();
       this.privateKeyWIF = privateKey.wif;
@@ -644,49 +814,46 @@ export default {
       this.bitcoinCashAddress = privateKey.address;
       await this.generatePublicQRCodes();
     },
-        generatePublicKey(privateKeyHex) {
-      const privateKey = Buffer.from(privateKeyHex, 'hex');
-      const publicKey = secp256k1.getPublicKey(privateKey, true);  
-          
-      return publicKey.toString('hex');
+    generatePublicKey(privateKeyHex) {
+      const privateKey = Buffer.from(privateKeyHex, "hex");
+      const publicKey = secp256k1.getPublicKey(privateKey, true);
+
+      return publicKey.toString("hex");
     },
 
-          
-        generateBCHAddress(publicKeyHex) {
-      const publicKeyHash = this.ripemd160(this.sha256(publicKeyHex));  
-          
-      return `bitcoincash:${publicKeyHash}`;  
-          
+    generateBCHAddress(publicKeyHex) {
+      const publicKeyHash = this.ripemd160(this.sha256(publicKeyHex));
+
+      return `bitcoincash:${publicKeyHash}`;
     },
 
-          
     async generatePrivateKey() {
-          
       const privateKey = new Uint8Array(32);
-        window.crypto.getRandomValues(privateKey);
+      window.crypto.getRandomValues(privateKey);
 
-          
       const publicKey = secp256k1.publicKeyCreate(privateKey, true);
 
       const privateKeyHex = this.binToHex(privateKey);
       const publicKeyHex = this.binToHex(publicKey);
 
-      const sha256Hash = await this.sha256(publicKeyHex, 'hex');
+      const sha256Hash = await this.sha256(publicKeyHex, "hex");
       const ripemdHash = this.ripemd160(this.hexToBin(sha256Hash));
 
-          
-      const extendedKey = new Uint8Array([0x80, ...privateKey, 0x01]); 
-      const hashWif1 = await this.sha256(extendedKey, 'hex');
-      const hashWif2 = await this.sha256(this.hexToBin(hashWif1), 'hex');
+      const extendedKey = new Uint8Array([0x80, ...privateKey, 0x01]);
+      const hashWif1 = await this.sha256(extendedKey, "hex");
+      const hashWif2 = await this.sha256(this.hexToBin(hashWif1), "hex");
       const checksumWif = this.hexToBin(hashWif2).slice(0, 4);
       const wifKey = new Uint8Array([...extendedKey, ...checksumWif]);
       const finalWIF = this.binToBase58(wifKey);
 
       let encryptedWIF = null;
 
-      if (this.encryptOption && this.passphrase) 
-      {
-        encryptedWIF = bip38.encrypt(Buffer.from(privateKey), true, this.passphrase);
+      if (this.encryptOption && this.passphrase) {
+        encryptedWIF = bip38.encrypt(
+          Buffer.from(privateKey),
+          true,
+          this.passphrase
+        );
         console.log("Encrypted WIF:", encryptedWIF);
       }
 
@@ -702,211 +869,213 @@ export default {
         encryptedWIF: encryptedWIF || null,
       };
     },
-        
 
-    async generateMultipleKeys() 
-    {
+    async generateMultipleKeys() {
       this.loading = true;
-      if (this.encryptOption) 
-    {
-      this.wallets = [];
-      this.bip38Enabled = true;
-    } else {
-      this.bip38Enabled = false;
-    }
-      const MAX_WALLETS = 10; 
+      if (this.encryptOption) {
+        this.wallets = [];
+        this.bip38Enabled = true;
+      } else {
+        this.bip38Enabled = false;
+      }
+      const MAX_WALLETS = 10;
 
-        
-      if (!this.addressCount || this.addressCount < 1) 
-    {
+      if (!this.addressCount || this.addressCount < 1) {
         this.addressCount = 0;
-    }
+      }
 
-        
-      if (!this.selectedDesign) 
-    {
+      if (!this.selectedDesign) {
         return;
-    }
+      }
 
-        this.customAmount = this.paymentDetails ? parseFloat(this.paymentDetails) : 0;
+      this.customAmount = this.paymentDetails
+        ? parseFloat(this.paymentDetails)
+        : 0;
 
-        
-      if (this.generatedWallets.length === 0) 
-    {
-      const firstWallet = await this.generatePrivateKey();
-      if (!firstWallet || !firstWallet.address || !firstWallet.wif) 
-    {
-        return;
-    }
-    
-      try {
-          
-          const qrDataPublic = this.customAmount > 0
-            ? `${firstWallet.address}?amount=${this.customAmount}`
-            : firstWallet.address;
-            firstWallet.qrCodePublic = await QRCode.toDataURL(qrDataPublic);
+      if (this.generatedWallets.length === 0) {
+        const firstWallet = await this.generatePrivateKey();
+        if (!firstWallet || !firstWallet.address || !firstWallet.wif) {
+          return;
+        }
 
-            firstWallet.qrCodePrivate = await QRCode.toDataURL(firstWallet.encryptedWIF ? firstWallet.encryptedWIF : firstWallet.wif);
+        try {
+          const qrDataPublic =
+            this.customAmount > 0
+              ? `${firstWallet.address}?amount=${this.customAmount}`
+              : firstWallet.address;
+          firstWallet.qrCodePublic = await QRCode.toDataURL(qrDataPublic);
+
+          firstWallet.qrCodePrivate = await QRCode.toDataURL(
+            firstWallet.encryptedWIF
+              ? firstWallet.encryptedWIF
+              : firstWallet.wif
+          );
         } catch (error) {
-            console.error("QR Code generation failed for static wallet:", error);
+          console.error("QR Code generation failed for static wallet:", error);
         }
 
         firstWallet.customAmount = this.customAmount;
         firstWallet.design = { ...this.selectedDesign };
         this.generatedWallets.push(firstWallet);
-    }
+      }
 
-        
-        this.addressCount = Math.min(Math.max(this.addressCount, 0), MAX_WALLETS);
+      this.addressCount = Math.min(Math.max(this.addressCount, 0), MAX_WALLETS);
 
-        
       if (this.generatedWallets.length > this.addressCount) {
-        
-        this.generatedWallets = [this.generatedWallets[0], ...this.generatedWallets.slice(1, this.addressCount)];
-    }
+        this.generatedWallets = [
+          this.generatedWallets[0],
+          ...this.generatedWallets.slice(1, this.addressCount),
+        ];
+      }
 
-        
       while (this.generatedWallets.length < this.addressCount) {
-      if (this.generatedWallets.length >= MAX_WALLETS) {
-        console.warn(`Wallet generation limit reached! Max allowed: ${MAX_WALLETS}`);
+        if (this.generatedWallets.length >= MAX_WALLETS) {
+          console.warn(
+            `Wallet generation limit reached! Max allowed: ${MAX_WALLETS}`
+          );
           break;
-      }
+        }
 
-      await new Promise(resolve => setTimeout(resolve, 500)); 
-        
+        await new Promise((resolve) => setTimeout(resolve, 500));
 
-      const wallet = await this.generatePrivateKey();
-      if (!wallet || !wallet.address || !wallet.wif) {
-        console.error(`Wallet #${this.generatedWallets.length + 1} generation failed!`);
+        const wallet = await this.generatePrivateKey();
+        if (!wallet || !wallet.address || !wallet.wif) {
+          console.error(
+            `Wallet #${this.generatedWallets.length + 1} generation failed!`
+          );
           continue;
-      }
+        }
 
-      try {
-        const qrDataPublic = this.customAmount > 0
-        ? `${wallet.address}?amount=${this.customAmount}`
-        : wallet.address;
-        wallet.qrCodePublic = await QRCode.toDataURL(qrDataPublic);
+        try {
+          const qrDataPublic =
+            this.customAmount > 0
+              ? `${wallet.address}?amount=${this.customAmount}`
+              : wallet.address;
+          wallet.qrCodePublic = await QRCode.toDataURL(qrDataPublic);
 
-        wallet.qrCodePrivate = await QRCode.toDataURL(wallet.encryptedWIF ? wallet.encryptedWIF : wallet.wif);
-    } catch (error) {
-        console.error(`QR Code generation failed for wallet #${this.generatedWallets.length + 1}:`, error);
-    }
+          wallet.qrCodePrivate = await QRCode.toDataURL(
+            wallet.encryptedWIF ? wallet.encryptedWIF : wallet.wif
+          );
+        } catch (error) {
+          console.error(
+            `QR Code generation failed for wallet #${
+              this.generatedWallets.length + 1
+            }:`,
+            error
+          );
+        }
 
         wallet.customAmount = this.customAmount;
         wallet.design = { ...this.selectedDesign };
 
         this.generatedWallets.push(wallet);
-    }
-      this.handleAssetChange(); 
-        this.loading = false; 
+      }
+      this.handleAssetChange();
+      this.loading = false;
     },
 
-        
-  async updatePublicQRCodes() {
-    if (!this.generatedWallets.length) {
-      console.error("No generated wallets found!");
-      return;
-    }
-
-    const amount = this.paymentDetails ? parseFloat(this.paymentDetails) : 0;
-
-    console.log('updatePublicQRCodes')
-    for (const wallet of this.generatedWallets) {
-      wallet.customAmount = amount;
-
-      // Default address and prefix for BCH
-      let selectedAddress = wallet.address;
-      let uriPrefix = 'bitcoincash:';
-
-      // Switch to CashToken address and prefix if selected
-      console.log('displayAddress', wallet.displayAddress)
-      console.log(this.displayAddress)
-      if (this.selectedAsset === 'Token' && wallet.displayAddress) {
-        selectedAddress = wallet.displayAddress;
-        uriPrefix = 'bitcoincash:';  // <-- Correct prefix for CashToken
+    async updatePublicQRCodes() {
+      if (!this.generatedWallets.length) {
+        console.error("No generated wallets found!");
+        return;
       }
 
-      // Remove any existing prefix from address to avoid duplicates
-      const cleanAddress = selectedAddress.replace(/^(bitcoincash:)/, '');
+      const amount = this.paymentDetails ? parseFloat(this.paymentDetails) : 0;
+
+      console.log("updatePublicQRCodes");
+      for (const wallet of this.generatedWallets) {
+        wallet.customAmount = amount;
+
+        // Default address and prefix for BCH
+        let selectedAddress = wallet.address;
+        let uriPrefix = "bitcoincash:";
+
+        // Switch to CashToken address and prefix if selected
+        console.log("displayAddress", wallet.displayAddress);
+        console.log(this.displayAddress);
+        if (this.selectedAsset === "Token" && wallet.displayAddress) {
+          selectedAddress = wallet.displayAddress;
+          uriPrefix = "bitcoincash:"; // <-- Correct prefix for CashToken
+        }
+
+        // Remove any existing prefix from address to avoid duplicates
+        const cleanAddress = selectedAddress.replace(/^(bitcoincash:)/, "");
+
+        let qrDataPublic = `${uriPrefix}${cleanAddress}`;
+        if (amount > 0) {
+          qrDataPublic += `?amount=${amount}`;
+        }
+
+        try {
+          wallet.qrCodePublic = await QRCode.toDataURL(qrDataPublic, {
+            errorCorrectionLevel: "L",
+          });
+          console.log(
+            `QR Code updated for ${cleanAddress}:`,
+            wallet.qrCodePublic
+          );
+        } catch (error) {
+          console.error(`Error generating QR code for ${cleanAddress}:`, error);
+        }
+      }
+    },
+
+    async updateQRCodeForWallet(wallet) {
+      if (!wallet) return;
+
+      // Default BCH address and prefix
+      let selectedAddress = wallet.address;
+      let uriPrefix = "bitcoincash:";
+
+      // Use CashToken address and prefix if option is set
+      console.log("úpdateQRCodeForWallet");
+      console.log("displayAddress", wallet.displayAddress);
+      if (this.displayAddress === "Token" && wallet.displayAddress) {
+        selectedAddress = wallet.displayAddress;
+        uriPrefix = "bitcoincash:"; // <-- Correct prefix for CashToken
+      }
+
+      // Clean address by removing any prefix
+      const cleanAddress = selectedAddress.replace(/^(bitcoincash:)/, "");
 
       let qrDataPublic = `${uriPrefix}${cleanAddress}`;
-      if (amount > 0) {
-        qrDataPublic += `?amount=${amount}`;
+
+      if (this.individualWalletOption && wallet.customAmount > 0) {
+        qrDataPublic += `?amount=${wallet.customAmount}`;
       }
 
       try {
-        wallet.qrCodePublic = await QRCode.toDataURL(qrDataPublic, {
-          errorCorrectionLevel: 'L',
-        });
-        console.log(`QR Code updated for ${cleanAddress}:`, wallet.qrCodePublic);
+        wallet.qrCodePublic = await QRCode.toDataURL(qrDataPublic);
       } catch (error) {
-        console.error(`Error generating QR code for ${cleanAddress}:`, error);
+        console.error(`Error updating QR code for ${selectedAddress}:`, error);
       }
-    }
-  },
+    },
 
-  async updateQRCodeForWallet(wallet) {
-    if (!wallet) return;
+    generateQRCode(address, amount) {
+      return `https://chart.googleapis.com/chart?chs=150x150&cht=qr&chl=bitcoincash:${address}?amount=${amount}`;
+    },
 
-    // Default BCH address and prefix
-    let selectedAddress = wallet.address;
-    let uriPrefix = 'bitcoincash:';
+    async printWallet() {
+      const originalIndividualWalletOption = this.individualWalletOption;
+      const originalSuppressWatcher = this.suppressWatcher;
 
-    // Use CashToken address and prefix if option is set
-    console.log('úpdateQRCodeForWallet')
-    console.log('displayAddress', wallet.displayAddress)
-    if (this.displayAddress === 'Token' && wallet.displayAddress) {
-      selectedAddress = wallet.displayAddress;
-      uriPrefix = 'bitcoincash:'; // <-- Correct prefix for CashToken
-    }
+      this.suppressWatcher = true;
+      this.individualWalletOption = false;
 
-    // Clean address by removing any prefix
-    const cleanAddress = selectedAddress.replace(/^(bitcoincash:)/, '');
+      await this.$nextTick();
+      await new Promise((resolve) => setTimeout(resolve, 200));
 
-    let qrDataPublic = `${uriPrefix}${cleanAddress}`;
+      const printable = document.getElementById("printable-wallet");
+      if (!printable) {
+        console.error("Printable wallet section not found!");
+        return;
+      }
 
-    if (this.individualWalletOption && wallet.customAmount > 0) {
-      qrDataPublic += `?amount=${wallet.customAmount}`;
-    }
+      const canvas = await html2canvas(printable, { scale: 2, useCORS: true });
+      const imageData = canvas.toDataURL("image/png");
+      const printWindow = window.open("", "_blank");
 
-    try {
-      wallet.qrCodePublic = await QRCode.toDataURL(qrDataPublic);
-    } catch (error) {
-      console.error(`Error updating QR code for ${selectedAddress}:`, error);
-    }
-  },
-
-
-
-
-      generateQRCode(address, amount) {
-    return `https://chart.googleapis.com/chart?chs=150x150&cht=qr&chl=bitcoincash:${address}?amount=${amount}`;
-  },
-
-
-      
-      async printWallet() {
-  
-  const originalIndividualWalletOption = this.individualWalletOption;
-  const originalSuppressWatcher = this.suppressWatcher;
-
-  this.suppressWatcher = true;
-  this.individualWalletOption = false;
-
-  await this.$nextTick();
-  await new Promise(resolve => setTimeout(resolve, 200)); 
-
-  const printable = document.getElementById("printable-wallet");
-  if (!printable) {
-    console.error("Printable wallet section not found!");
-    return;
-  }
-
-  const canvas = await html2canvas(printable, { scale: 2, useCORS: true });
-  const imageData = canvas.toDataURL("image/png");
-  const printWindow = window.open("", "_blank");
-
-  printWindow.document.write(`
+      printWindow.document.write(`
     <html>
       <head>
         <title>Print Wallet</title>
@@ -920,79 +1089,73 @@ export default {
       </body>
     </html>
   `);
-  printWindow.document.close();
-  printWindow.focus();
+      printWindow.document.close();
+      printWindow.focus();
 
-  setTimeout(() => {
-    printWindow.print();
-    
-  setTimeout(() => {
-    printWindow.close();
-      
-      this.individualWalletOption = originalIndividualWalletOption;
-      this.suppressWatcher = originalSuppressWatcher;
-      
-    }, 500);
-  }, 100);
-},
+      setTimeout(() => {
+        printWindow.print();
 
+        setTimeout(() => {
+          printWindow.close();
 
-        
-      toggleDropdown() {
-    this.dropdownOpen = !this.dropdownOpen;
-    if (!this.dropdownOpen) {
-      this.selectedDesign = true;
-      this.activeStep = 2;
-    }
-  },
+          this.individualWalletOption = originalIndividualWalletOption;
+          this.suppressWatcher = originalSuppressWatcher;
+        }, 500);
+      }, 100);
+    },
 
-      
-      selectDesign(design) {
+    toggleDropdown() {
+      this.dropdownOpen = !this.dropdownOpen;
+      if (!this.dropdownOpen) {
+        this.selectedDesign = true;
+        this.activeStep = 2;
+      }
+    },
+
+    selectDesign(design) {
       this.selectedDesign = design;
       this.dropdownOpen = false;
       this.activeStep = 2;
-  },
+    },
 
-       
-      toggleStep(step) {
+    toggleStep(step) {
       this.activeStep = this.activeStep === step ? null : step;
-  },
+    },
 
-      
-      proceedToCustomization(design) {
+    proceedToCustomization(design) {
       this.selectedDesign = design;
-      this.generatedWallets.forEach(wallet => {
-      wallet.design = { ...design };
-      }); 
+      this.generatedWallets.forEach((wallet) => {
+        wallet.design = { ...design };
+      });
       this.dropdownOpen = false;
       this.activeStep = 2;
-      this.addressCount = 1; 
+      this.addressCount = 1;
       this.generateMultipleKeys();
     },
   },
 
-    watch: {
-      individualWalletOption(newVal) {
-    if (this.suppressWatcher) return;
+  watch: {
+    individualWalletOption(newVal) {
+      if (this.suppressWatcher) return;
 
-    if (newVal) {
-      this.generatedWallets.forEach(wallet => {
-        wallet.customAmount = ""; 
-        this.updateQRCodeForWallet(wallet); 
-      });
-    } else {
-      const amount = this.paymentDetails ? parseFloat(this.paymentDetails) : 0;
-      this.generatedWallets.forEach(wallet => {
-        wallet.customAmount = amount;
-        this.updateQRCodeForWallet(wallet);
-      });
-    }
-  }
-  } 
-  };
+      if (newVal) {
+        this.generatedWallets.forEach((wallet) => {
+          wallet.customAmount = "";
+          this.updateQRCodeForWallet(wallet);
+        });
+      } else {
+        const amount = this.paymentDetails
+          ? parseFloat(this.paymentDetails)
+          : 0;
+        this.generatedWallets.forEach((wallet) => {
+          wallet.customAmount = amount;
+          this.updateQRCodeForWallet(wallet);
+        });
+      }
+    },
+  },
+};
 </script>
-
-
 
 <style scoped>
 .individual-wallet-section {
@@ -1022,7 +1185,6 @@ export default {
   color: #ddd;
 }
 
-
 .bip38-label {
   text-align: center;
   margin-bottom: 10px;
@@ -1039,7 +1201,7 @@ export default {
   line-height: 25px;
   visibility: hidden;
   width: 350px;
-  background-color: #E2E8F0;
+  background-color: #e2e8f0;
   color: rgb(51, 65, 85);
   text-align: left;
   padding: 8px 10px;
@@ -1049,7 +1211,7 @@ export default {
   z-index: 1;
   top: 125%;
   left: 50%;
-  transform: translateX(-50%)translateY(-130%);
+  transform: translateX(-50%) translateY(-130%);
   opacity: 0;
   transition: opacity 0.3s ease;
 }
@@ -1094,7 +1256,7 @@ export default {
 }
 
 .generate-btn:hover {
-  background-color: #E2E8F0;
+  background-color: #e2e8f0;
   opacity: 10px;
 }
 
@@ -1103,7 +1265,7 @@ export default {
   cursor: pointer;
   border: 1px solid #333;
   font-size: 13px;
-  font-family: 'Lexend';
+  font-family: "Lexend";
   margin-left: 40px;
   border-radius: 4px;
 }
@@ -1117,7 +1279,7 @@ export default {
   display: relative;
 }
 
-.dropdown-panel input[type = "text"] {
+.dropdown-panel input[type="text"] {
   margin-left: 5px;
   padding: 4px;
   width: 250px;
@@ -1148,7 +1310,9 @@ export default {
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* Dark Mode */
@@ -1173,7 +1337,7 @@ export default {
 }
 
 .dark-mode .customization-section {
-  background-color: #E2E8F0;
+  background-color: #e2e8f0;
   color: black;
 }
 
@@ -1188,13 +1352,13 @@ export default {
 }
 
 .dark-mode .step-label2 {
-  background-color: #E63946;
+  background-color: #e63946;
 }
 
 /* Ensure specific text updates in dark mode */
 .dark-mode .site-title,
 .dark-mode .wallet-description {
-  color: #E2E8F0 !important;
+  color: #e2e8f0 !important;
 }
 
 /* Light Mode */
@@ -1207,15 +1371,14 @@ export default {
 
 /* Ensure specific text updates in light mode */
 .light-mode .site-title,
-.light-mode .wallet-description{
+.light-mode .wallet-description {
   color: rgb(51, 65, 85) !important;
 }
 
 .light-mode .customization-section {
-  background-color: #E2E8F0;
+  background-color: #e2e8f0;
   color: black;
 }
-
 
 .toggle-button {
   position: fixed;
@@ -1223,7 +1386,7 @@ export default {
   right: 35px;
   width: 40px;
   height: 40px;
-  background: #EEDC82;
+  background: #eedc82;
   color: black;
   border: none;
   border-radius: 50%;
@@ -1249,11 +1412,9 @@ export default {
 }
 
 .light-mode .toggle-button {
-  background: #EEDC82;
+  background: #eedc82;
   color: #333;
 }
-
-
 
 .landing-container {
   position: fixed;
@@ -1295,7 +1456,7 @@ export default {
 .header-padding {
   width: 100%;
   height: 70px;
-  background-color: rgb(30 41 59 );
+  background-color: rgb(30 41 59);
   margin-top: 4%;
   margin-bottom: 4%;
   display: flex;
@@ -1305,7 +1466,7 @@ export default {
   justify-content: center;
   width: 100%;
   height: 70px;
-  background-color: rgb(30 41 59 );
+  background-color: rgb(30 41 59);
   margin-top: 4%;
   margin-bottom: 4%;
   display: flex;
@@ -1316,41 +1477,41 @@ export default {
 }
 
 .header-padding-text {
-font-size: 25px;
-font-weight: bold;
-color: white;
-margin-top: 25px;
-font-family: 'Lexend';
+  font-size: 25px;
+  font-weight: bold;
+  color: white;
+  margin-top: 25px;
+  font-family: "Lexend";
 }
 
 .site-logo {
-width: 25px;
-height: 25px;
+  width: 25px;
+  height: 25px;
 }
 
 .paper5-logo {
-width: 45px;
-height: 45px;
-margin-right:5px;
-margin-top: 10px;
+  width: 45px;
+  height: 45px;
+  margin-right: 5px;
+  margin-top: 10px;
 }
 
 .site-title {
-font-size: 20px;
-font-weight: bold;
-color: rgb(30 41 59 );
-font-family:'Lexend';
-text-decoration: none;
+  font-size: 20px;
+  font-weight: bold;
+  color: rgb(30 41 59);
+  font-family: "Lexend";
+  text-decoration: none;
 }
 
 .wallet-description {
-text-align: center;
-font-size: 25px;
-font-weight: bold;
-color: rgb(51 65 85);
-margin-top: -80px;
-margin-bottom: 20px;
-font-family: 'Lexend';
+  text-align: center;
+  font-size: 25px;
+  font-weight: bold;
+  color: rgb(51 65 85);
+  margin-top: -80px;
+  margin-bottom: 20px;
+  font-family: "Lexend";
 }
 
 .wallet-container {
@@ -1359,7 +1520,7 @@ font-family: 'Lexend';
   border: 1px solid #ccc;
   border-radius: 8px;
   padding: 20px;
-  background-color: #E2E8F0;
+  background-color: #e2e8f0;
 }
 
 .wallets-container {
@@ -1417,7 +1578,7 @@ font-family: 'Lexend';
   height: 30px;
 }
 
-.custom{
+.custom {
   font-weight: bold;
   margin-top: 10px;
   margin-bottom: 10px;
@@ -1441,7 +1602,7 @@ font-family: 'Lexend';
 
 .customization-section {
   padding: 10px;
-  background-color: #E2E8F0;
+  background-color: #e2e8f0;
 }
 
 .design-grid {
@@ -1490,7 +1651,7 @@ font-family: 'Lexend';
 }
 
 .select-button {
-  font-family: 'Lexend', sans-serif;
+  font-family: "Lexend", sans-serif;
   font-size: 100px;
   position: absolute;
   bottom: 90px;
@@ -1508,7 +1669,8 @@ font-family: 'Lexend';
 
 .design-preview:hover .select-button {
   opacity: 2;
-}.selected-design-container {
+}
+.selected-design-container {
   position: relative;
   position: relative;
   width: 100%;
@@ -1549,7 +1711,6 @@ font-family: 'Lexend';
   display: flex;
   right: 100.9px;
   top: 90px;
-
 }
 
 .selected-design .private-section {
@@ -1559,7 +1720,7 @@ font-family: 'Lexend';
   top: 42px;
 }
 
-.wallet-address{
+.wallet-address {
   position: absolute;
   font-size: 0.8rem;
   color: black;
@@ -1568,7 +1729,7 @@ font-family: 'Lexend';
   left: 71%;
   transform: translateX(-50%);
   white-space: nowrap;
-  max-width: 90%
+  max-width: 90%;
 }
 
 .private-key {
@@ -1594,7 +1755,7 @@ font-family: 'Lexend';
   text-align: center;
   font-size: clamp(1.2rem, 1vw, 1.5rem);
   font-weight: bold;
-  color: #DAA425;
+  color: #daa425;
   padding: 29%;
   background-color: transparent;
   border-radius: 5px;
@@ -1619,10 +1780,6 @@ font-family: 'Lexend';
 
 /*         Start Media            */
 
-
-
-
-
 /* 1440 above  */
 @media (max-width: 2560px) {
   .landing-container,
@@ -1643,15 +1800,15 @@ font-family: 'Lexend';
   .loader-wrapper {
     margin-right: 4%;
   }
-  
+
   .dropdown-panel {
     width: 54vw;
   }
   .selected-design .qr-code {
-  width: 6.9rem;
-  height: 6.9rem;
-}
-.selected-design .public-section {
+    width: 6.9rem;
+    height: 6.9rem;
+  }
+  .selected-design .public-section {
     right: 6.5% !important;
     top: 12.5% !important;
   }
@@ -1666,7 +1823,7 @@ font-family: 'Lexend';
     font-size: clamp(0.7em, 0.9em, 0.6em);
   }
   .wallet-address {
-    font-size: clamp(0.9em, 0.9em, 0.6em );
+    font-size: clamp(0.9em, 0.9em, 0.6em);
     left: 75%;
     top: 33px;
   }
@@ -1674,16 +1831,16 @@ font-family: 'Lexend';
     margin-left: 16.3%;
     margin-right: -10%;
   }
-  
+
   .select-button {
     font-size: 0.8rem;
     line-height: 2%;
     margin-bottom: -7%;
   }
-  .site-title{
+  .site-title {
     font-size: 20px;
   }
-  .site-logo{
+  .site-logo {
     height: 30px;
     width: 30px;
   }
@@ -1699,10 +1856,6 @@ font-family: 'Lexend';
     font-size: 1.1rem;
   }
 }
-
-
-
-
 
 @media (max-width: 1440px) {
   .landing-container,
@@ -1722,14 +1875,14 @@ font-family: 'Lexend';
   .loader-wrapper {
     margin-right: 4%;
   }
-  
+
   .dropdown-panel {
     width: 54vw;
   }
   .selected-design .qr-code {
-  width: 6.9rem;
-  height: 6.9rem;
-}
+    width: 6.9rem;
+    height: 6.9rem;
+  }
   .selected-design .public-section {
     right: 6.5% !important;
     top: 12% !important;
@@ -1745,7 +1898,7 @@ font-family: 'Lexend';
     font-size: clamp(0.7em, 0.9em, 0.6em);
   }
   .wallet-address {
-    font-size: clamp(0.9em, 0.9em, 0.6em );
+    font-size: clamp(0.9em, 0.9em, 0.6em);
     left: 75%;
     top: 33px;
   }
@@ -1753,7 +1906,7 @@ font-family: 'Lexend';
     margin-left: 16.3%;
     margin-right: -10%;
   }
-  
+
   .select-button {
     font-size: 0.8rem;
     line-height: 2%;
@@ -1787,9 +1940,9 @@ font-family: 'Lexend';
     margin-right: 4%;
   }
   .selected-design .qr-code {
-  width: 6.9rem;
-  height: 6.9rem;
-}
+    width: 6.9rem;
+    height: 6.9rem;
+  }
   .selected-design .public-section {
     right: 7.8% !important;
     top: 11% !important;
@@ -1799,7 +1952,7 @@ font-family: 'Lexend';
     top: 3% !important;
   }
   .wallet-address {
-    font-size: clamp(0.9em, 0.9em, 0.6em );
+    font-size: clamp(0.9em, 0.9em, 0.6em);
     left: 75%;
     top: 33px;
   }
@@ -1807,23 +1960,22 @@ font-family: 'Lexend';
     margin-left: 16.3%;
     margin-right: -10%;
   }
-  
+
   .select-button {
     font-size: 0.8rem;
     line-height: 2%;
     margin-bottom: -7%;
   }
-  .site-logo{
+  .site-logo {
     height: 23px;
-    width: 23px
+    width: 23px;
   }
-  .paper5-logo{
+  .paper5-logo {
     width: 30px;
     height: 30px;
     margin-bottom: 30px;
   }
 }
-
 
 @media (max-width: 900px) {
   .light-mode .landing-container,
@@ -1835,13 +1987,13 @@ font-family: 'Lexend';
   .dropdown-panel {
     width: 52.5vw;
   }
-  .site-title{
+  .site-title {
     font-size: 14px;
   }
-  .site-logo{
+  .site-logo {
     height: 25px;
   }
-  .toggle-button{
+  .toggle-button {
     font-size: 15px;
     width: 30px;
     height: 30px;
@@ -1857,7 +2009,7 @@ font-family: 'Lexend';
   .step-label3 .step-text {
     font-size: 0.8rem;
   }
-  .selected-design .qr-code{
+  .selected-design .qr-code {
     width: 2rem;
     height: 2rem;
   }
@@ -1875,7 +2027,6 @@ font-family: 'Lexend';
     right: -18px;
   }
 
-
   .private-key {
     top: 23% !important; /* adjust slightly to prevent vertical shift */
     left: -1%;
@@ -1885,8 +2036,7 @@ font-family: 'Lexend';
 
 @media (max-width: 768px) {
   .light-mode .landing-container,
-  .light-mode .wallet-container
-  .site-title {
+  .light-mode .wallet-container .site-title {
     width: 100% !important;
   }
   .wallet-description {
@@ -1897,14 +2047,14 @@ font-family: 'Lexend';
     width: 100% !important;
     padding: 7px;
   }
-  .site-title{
+  .site-title {
     font-size: 13px;
   }
-  .site-logo{
+  .site-logo {
     height: 16px;
     width: 16px;
   }
-  .toggle-button{
+  .toggle-button {
     font-size: 12px;
     width: 20px;
     height: 20px;
@@ -1922,19 +2072,19 @@ font-family: 'Lexend';
   .step-label3 .step-text {
     font-size: 0.8rem;
   }
-  .selected-design .qr-code{
+  .selected-design .qr-code {
     width: 2rem;
     height: 2rem;
   }
-  .private-qr{
+  .private-qr {
     margin-top: 2px;
     margin-left: 0;
   }
-  .public-qr{
+  .public-qr {
     margin-right: -17px;
     margin-top: 2px;
   }
-  .design-preview{
+  .design-preview {
     width: 110px;
   }
   .select-button {
@@ -1984,14 +2134,13 @@ font-family: 'Lexend';
   .wallet-address {
     margin-top: 1%;
     right: -18px;
-    font-size: clamp(5px, 0.7vw, 6.8px)!important;
+    font-size: clamp(5px, 0.7vw, 6.8px) !important;
   }
 }
 
 @media (max-width: 622px) {
   .light-mode .landing-container,
-  .light-mode .wallet-container
-  .site-title {
+  .light-mode .wallet-container .site-title {
     width: 100% !important;
   }
   .wallet-description {
@@ -2002,14 +2151,14 @@ font-family: 'Lexend';
     width: 100% !important;
     padding: 7px;
   }
-  .site-title{
+  .site-title {
     font-size: 13px;
   }
-  .site-logo{
+  .site-logo {
     height: 16px;
     width: 16px;
   }
-  .toggle-button{
+  .toggle-button {
     font-size: 12px;
     width: 20px;
     height: 20px;
@@ -2027,19 +2176,19 @@ font-family: 'Lexend';
   .step-label3 .step-text {
     font-size: 0.8rem;
   }
-  .selected-design .qr-code{
+  .selected-design .qr-code {
     width: 2rem;
     height: 2rem;
   }
-  .private-qr{
+  .private-qr {
     margin-top: 2px;
     margin-left: 0;
   }
-  .public-qr{
+  .public-qr {
     margin-right: -17px;
     margin-top: 2px;
   }
-  .design-preview{
+  .design-preview {
     width: 110px;
   }
   .select-button {
@@ -2089,14 +2238,13 @@ font-family: 'Lexend';
   .wallet-address {
     margin-top: 1%;
     right: -18px;
-    font-size: clamp(5px, 0.6vw, 20px)!important;
+    font-size: clamp(5px, 0.6vw, 20px) !important;
   }
 }
 
 @media (max-width: 590px) {
   .light-mode .landing-container,
-  .light-mode .wallet-container
-  .site-title {
+  .light-mode .wallet-container .site-title {
     width: 100% !important;
   }
   .wallet-description {
@@ -2107,14 +2255,14 @@ font-family: 'Lexend';
     width: 100% !important;
     padding: 7px;
   }
-  .site-title{
+  .site-title {
     font-size: 13px;
   }
-  .site-logo{
+  .site-logo {
     height: 16px;
     width: 16px;
   }
-  .toggle-button{
+  .toggle-button {
     font-size: 12px;
     width: 20px;
     height: 20px;
@@ -2132,19 +2280,19 @@ font-family: 'Lexend';
   .step-label3 .step-text {
     font-size: 0.8rem;
   }
-  .selected-design .qr-code{
+  .selected-design .qr-code {
     width: 2rem;
     height: 2rem;
   }
-  .private-qr{
+  .private-qr {
     margin-top: 2px;
     margin-left: 0;
   }
-  .public-qr{
+  .public-qr {
     margin-right: -17px;
     margin-top: 2px;
   }
-  .design-preview{
+  .design-preview {
     width: 110px;
   }
   .select-button {
@@ -2194,16 +2342,13 @@ font-family: 'Lexend';
   .wallet-address {
     margin-top: 1%;
     right: -18px;
-    font-size: clamp(5px, 0.6vw, 20px)!important;
+    font-size: clamp(5px, 0.6vw, 20px) !important;
   }
 }
 
-
-
 @media (max-width: 500px) {
   .light-mode .landing-container,
-  .light-mode .wallet-container
-  .site-title {
+  .light-mode .wallet-container .site-title {
     width: 100% !important;
   }
   .wallet-description {
@@ -2214,14 +2359,14 @@ font-family: 'Lexend';
     width: 100% !important;
     padding: 7px;
   }
-  .site-title{
+  .site-title {
     font-size: 13px;
   }
-  .site-logo{
+  .site-logo {
     height: 16px;
     width: 16px;
   }
-  .toggle-button{
+  .toggle-button {
     font-size: 12px;
     width: 20px;
     height: 20px;
@@ -2239,19 +2384,19 @@ font-family: 'Lexend';
   .step-label3 .step-text {
     font-size: 0.8rem;
   }
-  .selected-design .qr-code{
+  .selected-design .qr-code {
     width: 2rem;
     height: 2rem;
   }
-  .private-qr{
+  .private-qr {
     margin-top: 2px;
     margin-left: 0;
   }
-  .public-qr{
+  .public-qr {
     margin-right: -17px;
     margin-top: 2px;
   }
-  .design-preview{
+  .design-preview {
     width: 110px;
   }
   .select-button {
@@ -2301,14 +2446,13 @@ font-family: 'Lexend';
   .wallet-address {
     margin-top: 1%;
     right: -18px;
-    font-size: 5px!important;
+    font-size: 5px !important;
   }
 }
 
 @media (max-width: 443px) {
   .light-mode .landing-container,
-  .light-mode .wallet-container
-  .site-title {
+  .light-mode .wallet-container .site-title {
     width: 100% !important;
   }
   .wallet-description {
@@ -2319,14 +2463,14 @@ font-family: 'Lexend';
     width: 100% !important;
     padding: 7px;
   }
-  .site-title{
+  .site-title {
     font-size: 14px;
   }
-  .site-logo{
+  .site-logo {
     height: 16px;
     width: 16px;
   }
-  .toggle-button{
+  .toggle-button {
     font-size: 12px;
     width: 20px;
     height: 20px;
@@ -2344,15 +2488,15 @@ font-family: 'Lexend';
   .step-label3 .step-text {
     font-size: 0.8rem;
   }
-  .selected-design .qr-code{
+  .selected-design .qr-code {
     width: 2rem;
     height: 2rem;
   }
-  .private-qr{
+  .private-qr {
     margin-top: 2px;
     margin-left: 0;
   }
-  .public-qr{
+  .public-qr {
     margin-right: -17px;
     margin-top: 2px;
   }
@@ -2362,7 +2506,7 @@ font-family: 'Lexend';
     grid-template-columns: repeat(2, 1fr);
     gap: 1px;
   }
-  .design-preview{
+  .design-preview {
     width: 110px;
   }
   .select-button {
@@ -2416,13 +2560,9 @@ font-family: 'Lexend';
   }
 }
 
-
-
-
 @media (max-width: 425px) {
   .light-mode .landing-container,
-  .light-mode .wallet-container
-  .site-title {
+  .light-mode .wallet-container .site-title {
     width: 100% !important;
   }
   .wallet-description {
@@ -2433,14 +2573,14 @@ font-family: 'Lexend';
     width: 100% !important;
     padding: 7px;
   }
-  .site-title{
+  .site-title {
     font-size: 14px;
   }
-  .site-logo{
+  .site-logo {
     height: 16px;
     width: 16px;
   }
-  .toggle-button{
+  .toggle-button {
     font-size: 12px;
     width: 20px;
     height: 20px;
@@ -2458,15 +2598,15 @@ font-family: 'Lexend';
   .step-label3 .step-text {
     font-size: 0.8rem;
   }
-  .selected-design .qr-code{
+  .selected-design .qr-code {
     width: 2rem;
     height: 2rem;
   }
-  .private-qr{
+  .private-qr {
     margin-top: 2px;
     margin-left: 0;
   }
-  .public-qr{
+  .public-qr {
     margin-right: -17px;
     margin-top: 2px;
   }
@@ -2476,7 +2616,7 @@ font-family: 'Lexend';
     grid-template-columns: repeat(2, 1fr);
     gap: 1px;
   }
-  .design-preview{
+  .design-preview {
     width: 110px;
   }
   .select-button {
@@ -2532,8 +2672,7 @@ font-family: 'Lexend';
 
 @media (max-width: 375px) {
   .light-mode .landing-container,
-  .light-mode .wallet-container
-  .site-title {
+  .light-mode .wallet-container .site-title {
     width: 100% !important;
   }
   .wallet-description {
@@ -2544,14 +2683,14 @@ font-family: 'Lexend';
     width: 100% !important;
     padding: 7px;
   }
-  .site-title{
+  .site-title {
     font-size: 11px;
   }
-  .site-logo{
+  .site-logo {
     height: 16px;
     width: 16px;
   }
-  .toggle-button{
+  .toggle-button {
     font-size: 12px;
     width: 20px;
     height: 20px;
@@ -2569,7 +2708,7 @@ font-family: 'Lexend';
   .step-label3 .step-text {
     font-size: 0.6rem;
   }
-  .selected-design .qr-code{
+  .selected-design .qr-code {
     width: 2rem;
     height: 2rem;
   }
@@ -2599,5 +2738,4 @@ font-family: 'Lexend';
     padding: 0.5em 0.5em !important;
   }
 }
-
 </style>
