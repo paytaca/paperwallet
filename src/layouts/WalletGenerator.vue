@@ -628,14 +628,9 @@ export default {
         if (token.image_url.startsWith("ipfs://") || token.image_url.includes("ipfs.dweb.link")) continue;
         if (token.name.length > 30 || token.symbol.length > 30) continue;
 
-
-        const symbolKey = token.symbol.toLowerCase();
-        const fallbackImage = localTokenImages[symbolKey];
-
         validTokens.push({
           ...token,
-          image_url: token.image_url || fallbackImage,
-          fallbackImage
+          image_url: token.image_url,
         });
       }
 
