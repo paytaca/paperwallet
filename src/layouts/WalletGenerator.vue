@@ -146,7 +146,7 @@
     <option v-for="token in tokens"
             :key="token.tokenId"
             :value="token.symbol">
-            {{ token.name }} ({{ token.symbol }})
+            {{ token.name }}
     </option>
     </select>
 
@@ -294,7 +294,7 @@
 
     <!-- Token logo on the left -->
     <img    v-if="selectedAsset === 'Token' && selectedTokenObject"
-            :src="selectedTokenObject.image_url || 'default.png'" 
+            :src="selectedTokenObject.image_url"
             alt="Token Logo" 
             style="position: absolute;top: 50%; left: -20%; transform: translate(-50%, -50%); 
                     width: 60px; height: 60px; border-radius: 50%; z-index: 10;"/>
@@ -415,40 +415,64 @@ export default {
   },
 
     async created() {
-      document.body.classList.toggle("dark-mode", this.isDarkMode);
-      document.body.classList.toggle("light-mode", this.isLightMode);
-      
-    try {
-      const res = await fetch("https://watchtower.cash/api/cashtokens/fungible/?limit=100&offset=1");
+  document.body.classList.toggle("dark-mode", this.isDarkMode);
+  document.body.classList.toggle("light-mode", this.isLightMode);
+
+  this.loadingTokens = true;
+
+  try {
+    let allResults = [];
+    let nextUrl = "https://watchtower.cash/api/cashtokens/fungible/?limit=50&offset=1";
+
+    // Fetch all pages of tokens
+    while (nextUrl) {
+      const res = await fetch(nextUrl);
       const data = await res.json();
 
-    // Filter only valid tokens (have both name and symbol)
-      const validTokens = data.results
-    .filter(t =>
-      t.name && t.symbol && t.image_url &&
-      !t.image_url.startsWith('ipfs://') && !t.image_url.includes("ipfs.dweb.link"));
-    
-    // Prepend a generic "Any CashToken" option
-  this.tokens = [
-    {
-      name: "Any CashToken",
-      symbol: "CT",
-      image_url: "https://paytaca.github.io/assets/img/token-placeholder.png",
-    },
-    ...validTokens
-  ];
-
-    
-    } catch (err) {
-      console.error("Failed to fetch tokens from Watchtower:", err);
-    } finally {
-      this.loadingTokens = false;
+      allResults = allResults.concat(data.results);
+      nextUrl = data.next;
     }
-  },
+
+    const validTokens = [];
+
+    for (let i = 0; i < allResults.length; i++) {
+      const token = allResults[i];
+
+      if (!token.name || !token.symbol || !token.image_url) continue;
+      if (token.image_url.startsWith("ipfs://") || token.image_url.includes("ipfs.dweb.link")) continue;
+      if (token.name.length > 30 || token.symbol.length > 30) continue;
+
+
+      const symbolKey = token.symbol.toLowerCase();
+      const fallbackImage = localTokenImages[symbolKey];
+
+      validTokens.push({
+        ...token,
+        image_url: token.image_url || fallbackImage,
+        fallbackImage
+      });
+    }
+
+    // Add "Any CashToken" at the top
+    this.tokens = [
+      {
+        name: "Any CashToken",
+        symbol: "CT",
+        image_url: "/ct-logo.png",
+        fallbackImage: "/ct-logo.png",
+      },
+      ...validTokens
+    ];
+  } catch (err) {
+    console.error("Failed to fetch tokens from Watchtower:", err);
+  } finally {
+    this.loadingTokens = false;
+  }
+},
 
       computed: {
       selectedTokenObject() {
-    return this.tokens.find(token => token.name === this.selectedToken);
+    return this.tokens.find(token => token.symbol === this.selectedToken);
     },
 
       availableAmounts() {
