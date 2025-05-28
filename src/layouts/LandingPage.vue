@@ -1,25 +1,26 @@
 <template>
   <div class="landing-container">
     <header class="landing-header">
-      <img src="../assets/paytaca.jpg" alt="Paytaca Logo" class="site-logo">
-      <a href="https://www.paytaca.com/#home" target="_blank" class="site-title">Paytaca</a>
+      <img src="../assets/paytaca.jpg" alt="Paytaca Logo" class="site-logo" />
+      <a href="https://www.paytaca.com/#home" target="_blank" class="site-title"
+        >Paytaca</a
+      >
 
       <!--Dark Mode Toggle Button-->
-    <button class = "toggle-button" @click = "toggleDarkMode">
-      <span v-if = "isDarkMode">🌙</span>
-      <span v-else>🌞</span>
-    </button>
-
+      <button class="toggle-button" @click="toggleDarkMode">
+        <span v-if="isDarkMode">🌙</span>
+        <span v-else>🌞</span>
+      </button>
     </header>
 
-
-
     <div class="header-padding">
-      <img src="../assets/paper5.png" class="paper5-logo">
+      <img src="../assets/paper5.png" class="paper5-logo" />
       <h1 class="header-padding-text">Bitcoin Cash (BCH) Paper Wallet</h1>
     </div>
 
-    <p class="wallet-description">Move your mouse to generate Bitcoin Cash (BCH) Address</p>
+    <p class="wallet-description">
+      Move your mouse to generate Bitcoin Cash (BCH) Address
+    </p>
 
     <div class="hash-generator">
       <!-- Progress Container -->
@@ -34,26 +35,32 @@
         </div>
 
         <!-- Manual input area -->
-        <input class="input-bar" v-model="manualEntropy" @input="updateEntropy" placeholder="no mouse? enter random text here">
+        <input
+          class="input-bar"
+          v-model="manualEntropy"
+          @input="updateEntropy"
+          placeholder="no mouse? enter random text here"
+        />
       </div>
     </div>
 
     <!-- 🆕 Jumbled text that moves dynamically -->
-    <p class="jumbled-text" :style="{ transform: `translate(${offsetX}px, ${offsetY}px)` }">
+    <p
+      class="jumbled-text"
+      :style="{ transform: `translate(${offsetX}px, ${offsetY}px)` }"
+    >
       {{ jumbledText }}
     </p>
-
   </div>
 </template>
 
 <script>
-import { Buffer } from 'buffer';
+import { Buffer } from "buffer";
 import CryptoJS from "crypto-js";
 import QRCode from "qrcode";
 import { ec as EC } from "elliptic";
 import bs58 from "bs58";
 import { encode as cashaddrEncode } from "cashaddrjs";
-
 
 export default {
   name: "BCHAddressGenerator",
@@ -68,13 +75,14 @@ export default {
       jumbledText: this.generateJumbledText(),
       offsetX: 0,
       offsetY: 0,
-      isLightMode: localStorage.getItem("lightMode") === "true" || localStorage.getItem("lightMode"),
-      isDarkMode: localStorage.getItem("darkMode") === "true" && localStorage.getItem("darkMode") !== "true",
+      isLightMode:
+        localStorage.getItem("lightMode") === "true" ||
+        localStorage.getItem("lightMode"),
+      isDarkMode:
+        localStorage.getItem("darkMode") === "true" &&
+        localStorage.getItem("darkMode") !== "true",
     };
   },
-
-
-
 
   mounted() {
     window.addEventListener("mousemove", this.captureEntropy);
@@ -82,7 +90,6 @@ export default {
   beforeUnmount() {
     window.removeEventListener("mousemove", this.captureEntropy);
   },
-
 
   methods: {
     //Dark Mode Toggle
@@ -98,12 +105,11 @@ export default {
       if (this.isDarkMode) {
         document.body.classList.add("dark-mode");
         document.body.classList.remove("light-mode");
-      }else{
+      } else {
         document.body.classList.add("light-mode");
         document.body.classList.remove("dark-mode");
       }
     },
-
 
     captureEntropy(event) {
       if (this.addressGenerated || this.progress >= 100) return;
@@ -129,8 +135,9 @@ export default {
     },
 
     async generateAddress() {
-      const { cashAddress } =
-        await this.generatePrivateKeyFromEntropy(this.entropy);
+      const { cashAddress } = await this.generatePrivateKeyFromEntropy(
+        this.entropy
+      );
       this.generatedAddress = cashAddress; // Use the BCH CashAddr format
       this.addressGenerated = true;
       this.qrCodeData = await QRCode.toDataURL(this.generatedAddress);
@@ -148,15 +155,21 @@ export default {
       const publicKeyHex = keyPair.getPublic(true, "hex"); // Compressed public key
 
       // Hash the public key (SHA-256 → RIPEMD-160)
-      const sha256Hash = CryptoJS.SHA256(CryptoJS.enc.Hex.parse(publicKeyHex)).toString();
-      const ripemd160Hash = CryptoJS.RIPEMD160(CryptoJS.enc.Hex.parse(sha256Hash)).toString();
+      const sha256Hash = CryptoJS.SHA256(
+        CryptoJS.enc.Hex.parse(publicKeyHex)
+      ).toString();
+      const ripemd160Hash = CryptoJS.RIPEMD160(
+        CryptoJS.enc.Hex.parse(sha256Hash)
+      ).toString();
 
       // Construct Legacy Address (Base58Check)
       const versionByte = "00"; // Mainnet P2PKH prefix
       const payload = versionByte + ripemd160Hash;
 
       // Compute checksum (Double SHA-256)
-      const checksum = CryptoJS.SHA256(CryptoJS.SHA256(CryptoJS.enc.Hex.parse(payload)))
+      const checksum = CryptoJS.SHA256(
+        CryptoJS.SHA256(CryptoJS.enc.Hex.parse(payload))
+      )
         .toString()
         .substring(0, 8);
 
@@ -164,13 +177,17 @@ export default {
       const legacyAddress = bs58.encode(Buffer.from(finalAddressHex, "hex"));
 
       // Convert to Bitcoin Cash Address format (CashAddr)
-      const cashAddress = cashaddrEncode("bitcoincash", "P2PKH", Buffer.from(ripemd160Hash, "hex"));
+      const cashAddress = cashaddrEncode(
+        "bitcoincash",
+        "P2PKH",
+        Buffer.from(ripemd160Hash, "hex")
+      );
 
       return {
         privateKey: privateKeyHex,
         publicKey: publicKeyHex,
         legacyAddress,
-        cashAddress
+        cashAddress,
       };
     },
 
@@ -179,28 +196,29 @@ export default {
     },
 
     generateJumbledText() {
-      const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+      const characters =
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
       return Array.from({ length: 40 })
-        .map(() => characters.charAt(Math.floor(Math.random() * characters.length)))
+        .map(() =>
+          characters.charAt(Math.floor(Math.random() * characters.length))
+        )
         .join("");
-    }
-  }
+    },
+  },
 };
 </script>
 
-
 <style scoped>
-@import url('https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&display=swap');
-
+@import url("https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&display=swap");
 
 /*Dark Mode*/
 .dark-mode .landing-container,
 .dark-mode .landing-header {
-  background-color: rgb(30 41 59 );
+  background-color: rgb(30 41 59);
 }
 
 .dark-mode .hash-generator {
-  background-color: #E2E8F0;
+  background-color: #e2e8f0;
 }
 
 .dark-mode .header-padding {
@@ -215,7 +233,7 @@ export default {
 }
 
 .dark-mode .header-padding-text {
-  color: rgb(30 41 59 );
+  color: rgb(30 41 59);
 }
 
 /*LightMode*/
@@ -228,7 +246,6 @@ export default {
   background-color: rgb(30 41 59);
 }
 
-
 /*LightMode Text*/
 .light-mode .header-padding-text {
   color: rgb(239, 246, 255);
@@ -237,10 +254,8 @@ export default {
 .light-mode .site-title,
 .light-mode .jumbled-text,
 .light-mode .wallet-description {
-  color: rgb(30 41 59 );
+  color: rgb(30 41 59);
 }
-
-
 
 .toggle-button {
   position: fixed;
@@ -248,7 +263,7 @@ export default {
   right: 35px;
   width: 40px;
   height: 40px;
-  background: #EEDC82;
+  background: #eedc82;
   color: black;
   border: none;
   border-radius: 50%;
@@ -272,11 +287,9 @@ export default {
 }
 
 .light-mode .toggle-button {
-  background: #EEDC82;
+  background: #eedc82;
   color: #333;
 }
-
-
 
 .lexend {
   font-family: "Lexend", serif;
@@ -286,7 +299,7 @@ export default {
 }
 
 .landing-container {
-  background-color: #E2E8F0;
+  background-color: #e2e8f0;
   position: fixed;
   background-size: cover;
   top: 0;
@@ -305,7 +318,7 @@ export default {
 }
 
 .landing-header {
-  background-color: #E2E8F0;
+  background-color: #e2e8f0;
   width: 100vw;
   padding: 15px 30px;
   position: fixed;
@@ -320,7 +333,7 @@ export default {
 .header-padding {
   width: 100%;
   height: 140px;
-  background-color: rgb(30 41 59 );
+  background-color: rgb(30 41 59);
   margin-top: 1px;
   margin-bottom: 100px;
   display: flex;
@@ -335,7 +348,7 @@ export default {
   font-weight: bold;
   color: white;
   margin-top: 70px;
-  font-family: 'Lexend';
+  font-family: "Lexend";
 }
 
 .site-logo {
@@ -346,53 +359,53 @@ export default {
 .paper5-logo {
   width: 50px;
   height: 50px;
-  margin-right:5px;
+  margin-right: 5px;
   margin-top: 50px;
 }
 
 .site-title {
   font-size: 20px;
   font-weight: bold;
-  color: rgb(30 41 59 );
-  font-family:'Lexend';
+  color: rgb(30 41 59);
+  font-family: "Lexend";
   text-decoration: none;
 }
 
 @media (max-width: 600px) {
-  .site-title{
+  .site-title {
     font-size: 14px;
   }
-  .toggle-button{
+  .toggle-button {
     font-size: 14px;
     margin-top: 5px;
     width: 30px;
     height: 30px;
   }
-  .header-padding-text{
+  .header-padding-text {
     font-size: 12px;
   }
-  .paper5-logo{
+  .paper5-logo {
     height: 30px;
     width: 30px;
   }
-  .wallet-description{
+  .wallet-description {
     font-size: 14px !important;
     padding: 10px;
   }
-  .hash-generator{
+  .hash-generator {
     width: 100% !important;
     margin-top: 0 !important;
   }
-  .progress-container p{
+  .progress-container p {
     font-size: 14px;
   }
   .progress-bar-container {
     height: 30px !important;
   }
-  .input-bar{
+  .input-bar {
     font-size: 12px !important;
   }
-  .jumbled-text{
+  .jumbled-text {
     font-size: 14px !important;
     width: 100vw !important;
     word-break: break-word;
@@ -407,7 +420,7 @@ export default {
   color: rgb(51 65 85);
   margin-top: -80px;
   margin-bottom: 20px;
-  font-family: 'Lexend';
+  font-family: "Lexend";
 }
 
 .progress-container {
@@ -416,8 +429,7 @@ export default {
   color: rgb(51 65 85);
   font-weight: bold;
   font-size: 20px;
-  font-family: 'Lexend';
-
+  font-family: "Lexend";
 }
 
 .progress-bar-container {
@@ -448,7 +460,7 @@ export default {
   font-weight: bold;
   font-size: 18px;
   position: absolute;
-  font-family: 'Lexend';
+  font-family: "Lexend";
 }
 
 .input-bar {
@@ -475,11 +487,10 @@ export default {
 .jumbled-text {
   font-size: 20px;
   font-weight: bold;
-  color: rgb(30 41 59 );
+  color: rgb(30 41 59);
   text-align: center;
   margin-top: 15px;
   transition: transform 0.1s ease-in-out;
-  font-family: 'Lexend';
+  font-family: "Lexend";
 }
-
 </style>
