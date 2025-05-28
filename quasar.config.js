@@ -1,6 +1,6 @@
 import { defineConfig } from '#q-app/wrappers'
-import { nodePolyfills } from 'vite-plugin-node-polyfills'
-import path from 'path'
+//import { nodePolyfills } from 'vite-plugin-node-polyfills'
+//import path from 'path'
 
 export default defineConfig(() => {
   return {
@@ -40,76 +40,76 @@ export default defineConfig(() => {
           })
           .end();
       },
-      vite: {
-        build: {
-          target: 'esnext',
-          assets: {
-            dirs: ['src/assets']
-          },
-        },
+      // vite: {
+      //   build: {
+      //     target: 'esnext',
+      //     assets: {
+      //       dirs: ['src/assets']
+      //     },
+      //   },
 
-        // Add polyfills for Node.js modules
-        resolve: {
-          alias: {
-            stream: 'stream-browserify',
-            util: 'util/',
-            crypto: 'crypto-browserify',
-            buffer: 'buffer/',
-            process: 'process/browser',
-            events: 'events/',
-            assert: 'assert/',
-            'readable-stream': 'readable-stream',
-            '@': path.resolve(__dirname, 'src'),
-          },
-        },
-        define: {
-          'process.env': {},
-        },
-        optimizeDeps: {
-          include: [
-            'buffer',
-            'stream-browserify',
-            'process',
-            'util',
-            'crypto-browserify',
-            'assert',
-            'events',
-            'readable-stream',
-            'elliptic',
-            'bn.js',
-            'cipher-base',
-            'browserify-aes',
-            'hash-base',
-            'md5.js',
-            'evp_bytestokey'
-          ],
-          esbuildOptions: {
-            define: {
-              global: 'globalThis',
-              'process.env': '{}',
-              'process.version': '"v20.0.0"',
-            },
-          },
-        },
+      //   // Add polyfills for Node.js modules
+      //   resolve: {
+      //     alias: {
+      //       stream: 'stream-browserify',
+      //       util: 'util/',
+      //       crypto: 'crypto-browserify',
+      //       buffer: 'buffer/',
+      //       process: 'process/browser',
+      //       events: 'events/',
+      //       assert: 'assert/',
+      //       'readable-stream': 'readable-stream',
+      //       '@': path.resolve(__dirname, 'src'),
+      //     },
+      //   },
+      //   define: {
+      //     'process.env': {},
+      //   },
+      //   optimizeDeps: {
+      //     include: [
+      //       'buffer',
+      //       'stream-browserify',
+      //       'process',
+      //       'util',
+      //       'crypto-browserify',
+      //       'assert',
+      //       'events',
+      //       'readable-stream',
+      //       'elliptic',
+      //       'bn.js',
+      //       'cipher-base',
+      //       'browserify-aes',
+      //       'hash-base',
+      //       'md5.js',
+      //       'evp_bytestokey'
+      //     ],
+      //     esbuildOptions: {
+      //       define: {
+      //         global: 'globalThis',
+      //         'process.env': '{}',
+      //         'process.version': '"v20.0.0"',
+      //       },
+      //     },
+      //   },
 
-        plugins: [
-          nodePolyfills({
-            protocolImports: true
-          }),
-        ],
-      },
+      //   plugins: [
+      //     nodePolyfills({
+      //       protocolImports: true
+      //     }),
+      //   ],
+      // },
 
       vueRouterMode: 'hash',
     
-      vitePlugins: [
-        nodePolyfills(),
-        ['vite-plugin-checker', {
-          eslint: {
-            lintCommand: 'eslint -c ./eslint.config.js "./src*/**/*.{js,mjs,cjs,vue}"',
-            useFlatConfig: true
-          }
-        }, { server: false }]
-      ],
+      // vitePlugins: [
+      //   nodePolyfills(),
+      //   ['vite-plugin-checker', {
+      //     eslint: {
+      //       lintCommand: 'eslint -c ./eslint.config.js "./src*/**/*.{js,mjs,cjs,vue}"',
+      //       useFlatConfig: true
+      //     }
+      //   }, { server: false }]
+      // ],
 
       polyfillModulePreload: true
     },

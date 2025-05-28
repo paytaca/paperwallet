@@ -287,13 +287,13 @@
     <q-card-section class="qr-section public-section"
                     style="position: absolute; top: 13%; right: 5.3%; width: 18%; height: auto; 
                             pointer-events: none; gap: 10px;">
-    <img :src="wallet.qrCodePublic"
+    <img    :src="wallet.qrCodePublic"
             alt="Public QR Code"
             class="qr-code public-qr"
             style="width: clamp(21px, 7vw, 205px); height: auto;"/>
 
     <!-- Token logo on the left -->
-    <img v-if="selectedAsset === 'Token' && selectedTokenObject"
+    <img    v-if="selectedAsset === 'Token' && selectedTokenObject"
             :src="selectedTokenObject.image_url || 'default.png'" 
             alt="Token Logo" 
             style="position: absolute;top: 50%; left: -20%; transform: translate(-50%, -50%); 
@@ -302,7 +302,7 @@
     <q-card-section class="wallet-address"
                     style="position: absolute; top: 2%; left: 57%; width: 25%; font-size: clamp(1px, 0.9vw, 20px); 
                             text-align: center; white-space: nowrap; pointer-events: none;">
-    <p :style="{color: selectedDesign?.addressColor || 'inherit'}">
+    <p      :style="{color: selectedDesign?.addressColor || 'inherit'}">
             {{ selectedAsset === 'Token' ? wallet.displayAddress : wallet.address }}</p> 
     </q-card-section>
 
@@ -349,25 +349,30 @@
 </template>
 
 <script>
-    import CryptoJS from 'crypto-js';
-    import QRCode from "qrcode";
-    import { Buffer } from 'buffer/';
-    import secp256k1 from 'secp256k1';
-    import bs58 from "bs58";
-    import cashaddr from "cashaddrjs";
-    import html2canvas from 'html2canvas';
-    import bip38 from '@asoltys/bip38'
-    import pw1 from 'src/assets/pw1.png';
-    import pw2 from 'src/assets/pw2.png';
-    import pw3 from 'src/assets/pw3.png';
-    import pw4 from 'src/assets/pw4.png';
-    import pw5 from 'src/assets/pw5.png';
-    import pw6 from 'src/assets/pw6.png';
-    import pw7 from 'src/assets/pw7.png';
-    import pw8 from 'src/assets/pw8.png';
-    import pw9 from 'src/assets/pw9.png';
-    import pw10 from 'src/assets/pw10.png';
-    import { decodeCashAddress, encodeCashAddress, CashAddressNetworkPrefix, CashAddressType } from '@bitauth/libauth'
+import CryptoJS from 'crypto-js';
+import QRCode from "qrcode";
+import { Buffer } from 'buffer/';
+import secp256k1 from 'secp256k1';
+import bs58 from "bs58";
+import cashaddr from "cashaddrjs";
+import html2canvas from 'html2canvas';
+import bip38 from '@asoltys/bip38'
+import pw1 from 'src/assets/pw1.png';
+import pw2 from 'src/assets/pw2.png';
+import pw3 from 'src/assets/pw3.png';
+import pw4 from 'src/assets/pw4.png';
+import pw5 from 'src/assets/pw5.png';
+import pw6 from 'src/assets/pw6.png';
+import pw7 from 'src/assets/pw7.png';
+import pw8 from 'src/assets/pw8.png';
+import pw9 from 'src/assets/pw9.png';
+import pw10 from 'src/assets/pw10.png';
+import { decodeCashAddress,
+         encodeCashAddress,
+         CashAddressNetworkPrefix,
+         CashAddressType } 
+         from '@bitauth/libauth'
+
 export default {
   data() {
     return {
@@ -542,6 +547,19 @@ export default {
           this.generatedWallets = [];  
           this.generateMultipleKeys();  
     },
+    
+      toggleAdvanceSettingdropdown() {
+            this.showAdvanceSettingdropdown = !this.showAdvanceSettingdropdown;
+        if (this.showAdvanceSettingdropdown) 
+        {
+            this.generatedWallets = [];
+            this.firstWallet = [];  
+          // Clear existing wallets (including the static one)
+        } else  {
+            this.resetWallet();  
+          // Call the method to regenerate wallet without encryption
+        }
+      },
         
 
       toggleDarkMode() {
@@ -720,8 +738,9 @@ export default {
     {
         return;
     }
-
+    
       try {
+          
           const qrDataPublic = this.customAmount > 0
             ? `${firstWallet.address}?amount=${this.customAmount}`
             : firstWallet.address;
@@ -778,6 +797,7 @@ export default {
 
         this.generatedWallets.push(wallet);
     }
+      this.handleAssetChange(); 
         this.loading = false; 
     },
 
