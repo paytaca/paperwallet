@@ -625,11 +625,11 @@ export default {
         {
           name: "Any CashToken",
           symbol: "CT",
-          image_url:
-            "https://paytaca.github.io/assets/img/token-placeholder.png",
+          image_url: "src/assets/ct-logo.png", // Placeholder image for generic CashToken
         },
         ...validTokens,
       ];
+      console.log("Fetched tokens:", this.tokens);
     } catch (err) {
       console.error("Failed to fetch tokens from Watchtower:", err);
     } finally {
@@ -639,7 +639,7 @@ export default {
 
   computed: {
     selectedTokenObject() {
-      return this.tokens.find((token) => token.name === this.selectedToken);
+      return this.tokens.find((token) => token.symbol === this.selectedToken);
     },
 
     availableAmounts() {
