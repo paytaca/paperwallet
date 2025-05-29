@@ -312,7 +312,7 @@
                 </label>
                 <select
                   v-model.number="wallet.customAmount"
-                  @change="() => { updateQrCodeForWallet(wallet) }"
+                  @change="updateQRCodeForWallet(wallet)"
                   class="wallet-amount-input"
                 >
                   <option value="">Any Amount</option>
