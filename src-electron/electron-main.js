@@ -15,7 +15,7 @@ async function createWindow () {
    * Initial window options
    */
   mainWindow = new BrowserWindow({
-    icon: path.join(currentDir, 'public', 'paytacaicon.ico'),
+    icon: path.join(currentDir, 'icons', 'paytaca_logo.ico'),
     fullscreen: false,
     frame: true,         
     show: false, 

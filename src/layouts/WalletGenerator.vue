@@ -178,22 +178,55 @@
               <option value="Token">CashToken</option>
             </select>
 
-            <select
-              class="token-select"
-              v-show="selectedAsset === 'Token'"
-              style="margin-left: 10px"
-              v-model="selectedToken"
-            >
-              <option value="" disabled selected>Select a Token</option>
-              <option
-                v-for="token in tokens"
-                :key="token.tokenId"
-                :value="token.symbol"
-              >
-                {{ token.name }} ({{ token.symbol }})
-              </option>
-            </select>
+            <q-btn
+              v-if="selectedAsset === 'Token'"
+              label="Select Token"
+              @click="tokenDialog = true"
+              class="q-ml-sm"
+            />
+            <span v-if="selectedToken" class="q-ml-sm">{{
+              selectedToken
+            }}</span>
 
+            <q-dialog v-model="tokenDialog">
+              <q-card>
+                <q-card-section>
+                  <div class="text-h6">Select a Token</div>
+                </q-card-section>
+                <q-card-section class="q-pb-none">
+                  <q-input
+                    dense
+                    debounce="200"
+                    filled
+                    v-model="searchQuery"
+                    placeholder="Search by name or symbol"
+                    clearable
+                  >
+                    <template v-slot:append>
+                      <q-icon name="search" />
+                    </template>
+                  </q-input>
+                </q-card-section>
+                <q-card-section>
+                  <q-list bordered separator>
+                    <q-item
+                      v-for="token in filteredTokens"
+                      :key="token.Tokens"
+                      clickable
+                      @click="selectToken(token.symbol)"
+                    >
+                      <q-item-section>
+                        {{ token.name }} ({{ token.symbol }})
+                      </q-item-section>
+                    </q-item>
+                  </q-list>
+                </q-card-section>
+
+                <q-card-actions align="right">
+                  <q-btn flat label="Close" color="primary" v-close-popup />
+                </q-card-actions>
+              </q-card>
+            </q-dialog>
             <label
               class="individual-custom-amount"
               style="display: flex; align-items: center"
@@ -312,7 +345,7 @@
                 </label>
                 <select
                   v-model.number="wallet.customAmount"
-                  @change="() => { updateQrCodeForWallet(wallet) }"
+                  @change="updateQRCodeForWallet(wallet)"
                   class="wallet-amount-input"
                 >
                   <option value="">Any Amount</option>
@@ -585,6 +618,10 @@ export default {
       loadingTokens: false,
       suppressWatcher: false,
       isTestNet: false,
+      tokenSearch: "",
+      tokenDialog: false,
+      searchQuery: "",
+      filteredTokens: [],
       designs: [
         { id: 1, image: pw1, textColor: "black", addressColor: "white" },
         { id: 2, image: pw2, textColor: "white", addressColor: "black" },
@@ -608,7 +645,8 @@ export default {
 
     try {
       let allResults = [];
-      let nextUrl = "https://watchtower.cash/api/cashtokens/fungible/?limit=50&offset=1";
+      let nextUrl =
+        "https://watchtower.cash/api/cashtokens/fungible/?limit=50&offset=1";
 
       // Fetch all pages of tokens
       while (nextUrl) {
@@ -625,7 +663,11 @@ export default {
         const token = allResults[i];
 
         if (!token.name || !token.symbol || !token.image_url) continue;
-        if (token.image_url.startsWith("ipfs://") || token.image_url.includes("ipfs.dweb.link")) continue;
+        if (
+          token.image_url.startsWith("ipfs://") ||
+          token.image_url.includes("ipfs.dweb.link")
+        )
+          continue;
         if (token.name.length > 30 || token.symbol.length > 30) continue;
 
         validTokens.push({
@@ -633,6 +675,10 @@ export default {
           image_url: token.image_url,
         });
       }
+      // Sort tokens by symbol alphabetically (case-insensitive)
+      validTokens.sort((a, b) =>
+        a.name.toLowerCase().localeCompare(b.name.toLowerCase())
+      );
 
       // Add "Any CashToken" at the top
       this.tokens = [
@@ -642,7 +688,7 @@ export default {
           image_url: "/ct-logo.png",
           fallbackImage: "/ct-logo.png",
         },
-        ...validTokens
+        ...validTokens,
       ];
     } catch (err) {
       console.error("Failed to fetch tokens from Watchtower:", err);
@@ -703,8 +749,6 @@ export default {
           const converted = this.convertCashAddress(
             this.generatedWallets[i].address
           );
-          // console.log('converted', converted)
-          // this.displayAddress = converted.address || this.generatedWallets[i].address
           this.generatedWallets[i].displayAddress =
             converted.address || this.generatedWallets[i].address;
         }
@@ -723,7 +767,6 @@ export default {
     convertCashAddress(address) {
       try {
         const decodedAddress = decodeCashAddress(address);
-        console.log("decodedAddress", decodedAddress);
         const prefix = CashAddressNetworkPrefix.mainnet;
         const addressType = CashAddressType.p2pkhWithTokens;
         return encodeCashAddress({
@@ -775,6 +818,12 @@ export default {
         document.body.classList.add("light-mode");
         document.body.classList.remove("light-mode");
       }
+    },
+
+    selectToken(symbol) {
+      this.selectedToken = symbol;
+      this.tokenDialog = false;
+      this.searchQuery = "";
     },
 
     async sha256(data = "", encoding = "utf8") {
@@ -868,7 +917,6 @@ export default {
           true,
           this.passphrase
         );
-        console.log("Encrypted WIF:", encryptedWIF);
       }
 
       return {
@@ -995,8 +1043,6 @@ export default {
       }
 
       const amount = this.paymentDetails ? parseFloat(this.paymentDetails) : 0;
-
-      console.log("updatePublicQRCodes");
       for (const wallet of this.generatedWallets) {
         wallet.customAmount = amount;
 
@@ -1005,8 +1051,6 @@ export default {
         let uriPrefix = "bitcoincash:";
 
         // Switch to CashToken address and prefix if selected
-        console.log("displayAddress", wallet.displayAddress);
-        console.log(this.displayAddress);
         if (this.selectedAsset === "Token" && wallet.displayAddress) {
           selectedAddress = wallet.displayAddress;
           uriPrefix = "bitcoincash:"; // <-- Correct prefix for CashToken
@@ -1024,10 +1068,6 @@ export default {
           wallet.qrCodePublic = await QRCode.toDataURL(qrDataPublic, {
             errorCorrectionLevel: "L",
           });
-          console.log(
-            `QR Code updated for ${cleanAddress}:`,
-            wallet.qrCodePublic
-          );
         } catch (error) {
           console.error(`Error generating QR code for ${cleanAddress}:`, error);
         }
@@ -1042,8 +1082,6 @@ export default {
       let uriPrefix = "bitcoincash:";
 
       // Use CashToken address and prefix if option is set
-      console.log("úpdateQRCodeForWallet");
-      console.log("displayAddress", wallet.displayAddress);
       if (this.displayAddress === "Token" && wallet.displayAddress) {
         selectedAddress = wallet.displayAddress;
         uriPrefix = "bitcoincash:"; // <-- Correct prefix for CashToken
@@ -1166,6 +1204,22 @@ export default {
           this.updateQRCodeForWallet(wallet);
         });
       }
+    },
+    searchQuery: {
+      handler(query) {
+        const lowerQuery = query.trim().toLowerCase();
+
+        if (!lowerQuery) {
+          this.filteredTokens = this.tokens;
+        } else {
+          this.filteredTokens = this.tokens.filter(
+            (token) =>
+              token.name.toLowerCase().includes(lowerQuery) ||
+              token.symbol.toLowerCase().includes(lowerQuery)
+          );
+        }
+      },
+      immediate: true, // ensures it's run once at component mount
     },
   },
 };

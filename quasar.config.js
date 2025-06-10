@@ -157,6 +157,7 @@ export default defineConfig(() => {
       bundler: 'builder',
       builder: {
         appId: 'paytaca-paperwallet',
+        icon: 'src-electron/icons/paytaca_logo.ico',
         extraFiles: [
           'src/assets/**/*'
         ],
