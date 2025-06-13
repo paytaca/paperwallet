@@ -184,9 +184,9 @@
               @click="tokenDialog = true"
               class="q-ml-sm"
             />
-            <span v-if="selectedToken" class="q-ml-sm">{{
-              selectedToken
-            }}</span>
+            <span v-if="selectedToken" class="q-ml-sm">
+              {{ selectedToken }}
+            </span>
 
             <q-dialog v-model="tokenDialog">
               <q-card>
@@ -208,10 +208,11 @@
                   </q-input>
                 </q-card-section>
                 <q-card-section>
+                  <q-spinner v-if="loadingTokens" size="sm" color="primary" />
                   <q-list bordered separator>
                     <q-item
                       v-for="token in filteredTokens"
-                      :key="token.Tokens"
+                      :key="token.token_id || token.id || token.symbol"
                       clickable
                       @click="selectToken(token.symbol)"
                     >
@@ -219,6 +220,12 @@
                         {{ token.name }} ({{ token.symbol }})
                       </q-item-section>
                     </q-item>
+                    <div
+                      v-if="!filteredTokens.length && !loadingTokens"
+                      class="q-pa-sm text-grey"
+                    >
+                      No tokens found
+                    </div>
                   </q-list>
                 </q-card-section>
 
@@ -614,6 +621,7 @@ export default {
       wallet: { customAmount: "" },
       selectedAsset: "Bitcoin Cash",
       selectedToken: "",
+      selectedTokenId: "",
       tokens: [],
       loadingTokens: false,
       suppressWatcher: false,
@@ -690,6 +698,7 @@ export default {
         },
         ...validTokens,
       ];
+      this.filteredTokens = this.tokens;
     } catch (err) {
       console.error("Failed to fetch tokens from Watchtower:", err);
     } finally {
@@ -1073,6 +1082,17 @@ export default {
         }
       }
     },
+    filterTokens() {
+      // No search? List all tokens
+      const q = this.searchQuery.trim().toLowerCase();
+      if (!q) return this.tokens || [];
+      // Search: Only show matching tokens
+      return (this.tokens || []).filter(
+        (token) =>
+          (token.name && token.name.toLowerCase().includes(q)) ||
+          (token.symbol && token.symbol.toLowerCase().includes(q))
+      );
+    },
 
     async updateQRCodeForWallet(wallet) {
       if (!wallet) return;
@@ -1207,8 +1227,11 @@ export default {
     },
     searchQuery: {
       handler(query) {
-        const lowerQuery = query.trim().toLowerCase();
-
+        const lowerQuery = (query || "").trim().toLowerCase();
+        if (!this.tokens || this.tokens.length === 0) {
+          this.filteredTokens = []; // Or some default value
+          return;
+        }
         if (!lowerQuery) {
           this.filteredTokens = this.tokens;
         } else {
@@ -1219,7 +1242,8 @@ export default {
           );
         }
       },
-      immediate: true, // ensures it's run once at component mount
+      searchQuery: "filterTokens",
+      tokens: "filterTokens",
     },
   },
 };
