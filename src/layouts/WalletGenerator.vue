@@ -180,14 +180,10 @@
 
             <q-btn
               v-if="selectedAsset === 'Token'"
-              label="Select Token"
+              :label="selectedToken ? selectedToken : 'Select Token'"
               @click="tokenDialog = true"
               class="q-ml-sm"
             />
-            <span v-if="selectedToken" class="q-ml-sm">
-              {{ selectedToken }}
-            </span>
-
             <q-dialog v-model="tokenDialog">
               <q-card>
                 <q-card-section>
@@ -214,7 +210,7 @@
                       v-for="token in filteredTokens"
                       :key="token.token_id || token.id || token.symbol"
                       clickable
-                      @click="selectToken(token.symbol)"
+                      @click="selectToken(token)"
                     >
                       <q-item-section>
                         {{ token.name }} ({{ token.symbol }})
@@ -829,12 +825,13 @@ export default {
       }
     },
 
-    selectToken(symbol) {
-      this.selectedToken = symbol;
+    selectToken(token) {
+      this.selectedToken = token.symbol;
+      this.selectedTokenId = token.token_id || token.id || "";
       this.tokenDialog = false;
       this.searchQuery = "";
+      this.updatePublicQRCodes();
     },
-
     async sha256(data = "", encoding = "utf8") {
       let buffer;
       if (data instanceof Uint8Array) {
@@ -1069,7 +1066,16 @@ export default {
         const cleanAddress = selectedAddress.replace(/^(bitcoincash:)/, "");
 
         let qrDataPublic = `${uriPrefix}${cleanAddress}`;
-        if (amount > 0) {
+
+        // If Token, add ?c=<tokenId>[&amount=...]
+        if (this.selectedAsset === "Token" && this.selectedTokenId) {
+          // Remove ct/ prefix if present
+          const cleanTokenId = this.selectedTokenId.replace(/^ct\//, "");
+          qrDataPublic += `?c=${cleanTokenId}`;
+          if (amount > 0) {
+            qrDataPublic += `&amount=${amount}`;
+          }
+        } else if (amount > 0) {
           qrDataPublic += `?amount=${amount}`;
         }
 
