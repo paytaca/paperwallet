@@ -213,7 +213,16 @@
                       @click="selectToken(token)"
                     >
                       <q-item-section>
-                        {{ token.name }} ({{ token.symbol }})
+                        <div class="text-subtitle1">
+                          {{ token.name }} ({{ token.symbol }})
+                        </div>
+                        <div
+                          v-if="token.token_id || token.id"
+                          class="text-caption text-grey"
+                          style="white-space: pre-line"
+                        >
+                          c={{ formatTokenId(token.token_id || token.id) }}
+                        </div>
                       </q-item-section>
                     </q-item>
                     <div
@@ -769,6 +778,14 @@ export default {
   },
 
   methods: {
+    formatTokenId(tokenId) {
+      if (!tokenId) return "";
+      if (tokenId.length <= 15) return tokenId;
+      return `${tokenId.substring(0, 15)}...${tokenId.substring(
+        tokenId.length - 15
+      )}`;
+    },
+
     handleAssetChange() {
       if (this.selectedAsset === "Token") {
         for (let i = 0; i < this.generatedWallets.length; i++) {
