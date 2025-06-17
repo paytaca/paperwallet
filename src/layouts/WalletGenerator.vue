@@ -695,6 +695,7 @@ export default {
         ...validTokens,
       ];
       this.filteredTokens = this.tokens;
+      console.log("Fetched tokens from Watchtower:", this.tokens);
     } catch (err) {
       console.error("Failed to fetch tokens from Watchtower:", err);
     } finally {
@@ -709,15 +710,35 @@ export default {
 
     availableAmounts() {
       if (this.selectedAsset === "Token") {
-        return [0.25, 0.75, 1, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50];
+        const token = this.tokens.find(
+          (t) =>
+            t.id === this.selectedTokenId || t.symbol === this.selectedToken
+        );
+        const decimals = token ? token.decimals : 0;
+        if (decimals === 0) {
+          // Only whole numbers allowed
+          return [1, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50];
+        } else {
+          // Decimals allowed
+          return [0.25, 0.75, 1, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50];
+        }
       } else {
+        // BCH
         return [0.0001, 0.001, 0.005, 0.05, 0.1, 0.25, 0.5, 0.75, 1, 5, 10];
       }
     },
-
     customAmountOptions() {
       if (this.selectedAsset === "Token") {
-        return [0.25, 0.75, 1, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50];
+        const token = this.tokens.find(
+          (t) =>
+            t.id === this.selectedTokenId || t.symbol === this.selectedToken
+        );
+        const decimals = token ? token.decimals : 0;
+        if (decimals === 0) {
+          return [1, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50];
+        } else {
+          return [0.25, 0.75, 1, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50];
+        }
       } else {
         return [0.0001, 0.001, 0.005, 0.05, 0.1, 0.25, 0.5, 0.75, 1, 5, 10];
       }
@@ -1048,7 +1069,7 @@ export default {
         return;
       }
 
-      const amount = this.paymentDetails ? parseFloat(this.paymentDetails) : 0;
+      let amount = this.paymentDetails ? parseFloat(this.paymentDetails) : 0;
       for (const wallet of this.generatedWallets) {
         wallet.customAmount = amount;
 
@@ -1073,12 +1094,17 @@ export default {
           const cleanTokenId = this.selectedTokenId.replace(/^ct\//, "");
           qrDataPublic += `?c=${cleanTokenId}`;
           if (amount > 0) {
-            qrDataPublic += `&amount=${amount}`;
+            const token = this.tokens.find(
+              (t) =>
+                t.id === this.selectedTokenId || t.symbol === this.selectedToken
+            );
+            amount = amount * 10 ** (token?.decimals || 0);
+            qrDataPublic += `&f=${amount}`; // Use 'f' for amount as in your example
           }
         } else if (amount > 0) {
-          qrDataPublic += `?amount=${amount}`;
+          qrDataPublic += `?amount=${amount}`; // For BCH, use 'amount'
         }
-
+        console.log("Generated QR Code Data:", qrDataPublic);
         try {
           wallet.qrCodePublic = await QRCode.toDataURL(qrDataPublic, {
             errorCorrectionLevel: "L",
@@ -1216,6 +1242,11 @@ export default {
     individualWalletOption(newVal) {
       if (this.suppressWatcher) return;
 
+      const token = this.tokens.find(
+        (t) => t.id === this.selectedTokenId || t.symbol === this.selectedToken
+      );
+      const decimals = token ? token.decimals : 0;
+
       if (newVal) {
         this.generatedWallets.forEach((wallet) => {
           wallet.customAmount = "";
@@ -1225,8 +1256,15 @@ export default {
         const amount = this.paymentDetails
           ? parseFloat(this.paymentDetails)
           : 0;
+
+        // Adjust the amount based on the token's decimals
+        const adjustedAmount =
+          decimals === 0
+            ? Math.floor(amount)
+            : parseFloat(amount.toFixed(decimals));
+
         this.generatedWallets.forEach((wallet) => {
-          wallet.customAmount = amount;
+          wallet.customAmount = adjustedAmount;
           this.updateQRCodeForWallet(wallet);
         });
       }
