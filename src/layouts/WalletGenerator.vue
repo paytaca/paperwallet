@@ -185,58 +185,70 @@
               class="q-ml-sm"
             />
             <q-dialog v-model="tokenDialog">
-              <q-card>
-                <q-card-section>
-                  <div class="text-h6">Select a Token</div>
-                </q-card-section>
-                <q-card-section class="q-pb-none">
-                  <q-input
-                    dense
-                    debounce="200"
-                    filled
-                    v-model="searchQuery"
-                    placeholder="Search by name or symbol"
-                    clearable
+              <q-card class="card-margin bg-white static-dialog">
+                <q-card class="card-margin">
+                  <!-- Apply the new margin class here -->
+                  <q-card-section>
+                    <div class="text-h6">Select a Token</div>
+                  </q-card-section>
+                  <q-card-section class="q-pb-none q-mb-lg">
+                    <q-input
+                      dense
+                      debounce="200"
+                      filled
+                      v-model="searchQuery"
+                      placeholder="Search by name or symbol"
+                      clearable
+                    >
+                      <template v-slot:append>
+                        <q-icon name="search" />
+                      </template>
+                    </q-input>
+                  </q-card-section>
+                  <q-card-section
+                    class="q-pa-none"
+                    style="max-height: 300px; overflow-y: auto"
                   >
-                    <template v-slot:append>
-                      <q-icon name="search" />
-                    </template>
-                  </q-input>
-                </q-card-section>
-                <q-card-section>
-                  <q-spinner v-if="loadingTokens" size="sm" color="primary" />
-                  <q-list bordered separator>
-                    <q-item
-                      v-for="token in filteredTokens"
-                      :key="token.token_id || token.id || token.symbol"
-                      clickable
-                      @click="selectToken(token)"
-                    >
-                      <q-item-section>
-                        <div class="text-subtitle1">
-                          {{ token.name }} ({{ token.symbol }})
-                        </div>
-                        <div
-                          v-if="token.token_id || token.id"
-                          class="text-caption text-grey"
-                          style="white-space: pre-line"
-                        >
-                          c={{ formatTokenId(token.token_id || token.id) }}
-                        </div>
-                      </q-item-section>
-                    </q-item>
-                    <div
-                      v-if="!filteredTokens.length && !loadingTokens"
-                      class="q-pa-sm text-grey"
-                    >
-                      No tokens found
-                    </div>
-                  </q-list>
-                </q-card-section>
+                    <q-spinner
+                      v-if="loadingTokens"
+                      size="sm"
+                      color="primary"
+                      position="center"
+                    />
+                    <q-list class="q-pa-none scroll-container">
+                      <q-item
+                        v-for="token in filteredTokens"
+                        :key="token.token_id || token.id || token.symbol"
+                        clickable
+                        @click="selectToken(token)"
+                        class="q-my-xs q-pa-sm token-item"
+                      >
+                        <q-item-section>
+                          <div class="text-subtitle1">
+                            {{ token.name }} ({{ token.symbol }})
+                          </div>
+                          <div
+                            v-if="token.token_id || token.id"
+                            class="text-caption text-grey"
+                            style="white-space: pre-line"
+                          >
+                            c={{ formatTokenId(token.token_id || token.id) }}
+                          </div>
+                        </q-item-section>
+                      </q-item>
+                      <div
+                        v-if="!filteredTokens.length && !loadingTokens"
+                        class="q-pa-sm text-grey"
+                      >
+                        No tokens found
+                      </div>
+                    </q-list>
+                  </q-card-section>
 
-                <q-card-actions align="right">
-                  <q-btn flat label="Close" color="primary" v-close-popup />
-                </q-card-actions>
+                  <q-card-actions align="right">
+                    <q-btn flat label="Close" color="primary" v-close-popup />
+                  </q-card-actions>
+                </q-card>
               </q-card>
             </q-dialog>
             <label
@@ -1311,6 +1323,97 @@ export default {
 </script>
 
 <style scoped>
+.q-btn.q-ml-sm {
+  padding: 3px 6px;
+  cursor: pointer;
+  border: 1px solid #333;
+  font-size: 13px;
+  font-family: "Lexend";
+  margin-left: 10px;
+  border-radius: 4px;
+  background: #f0f0f0;
+  height: 4px;
+  width: 125px;
+}
+.q-btn.q-ml-sm:hover {
+  overflow: visible;
+}
+/* Dialog card styling */
+.card-margin {
+  background-color: white !important;
+  margin: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  background-color: var(--q-color-white);
+  transition: transform 0.2s ease-in-out;
+}
+
+.card-margin:hover {
+  transform: scale(1.01);
+}
+
+.q-card-section .text-h6 {
+  font-weight: bold;
+  color: #2c3e50;
+}
+
+.q-input {
+  margin-top: 8px;
+  margin-bottom: 8px;
+}
+
+.q-card-section.q-pa-none {
+  padding: 0 !important;
+}
+
+.q-card-section[style*="max-height"] {
+  border-top: 1px solid #e0e0e0;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.q-list .q-item {
+  transition: background-color 0.2s;
+}
+
+.q-list .q-item:hover {
+  background-color: #f5f5f5;
+}
+
+.text-subtitle1 {
+  font-weight: 500;
+}
+
+.text-caption.text-grey {
+  font-size: 11px;
+  margin-top: 4px;
+}
+.search-section {
+  margin-bottom: 15px; /* or whatever value looks good */
+}
+.token-item:hover {
+  background-color: #f5f5f5;
+  border-radius: 7px;
+  transition: background-color 0.1s;
+}
+.scroll-container {
+  max-height: 300px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch; /* Enables smooth scroll on iOS */
+  scrollbar-width: none; /* Firefox */
+}
+
+.scroll-container::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Edge */
+}
+.static-dialog {
+  width: 400px; /* You can adjust this */
+  max-width: 90vw; /* For responsiveness on smaller screens */
+  height: 450px; /* Fixed height */
+  max-height: 90vh;
+  overflow: hidden; /* Prevent internal resize */
+  display: flex;
+  flex-direction: column;
+}
 .individual-wallet-section {
   margin-left: 10px;
   margin-top: 15px;
