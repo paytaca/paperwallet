@@ -163,7 +163,7 @@
               {{
                 showAdvanceSettingdropdown
                   ? "Hide Advanced Settings"
-                  : "Advance Settings"
+                  : "Advanced Settings"
               }}
             </button>
           </div>
@@ -182,7 +182,7 @@
               v-if="selectedAsset === 'Token'"
               :label="selectedToken ? selectedToken : 'Select Token'"
               @click="tokenDialog = true"
-              class="q-ml-sm"
+              class="q-ml-sm expand-btn"
             />
             <q-dialog v-model="tokenDialog">
               <q-card class="card-margin bg-white static-dialog">
@@ -191,30 +191,30 @@
                   <q-card-section>
                     <div class="text-h6">Select a Token</div>
                   </q-card-section>
-                  <q-card-section class="q-pb-none q-mb-lg">
-                    <q-input
-                      dense
-                      debounce="200"
-                      filled
-                      v-model="searchQuery"
-                      placeholder="Search by name or symbol"
-                      clearable
-                    >
-                      <template v-slot:append>
-                        <q-icon name="search" />
-                      </template>
-                    </q-input>
-                  </q-card-section>
+                  <div class="search-bar-wrapper">
+                    <q-card-section class="q-pb-none q-mb-lg">
+                      <q-input
+                        dense
+                        debounce="200"
+                        filled
+                        v-model="searchQuery"
+                        placeholder="Search by name or symbol"
+                        clearable
+                      >
+                        <template v-slot:append>
+                          <q-icon name="search" />
+                        </template>
+                      </q-input>
+                    </q-card-section>
+                  </div>
                   <q-card-section
                     class="q-pa-none"
-                    style="max-height: 300px; overflow-y: auto"
+                    style="max-height: 450px; overflow-y: auto"
                   >
-                    <q-spinner
-                      v-if="loadingTokens"
-                      size="sm"
-                      color="primary"
-                      position="center"
-                    />
+                    <div v-if="loadingTokens" class="spinner-container">
+                      <q-spinner size="sm" color="primary" position="center" />
+                    </div>
+
                     <q-list class="q-pa-none scroll-container">
                       <q-item
                         v-for="token in filteredTokens"
@@ -244,10 +244,6 @@
                       </div>
                     </q-list>
                   </q-card-section>
-
-                  <q-card-actions align="right">
-                    <q-btn flat label="Close" color="primary" v-close-popup />
-                  </q-card-actions>
                 </q-card>
               </q-card>
             </q-dialog>
@@ -350,9 +346,10 @@
 
           <!-- Design Image Display -->
           <div
+            div
+            id="printable-wallet"
             v-if="generatedWallets.length"
             class="wallets-container"
-            id="printable-wallet"
           >
             <div
               v-for="(wallet, index) in generatedWallets"
@@ -668,6 +665,15 @@ export default {
 
     this.loadingTokens = true;
 
+    async function checkImageLoad(url) {
+      return new Promise((resolve) => {
+        const img = new Image();
+        img.onload = () => resolve(true);
+        img.onerror = () => resolve(false);
+        img.src = url;
+      });
+    }
+
     try {
       let allResults = [];
       let nextUrl =
@@ -677,30 +683,49 @@ export default {
       while (nextUrl) {
         const res = await fetch(nextUrl);
         const data = await res.json();
-
         allResults = allResults.concat(data.results);
         nextUrl = data.next;
       }
 
-      const validTokens = [];
+      // Process tokens with image validation
+      const tokenProcessingPromises = allResults.map(async (token) => {
+        if (!token.name || !token.symbol || !token.image_url) return null;
+        if (token.name.length > 30 || token.symbol.length > 30) return null;
 
-      for (let i = 0; i < allResults.length; i++) {
-        const token = allResults[i];
-
-        if (!token.name || !token.symbol || !token.image_url) continue;
+        // Skip IPFS URLs
         if (
           token.image_url.startsWith("ipfs://") ||
           token.image_url.includes("ipfs.dweb.link")
-        )
-          continue;
-        if (token.name.length > 30 || token.symbol.length > 30) continue;
+        ) {
+          return null;
+        }
 
-        validTokens.push({
-          ...token,
-          image_url: token.image_url,
-        });
-      }
-      // Sort tokens by symbol alphabetically (case-insensitive)
+        try {
+          // Check if image loads (with 2 second timeout)
+          const imageValid = await Promise.race([
+            checkImageLoad(token.image_url),
+            new Promise((resolve) => setTimeout(() => resolve(false), 2000)),
+          ]);
+
+          return {
+            ...token,
+            image_url: imageValid ? token.image_url : "/ct-logo.png",
+            fallbackImage: "/ct-logo.png",
+          };
+        } catch {
+          return {
+            ...token,
+            image_url: "/ct-logo.png",
+            fallbackImage: "/ct-logo.png",
+          };
+        }
+      });
+
+      // Wait for all token processing to complete
+      const processedTokens = await Promise.all(tokenProcessingPromises);
+      const validTokens = processedTokens.filter((t) => t !== null);
+
+      // Sort tokens alphabetically
       validTokens.sort((a, b) =>
         a.name.toLowerCase().localeCompare(b.name.toLowerCase())
       );
@@ -715,10 +740,21 @@ export default {
         },
         ...validTokens,
       ];
+
       this.filteredTokens = this.tokens;
-      console.log("Fetched tokens from Watchtower:", this.tokens);
-    } catch (err) {
-      console.error("Failed to fetch tokens from Watchtower:", err);
+      console.log("Successfully loaded tokens:", this.tokens);
+    } catch {
+      console.error("Failed to fetch tokens.");
+      // Fallback to just the Any CashToken if all else fails
+      this.tokens = [
+        {
+          name: "Any CashToken",
+          symbol: "CT",
+          image_url: "/ct-logo.png",
+          fallbackImage: "/ct-logo.png",
+        },
+      ];
+      this.filteredTokens = this.tokens;
     } finally {
       this.loadingTokens = false;
     }
@@ -1198,30 +1234,86 @@ export default {
       await this.$nextTick();
       await new Promise((resolve) => setTimeout(resolve, 200));
 
-      const printable = document.getElementById("printable-wallet");
-      if (!printable) {
-        console.error("Printable wallet section not found!");
+      const walletElements = document.querySelectorAll(
+        "#printable-wallet .wallet"
+      );
+
+      if (!walletElements.length) {
+        console.error("No wallet elements found!");
         return;
       }
 
-      const canvas = await html2canvas(printable, { scale: 2, useCORS: true });
-      const imageData = canvas.toDataURL("image/png");
+      const imageTags = [];
+
+      for (const walletEl of walletElements) {
+        const canvas = await html2canvas(walletEl, {
+          scale: 2,
+          useCORS: true,
+          width: walletEl.offsetWidth,
+          height: walletEl.offsetHeight,
+        });
+
+        const imageData = canvas.toDataURL("image/png");
+
+        imageTags.push(`
+      <div class="print-page">
+        <img src="${imageData}" alt="Wallet Image" />
+      </div>
+    `);
+      }
+
       const printWindow = window.open("", "_blank");
 
       printWindow.document.write(`
     <html>
       <head>
-        <title>Print Wallet</title>
-        <style>
-          body { text-align: center; margin: 0; padding: 0; }
-          img { height: auto; width: auto; max-width: 1000px; }
-        </style>
+        <title>Print Wallets</title>
+       <style>
+        body {
+          margin: 0;
+          padding: 0;
+          background: white;
+          text-align: center;
+        }
+
+        .print-page {
+          page-break-after: always;
+          break-after: page;
+          padding: 0;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          height: 100vh; /* force it to fill the page */
+        }
+
+        .print-page img {
+          max-width: 100%;
+          max-height: 100%;
+          width: auto;
+          height: auto;
+          object-fit: contain;
+          display: block;
+        }
+
+        @media print {
+          .print-page {
+            page-break-after: always;
+            break-after: page;
+          }
+
+          body {
+            margin: 0;
+            padding: 0;
+          }
+        }
+      </style>
       </head>
       <body>
-        <img src="${imageData}" alt="Printed Wallet">
+        ${imageTags.join("")}
       </body>
     </html>
   `);
+
       printWindow.document.close();
       printWindow.focus();
 
@@ -1230,13 +1322,11 @@ export default {
 
         setTimeout(() => {
           printWindow.close();
-
           this.individualWalletOption = originalIndividualWalletOption;
           this.suppressWatcher = originalSuppressWatcher;
         }, 500);
-      }, 100);
+      }, 300);
     },
-
     toggleDropdown() {
       this.dropdownOpen = !this.dropdownOpen;
       if (!this.dropdownOpen) {
@@ -1324,7 +1414,7 @@ export default {
 
 <style scoped>
 .q-btn.q-ml-sm {
-  padding: 3px 6px;
+  padding: 5px 10px;
   cursor: pointer;
   border: 1px solid #333;
   font-size: 13px;
@@ -1338,11 +1428,17 @@ export default {
 .q-btn.q-ml-sm:hover {
   overflow: visible;
 }
+.expand-btn {
+  width: 100%;
+  min-width: 150px;
+  white-space: normal;
+  word-break: break-all;
+}
 /* Dialog card styling */
 .card-margin {
   background-color: white !important;
-  margin: 20px;
-  border-radius: 12px;
+  margin: 18px;
+  border-radius: 14px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
   background-color: var(--q-color-white);
   transition: transform 0.2s ease-in-out;
@@ -1350,6 +1446,9 @@ export default {
 
 .card-margin:hover {
   transform: scale(1.01);
+}
+.q-input__control {
+  min-height: 38px;
 }
 
 .q-card-section .text-h6 {
@@ -1395,11 +1494,17 @@ export default {
   border-radius: 7px;
   transition: background-color 0.1s;
 }
-.scroll-container {
-  max-height: 300px;
+.token-list-section {
+  max-height: 500px;
   overflow-y: auto;
-  -webkit-overflow-scrolling: touch; /* Enables smooth scroll on iOS */
-  scrollbar-width: none; /* Firefox */
+}
+.scroll-container {
+  max-height: 450px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  width: calc(100% - 40px);
+  margin: 0 20px;
 }
 
 .scroll-container::-webkit-scrollbar {
@@ -1408,11 +1513,23 @@ export default {
 .static-dialog {
   width: 400px; /* You can adjust this */
   max-width: 90vw; /* For responsiveness on smaller screens */
-  height: 450px; /* Fixed height */
+  height: 600px; /* Fixed height */
   max-height: 90vh;
   overflow: hidden; /* Prevent internal resize */
   display: flex;
   flex-direction: column;
+}
+.spinner-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%; /* Fill the available space */
+  padding: 20px; /* Optional: adds spacing */
+}
+.search-bar-wrapper {
+  width: 100%;
+  max-width: 500px;
+  margin-bottom: 25px;
 }
 .individual-wallet-section {
   margin-left: 10px;
@@ -1424,7 +1541,7 @@ export default {
   align-items: center;
   gap: 0.5rem;
   cursor: pointer;
-  font-size: 0.8rem;
+  font-size: 0.6rem;
   color: #333;
   user-select: none;
   margin: 0.5rem 0;
@@ -1794,7 +1911,8 @@ export default {
   overflow: hidden;
 }
 
-.step-label1 {
+.step-label1,
+.step-label3 {
   display: flex;
   align-items: center;
   padding: 3.5%;
@@ -1809,16 +1927,6 @@ export default {
   align-items: center;
   padding: 3.5%;
   background-color: #e05458;
-  color: white;
-  cursor: pointer;
-  height: 30px;
-}
-
-.step-label3 {
-  display: flex;
-  align-items: center;
-  padding: 3.5%;
-  background-color: rgb(51 65 85);
   color: white;
   cursor: pointer;
   height: 30px;
@@ -2168,6 +2276,32 @@ export default {
     line-height: 2%;
     margin-bottom: -7%;
   }
+  .expand-btn {
+    text-size-adjust: 100%;
+    width: 100%;
+    min-width: 130px;
+  }
+  .q-btn.q-ml-sm {
+    padding: 4px 10px;
+    cursor: pointer;
+    border: 1px solid #333;
+    font-size: 11px;
+    font-family: "Lexend";
+    margin-left: 10px;
+    border-radius: 4px;
+    background: #f0f0f0;
+    height: 4px;
+    width: 125px;
+  }
+  .encryption {
+    padding: 5px 9px;
+    cursor: pointer;
+    border: 1px solid #333;
+    font-size: 11px;
+    font-family: "Lexend";
+    margin-left: 30 px;
+    border-radius: 4px;
+  }
 }
 
 @media (max-width: 1024px) {
@@ -2200,8 +2334,8 @@ export default {
     height: 6.9rem;
   }
   .selected-design .public-section {
-    right: 7.8% !important;
-    top: 11% !important;
+    left: 74.6%;
+    top: 11.5% !important;
   }
   .selected-design .private-section {
     left: -2% !important;
@@ -2497,164 +2631,151 @@ export default {
     font-size: clamp(5px, 0.6vw, 20px) !important;
   }
 }
-
 @media (max-width: 590px) {
+  /* Layout and Containers */
   .light-mode .landing-container,
-  .light-mode .wallet-container .site-title {
-    width: 100% !important;
-  }
-  .wallet-description {
-    margin-bottom: 0;
-  }
+  .light-mode .wallet-container .site-title,
   .light-mode .landing-header,
   .dark-mode .landing-header {
     width: 100% !important;
-    padding: 7px;
   }
+
+  .light-mode .landing-header,
+  .dark-mode .landing-header {
+    padding: 16px;
+  }
+
+  .wallet-container {
+    width: 100vw;
+    padding-right: 10px;
+    padding: 3px;
+    max-width: 81vw;
+  }
+
+  /* Header Padding (Only in 443px block) */
+  .header-padding {
+    background-color: rgb(30 41 59);
+    margin-top: 4%;
+    margin-bottom: 4%;
+    display: flex;
+    padding: 1px 1vh;
+    align-items: center;
+    text-align: center;
+    justify-content: center;
+    width: 100%;
+    max-height: 25%;
+  }
+  .header-padding-text {
+    text-align: center;
+    bottom: 1px;
+    font-size: clamp(2vh, 4vw, 30px);
+    margin-top: 40px;
+    padding: 9px 9px 35px;
+    font-weight: bold;
+    color: white;
+    margin-top: 25px;
+    font-family: "Lexend";
+  }
+
+  /* Branding */
   .site-title {
-    font-size: 13px;
+    font-size: 14px;
   }
+
   .site-logo {
     height: 16px;
     width: 16px;
   }
+
+  /* Toggle and Description */
   .toggle-button {
     font-size: 12px;
     width: 20px;
     height: 20px;
   }
+
   .wallet-description {
+    margin-bottom: 0%;
+    margin-top: -12%;
     font-size: 1rem;
   }
-  .wallet-container {
-    width: 80vw;
-    padding-right: 10px;
-    padding: 3px;
-  }
+
+  /* Step Labels */
   .step-label1 .step-text,
   .step-label2 .step-text,
   .step-label3 .step-text {
-    font-size: 0.8rem;
+    font-size: 0.7rem;
   }
+
+  /* QR Code and Positioning */
   .selected-design .qr-code {
     width: 2rem;
     height: 2rem;
   }
+
   .private-qr {
     margin-top: 2px;
     margin-left: 0;
   }
+
   .public-qr {
     margin-right: -17px;
     margin-top: 2px;
   }
-  .design-preview {
-    width: 110px;
-  }
-  .select-button {
-    font-size: 0.6rem;
-    line-height: 2%;
-    margin-bottom: 1%;
-    top: 40%;
-    width: 100px;
-    height: 1vh;
-  }
-  .customization-section .custom,
-  .customization-section .dropdown,
-  .customization-section .address,
-  .customization-section .input-bar,
-  .customization-section .encryption {
-    font-size: 0.8rem;
-  }
-  .dropdown-panel {
-    width: 54vw;
-    height: 38vh;
-  }
-  .dropdown-image {
-    width: 20px;
-    height: 20px;
-  }
-  .dropdown-panel .strong,
-  .dropdown-panel .advanced-settings-row {
-    font-size: 0.2rem;
-    bottom: 10%;
-  }
-  .generate-btn {
-    font-size: 0.5rem;
-  }
+
+  /* QR Sections Placement (smaller screens may override with % if needed) */
   .selected-design .public-section {
     right: 10.7% !important;
     top: 9% !important;
   }
+
   .selected-design .private-section {
     left: -4.7% !important;
     top: -0.1% !important;
   }
-  .private-key {
-    font-size: 0.18rem;
-    top: 22%;
-    margin-right: 1%;
-  }
-  .wallet-address {
-    margin-top: 1%;
-    right: -18px;
-    font-size: clamp(5px, 0.6vw, 20px) !important;
-  }
-}
 
-@media (max-width: 500px) {
-  .light-mode .landing-container,
-  .light-mode .wallet-container .site-title {
-    width: 100% !important;
+  /* Override for smaller widths */
+  @media (max-width: 500px) {
+    .selected-design .public-section {
+      right: 11.9% !important;
+      top: 8.5% !important;
+    }
+
+    .selected-design .private-section {
+      left: -5.5% !important;
+      top: -1% !important;
+    }
   }
-  .wallet-description {
-    margin-bottom: 0;
+
+  @media (max-width: 443px) {
+    .selected-design .public-section {
+      right: 13% !important;
+      top: 7.8% !important;
+    }
+
+    .selected-design .private-section {
+      left: -7% !important;
+      top: 0.1% !important;
+    }
   }
-  .light-mode .landing-header,
-  .dark-mode .landing-header {
-    width: 100% !important;
-    padding: 7px;
+
+  /* Design Grid */
+  .design-grid {
+    display: flex !important;
+    flex-direction: column;
+    align-items: center;
+    height: auto;
+    gap: 1rem;
+    padding: 1rem 0;
   }
-  .site-title {
-    font-size: 13px;
-  }
-  .site-logo {
-    height: 16px;
-    width: 16px;
-  }
-  .toggle-button {
-    font-size: 12px;
-    width: 20px;
-    height: 20px;
-  }
-  .wallet-description {
-    font-size: 1rem;
-  }
-  .wallet-container {
-    width: 80vw;
-    padding-right: 10px;
-    padding: 3px;
-  }
-  .step-label1 .step-text,
-  .step-label2 .step-text,
-  .step-label3 .step-text {
-    font-size: 0.8rem;
-  }
-  .selected-design .qr-code {
-    width: 2rem;
-    height: 2rem;
-  }
-  .private-qr {
-    margin-top: 2px;
-    margin-left: 0;
-  }
-  .public-qr {
-    margin-right: -17px;
-    margin-top: 2px;
-  }
+
   .design-preview {
-    width: 110px;
+    width: 90vw !important;
+    max-width: 145%;
+    margin-right: 5%;
   }
+
+  /* Select Button */
   .select-button {
     font-size: 0.6rem;
     line-height: 2%;
@@ -2663,6 +2784,8 @@ export default {
     width: 100px;
     height: 1vh;
   }
+
+  /* Customization Section */
   .customization-section .custom,
   .customization-section .dropdown,
   .customization-section .address,
@@ -2670,328 +2793,82 @@ export default {
   .customization-section .encryption {
     font-size: 0.8rem;
   }
+
+  @media (max-width: 443px) {
+    .customization-section .custom,
+    .customization-section .dropdown,
+    .customization-section .address,
+    .customization-section .input-bar,
+    .customization-section .encryption {
+      font-size: 0.6rem;
+    }
+  }
+
+  /* Dropdown */
   .dropdown-panel {
     width: 54vw;
-    height: 50vh;
+    height: 38vh;
   }
+
+  @media (max-width: 500px) {
+    .dropdown-panel {
+      height: 50vh;
+    }
+  }
+
+  @media (max-width: 443px) {
+    .dropdown-panel {
+      width: 51vw;
+    }
+  }
+
   .dropdown-image {
     width: 20px;
     height: 20px;
   }
+
   .dropdown-panel .strong,
   .dropdown-panel .advanced-settings-row {
     font-size: 0.2rem;
     bottom: 10%;
   }
+
+  /* Generate Button */
   .generate-btn {
     font-size: 0.5rem;
   }
-  .selected-design .public-section {
-    right: 11.9% !important;
-    top: 8.5% !important;
-  }
-  .selected-design .private-section {
-    left: -5.5% !important;
-    top: -1% !important;
-  }
+
+  /* Keys & Address */
   .private-key {
     font-size: 0.18rem;
     top: 22%;
     margin-right: 1%;
   }
+
   .wallet-address {
     margin-top: 1%;
     right: -18px;
-    font-size: 5px !important;
+    font-size: clamp(3.2px, 0.6vw, 5px) !important;
   }
-}
 
-@media (max-width: 443px) {
-  .light-mode .landing-container,
-  .light-mode .wallet-container .site-title {
-    width: 100% !important;
+  /* Additional Styles */
+  .step-container[data-v-11bdf92a] {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    overflow: hidden;
+    max-width: 100%;
   }
-  .wallet-description {
-    margin-bottom: 0;
-  }
-  .light-mode .landing-header,
-  .dark-mode .landing-header {
-    width: 100% !important;
-    padding: 7px;
-  }
-  .site-title {
-    font-size: 14px;
-  }
-  .site-logo {
-    height: 16px;
-    width: 16px;
-  }
-  .toggle-button {
-    font-size: 12px;
-    width: 20px;
-    height: 20px;
-  }
-  .wallet-description {
-    font-size: 1rem;
-  }
-  .wallet-container {
-    width: 80vw;
-    padding-right: 10px;
-    padding: 3px;
-  }
-  .step-label1 .step-text,
-  .step-label2 .step-text,
-  .step-label3 .step-text {
-    font-size: 0.8rem;
-  }
-  .selected-design .qr-code {
-    width: 2rem;
-    height: 2rem;
-  }
-  .private-qr {
-    margin-top: 2px;
-    margin-left: 0;
-  }
-  .public-qr {
-    margin-right: -17px;
-    margin-top: 2px;
-  }
-  .design-grid {
-    display: grid;
-    height: 100vh;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1px;
-  }
-  .design-preview {
-    width: 110px;
-  }
-  .select-button {
-    font-size: 0.6rem;
-    line-height: 2%;
-    margin-bottom: 1%;
-    top: 40%;
-    width: 100px;
-    height: 1vh;
-  }
-  .customization-section .custom,
-  .customization-section .dropdown,
-  .customization-section .address,
-  .customization-section .input-bar,
-  .customization-section .encryption {
-    font-size: 0.6rem;
-  }
-  .dropdown-panel {
-    width: 51vw;
-    height: 50vh;
-  }
-  .dropdown-image {
-    width: 20px;
-    height: 20px;
-  }
-  .dropdown-panel .strong,
-  .dropdown-panel .advanced-settings-row {
-    font-size: 0.2rem;
-    bottom: 10%;
-  }
-  .generate-btn {
-    font-size: 0.5rem;
-  }
-  .selected-design .public-section {
-    right: 13% !important;
-    top: 7.8% !important;
-  }
-  .selected-design .private-section {
-    left: -7% !important;
-    top: 0.1% !important;
-  }
-  .private-key {
-    font-size: 0.18rem;
-    top: 22%;
-    margin-right: 1%;
-  }
-  .wallet-address {
-    font-size: 3.2px !important;
-    margin-top: 0% !important;
-    right: -18px;
-  }
-}
 
-@media (max-width: 425px) {
-  .light-mode .landing-container,
-  .light-mode .wallet-container .site-title {
-    width: 100% !important;
-  }
-  .wallet-description {
-    margin-bottom: 0;
-  }
-  .light-mode .landing-header,
-  .dark-mode .landing-header {
-    width: 100% !important;
-    padding: 7px;
-  }
-  .site-title {
-    font-size: 14px;
-  }
-  .site-logo {
-    height: 16px;
-    width: 16px;
-  }
-  .toggle-button {
-    font-size: 12px;
-    width: 20px;
-    height: 20px;
-  }
-  .wallet-description {
-    font-size: 1rem;
-  }
-  .wallet-container {
-    width: 80vw;
-    padding-right: 10px;
-    padding: 3px;
-  }
-  .step-label1 .step-text,
-  .step-label2 .step-text,
-  .step-label3 .step-text {
-    font-size: 0.8rem;
-  }
-  .selected-design .qr-code {
-    width: 2rem;
-    height: 2rem;
-  }
-  .private-qr {
-    margin-top: 2px;
-    margin-left: 0;
-  }
-  .public-qr {
-    margin-right: -17px;
-    margin-top: 2px;
-  }
-  .design-grid {
-    display: grid;
-    height: 100vh;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1px;
-  }
-  .design-preview {
-    width: 110px;
-  }
-  .select-button {
-    font-size: 0.6rem;
-    line-height: 2%;
-    margin-bottom: 1%;
-    top: 40%;
-    width: 100px;
-    height: 1vh;
-  }
-  .customization-section .custom,
-  .customization-section .dropdown,
-  .customization-section .address,
-  .customization-section .input-bar,
-  .customization-section .encryption {
-    font-size: 0.6rem;
-  }
-  .dropdown-panel {
-    width: 51vw;
-    height: 50vh;
-  }
-  .dropdown-image {
-    width: 20px;
-    height: 20px;
-  }
-  .dropdown-panel .strong,
-  .dropdown-panel .advanced-settings-row {
-    font-size: 0.2rem;
-    bottom: 10%;
-  }
-  .generate-btn {
-    font-size: 0.5rem;
-  }
-  .selected-design .public-section {
-    right: 13% !important;
-    top: 7.8% !important;
-  }
-  .selected-design .private-section {
-    left: -7% !important;
-    top: 0.1% !important;
-  }
-  .private-key {
-    font-size: 0.18rem;
-    top: 22%;
-    margin-right: 1%;
-  }
-  .wallet-address {
-    font-size: 3.2px !important;
-    margin-top: 0% !important;
-    right: -18px;
-  }
-}
-
-@media (max-width: 375px) {
-  .light-mode .landing-container,
-  .light-mode .wallet-container .site-title {
-    width: 100% !important;
-  }
-  .wallet-description {
-    margin-bottom: 0;
-  }
-  .light-mode .landing-header,
-  .dark-mode .landing-header {
-    width: 100% !important;
-    padding: 7px;
-  }
-  .site-title {
-    font-size: 11px;
-  }
-  .site-logo {
-    height: 16px;
-    width: 16px;
-  }
-  .toggle-button {
-    font-size: 12px;
-    width: 20px;
-    height: 20px;
-  }
-  .wallet-description {
-    font-size: 1rem;
-  }
-  .wallet-container {
-    width: 80vw;
-    padding-right: 10px;
-    padding: 3px;
-  }
-  .step-label1 .step-text,
-  .step-label2 .step-text,
-  .step-label3 .step-text {
-    font-size: 0.6rem;
-  }
-  .selected-design .qr-code {
-    width: 2rem;
-    height: 2rem;
-  }
-  .selected-design .public-section {
-    right: 13% !important;
-    top: 7% !important;
-  }
-  .selected-design .private-section {
-    left: -7.8% !important;
-    top: -1% !important;
-  }
-  .private-key {
-    font-size: 2px !important;
-    top: 21% !important;
-    margin-right: 1%;
-  }
-  .wallet-address {
-    font-size: 2.6px !important;
-    margin-top: 5%;
-    right: -18px;
-  }
-  .bch-amount {
-    margin-bottom: 13%;
-  }
-  .bip38-label {
-    top: 70% !important;
-    padding: 0.5em 0.5em !important;
+  .overlay {
+    position: absolute;
+    top: 0;
+    left: 2px;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.4);
+    opacity: 0;
+    transition: opacity 0.3s ease;
   }
 }
 </style>
