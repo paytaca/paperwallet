@@ -395,21 +395,23 @@ export default {
   .hash-generator {
     width: 100% !important;
     margin-top: 0 !important;
+    height: 170px;
+    max-width: 92%;
   }
   .progress-container p {
     font-size: 14px;
   }
   .progress-bar-container {
-    height: 30px !important;
+    height: 27px !important;
   }
   .input-bar {
-    font-size: 12px !important;
+    font-size: 14px !important;
   }
   .jumbled-text {
     font-size: 14px !important;
-    width: 100vw !important;
+    width: 90vw !important;
     word-break: break-word;
-    padding: 20px;
+    padding: 15px;
   }
 }
 
