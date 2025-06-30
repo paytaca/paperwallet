@@ -112,6 +112,7 @@ export default defineConfig(() => {
       // ],
 
       polyfillModulePreload: true
+      
     },
     devServer: {
        server: {
