@@ -2631,251 +2631,20 @@ export default {
     font-size: clamp(5px, 0.6vw, 20px) !important;
   }
 }
-@media (min-width: 325px) and (max-width: 500px) {
+@media (max-width: 490px) {
   /* Layout and Containers */
   .light-mode .landing-container,
   .light-mode .wallet-container .site-title,
   .light-mode .landing-header,
   .dark-mode .landing-header {
-    width: 100% !important;
-  }
-
-  .light-mode .landing-header,
-  .dark-mode .landing-header {
-    padding: 16px;
+    width: 100%;
+    padding: 1vh;
   }
 
   .wallet-container {
     width: 100%;
-    padding-right: 10px;
-    padding: 3px;
-    width: 85%;
+    padding: 3px 3px;
     max-width: 100%;
-  }
-
-  /* Header Padding */
-  .header-padding {
-    background-color: rgb(30 41 59);
-    margin-top: 4%;
-    margin-bottom: 4%;
-    display: flex;
-    padding: 1px 1vh;
-    align-items: center;
-    text-align: center;
-    justify-content: center;
-    width: 100%;
-    max-height: 25%;
-  }
-
-  .header-padding-text {
-    text-align: center;
-    bottom: 1px;
-    font-size: clamp(2vh, 4vw, 30px);
-    padding: 9px 9px 35px;
-    font-weight: bold;
-    color: white;
-    margin-top: 25px;
-    font-family: "Lexend";
-  }
-
-  /* Branding */
-  .site-title {
-    font-size: 14px;
-  }
-
-  .site-logo {
-    height: 16px;
-    width: 16px;
-  }
-  .encryption {
-    padding: 4px 5px;
-    cursor: pointer;
-    border: 1px solid #333;
-    font-size: 13px;
-    font-family: "Lexend";
-    margin-left: 27px;
-    border-radius: 3px;
-  }
-  .input-bar {
-    width: 60px;
-    height: 23px;
-    padding: 8px;
-    margin-top: 10px;
-    width: 26px;
-    margin-left: 6px;
-  }
-  .individual-custom-amount {
-    display: flex;
-    align-items: center;
-    gap: 0.2rem;
-    cursor: pointer;
-    font-size: 0.4rem;
-    color: #333;
-    -webkit-user-select: none;
-    user-select: none;
-    margin: 0.3rem 0;
-  }
-  .token-dropdown {
-    width: 64px;
-    height: 19px;
-    padding: 2px;
-    font-size: 0.4rem;
-    margin-left: -6px;
-  }
-  .q-btn.q-ml-sm {
-    padding: 3px 5px;
-    cursor: pointer;
-    border: 1px solid #333;
-    font-size: 0.5rem;
-    font-family: "Lexend";
-    margin-left: -3px;
-    border-radius: 4px;
-    background: #f0f0fc;
-    height: 4px;
-    width: 30px;
-    max-width: 125px;
-  }
-  .q-btn__content {
-    transition: opacity 0.3s;
-    z-index: 0;
-    padding: 0%;
-  }
-  .expand-btn {
-    -webkit-text-size-adjust: 100%;
-    -moz-text-size-adjust: 100%;
-    text-size-adjust: 94%;
-    width: 100%;
-    min-width: 80px;
-  }
-  .loader-wrapper {
-    margin-left: -1%;
-  }
-  /* Toggle and Description */
-  .toggle-button {
-    font-size: 12px;
-    width: 20px;
-    height: 20px;
-  }
-
-  .wallet-description {
-    margin-bottom: 0%;
-    margin-top: -12%;
-    font-size: 1rem;
-  }
-  .wallet-address {
-    position: absolute;
-    top: 2%;
-    left: 57%;
-    width: 25%;
-    font-size: clamp(4.2px, 0.6vw, 5px) !important;
-    text-align: center;
-    white-space: nowrap;
-    pointer-events: none;
-    color: inherit; /* Optional: overwritten via inline :style binding */
-  }
-
-  /* Private Key Text */
-  .private-key {
-    position: absolute;
-    bottom: 80%;
-    left: 16%;
-    top: 25%;
-    width: 50%;
-    transform: translateX(-53%) translateY(-8%) rotate(-45.7deg);
-    font-size: min(max(2px, 0.6vw), 20px);
-    font-weight: bold;
-    text-align: center;
-    white-space: nowrap;
-    overflow: visible;
-    text-overflow: ellipsis;
-    pointer-events: none;
-    color: inherit; /* Optional: overwritten via inline :style binding */
-  }
-
-  /* QR Code Container for Public Key */
-  .public-section {
-    position: absolute;
-    top: 13%;
-    right: 5.3%;
-    width: 18%;
-    height: auto;
-    pointer-events: none;
-    gap: 10px;
-  }
-
-  /* QR Code Container for Private Key */
-  .private-section {
-    position: absolute;
-    top: 3.8%;
-    left: 0.2%;
-    width: 18%;
-    height: auto;
-    pointer-events: none;
-  }
-
-  /* QR Code Image */
-  .qr-code {
-    width: clamp(21px, 7vw, 205px);
-    height: auto;
-  }
-
-  /* Step Labels */
-  .step-label1 .step-text,
-  .step-label2 .step-text,
-  .step-label3 .step-text {
-    font-size: 0.7rem;
-  }
-  .bch-amount {
-    margin-left: 16.3%;
-    margin-right: -10%;
-  }
-
-  /* QR Code and Positioning */
-  .selected-design .qr-code {
-    width: 2rem;
-    height: 2rem;
-  }
-
-  .selected-design .public-section {
-    position: absolute;
-    top: 9.8% !important;
-    left: 81%;
-    transform: translateX(-50%);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .selected-design .private-section {
-    position: absolute;
-    left: -1% !important;
-    top: 2.1% !important;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .wallet-address {
-    margin-top: 4%;
-    font-size: clamp(3.2px, 0.6vw, 5px) !important;
-    text-align: center;
-    word-break: break-word;
-    color: black;
-    max-width: 100px;
-  }
-
-  .private-key {
-    font-size: 0.18rem;
-    margin-right: 1%;
-    text-align: center;
-    word-break: break-word;
-    color: black;
-    max-width: 80px;
-  }
-
-  .selected-design .design-image {
-    width: 104%;
-    height: auto;
   }
 
   .wallets-container {
@@ -2884,531 +2653,264 @@ export default {
     position: relative;
   }
 
-  .selected-design .design-image-container {
-    position: relative;
-    display: inline-block;
-    padding-top: 8px;
-    margin: -2px;
-  }
-
-  .selected-design .qr-code-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 48vh;
-    height: 35vh;
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    padding: 2px;
-  }
-  .customization-section {
-    padding: 2px;
-    background-color: #e2e8f0;
-  }
-  .individual-wallet-section {
-    margin-left: 1px;
-    margin-top: 0px;
-    font-size: 11px;
-  }
-
-  /* Design Grid */
-  .design-grid {
-    display: flex !important;
-    flex-direction: column;
-    align-items: center;
-    height: auto;
-    gap: 1rem;
-    padding: 1rem 0;
-  }
-  .card-margin {
-    background-color: white !important;
-    margin: 18px;
-    border-radius: 14px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-    background-color: var(--q-color-white);
-    transition: transform 0.2s ease-in-out;
-    height: 73vh;
-  }
-
-  .design-preview {
-    width: 90vw !important;
-    max-width: 145%;
-    margin-right: 5%;
-  }
-  .dropdown-panel {
-    width: 81vw !important;
-    height: 25vh !important;
-  }
-  .p {
-    margin: 1px 0 1px !important;
-  }
-  .advanced-settings-row {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 1rem;
-    font-size: 12.7px !important;
-  }
-  .passphrase-input[data-v-11bdf92a] {
-    padding: 4px 6px;
-    border: 1px solid #ccc;
-    border-radius: 3px;
-  }
-  q-card__section
-    q-card__section--vert
-    qr-section
-    public-section
-    private-section {
-    width: 100%;
-    height: 100%;
-    display: flex;
-  }
-
-  /* Select Button */
-  .select-button {
-    font-size: 0.6rem;
-    line-height: 2%;
-    margin-bottom: 1%;
-    top: 40%;
-    width: 200px;
-    height: 5vh;
-  }
-
-  /* Customization Section */
-  .customization-section .custom,
-  .customization-section .dropdown,
-  .customization-section .address,
-  .customization-section .input-bar,
-  .customization-section .encryption {
-    font-size: 0.6rem; /* merged smallest font size */
-  }
-
-  /* Dropdown */
-  .dropdown-panel {
-    width: 51vw; /* merged smallest width */
-    height: 50vh; /* merged tallest height */
-  }
-
-  .dropdown-image {
-    width: 20px;
-    height: 20px;
-  }
-
-  .dropdown-panel .strong,
-  .dropdown-panel .advanced-settings-row {
-    font-size: 0.2rem;
-    bottom: 10%;
-  }
-
-  /* Generate Button */
-  .generate-btn {
-    font-size: 0.5rem;
-  }
-
-  /* Additional Styles */
-  .step-container {
-    border: 1px solid #ddd;
-    border-radius: 7px;
-    margin-bottom: 3px;
-    overflow: hidden;
-    max-width: 100%;
-  }
-
-  .overlay {
-    position: absolute;
-    top: 0;
-    left: 2px;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.4);
-    opacity: 0;
-    transition: opacity 0.3s ease;
-  }
-
-  /* Added styles for public-qr and private-qr */
-  .public-qr {
-    width: 41px !important;
-    height: 41.1px !important;
-    margin-right: -10px !important;
-    margin-top: -1px !important;
-  }
-
-  .private-qr {
-    width: 41px !important;
-    height: 41px !important;
-    margin-left: -1px !important;
-    margin-top: -3px !important;
-  }
-  .bip38-label {
-    text-align: center;
-    margin-bottom: -100px;
-    transform: translateX(-50%) rotate(-180deg);
-  }
-  .bip38-label-text {
-    font-size: 0.8rem;
-    color: #333;
-    font-weight: bold;
-    margin-top: 10px;
-  }
-}
-@media (max-width: 330px) {
-  /* Layout and Containers */
-  .light-mode .landing-container,
-  .light-mode .wallet-container .site-title,
-  .light-mode .landing-header,
-  .dark-mode .landing-header {
-    width: 100% !important;
-  }
-
-  .light-mode .landing-header,
-  .dark-mode .landing-header {
-    padding: 16px;
-  }
-
-  .wallet-container {
-    width: 100%;
-    padding-right: 10px;
-    padding: 3px;
-    width: 85%;
-    max-width: 100%;
-  }
-
-  /* Header Padding */
+  /* Header */
   .header-padding {
-    background-color: rgb(30 41 59);
-    margin-top: 4%;
-    margin-bottom: 4%;
+    background-color: rgb(30, 41, 59);
+    margin: 4% 0;
+    padding: 1vh;
     display: flex;
-    padding: 1px 1vh;
+    justify-content: center;
     align-items: center;
     text-align: center;
-    justify-content: center;
-    width: 100%;
+    width: 108%;
     max-height: 25%;
   }
 
   .header-padding-text {
-    text-align: center;
-    bottom: 1px;
-    font-size: clamp(2vh, 4vw, 30px);
-    padding: 9px 9px 35px;
+    font-size: clamp(1rem, 4vw, 2rem);
     font-weight: bold;
     color: white;
-    margin-top: 25px;
+    padding: 9px;
     font-family: "Lexend";
+    margin-top: 25px;
+    text-align: center;
+  }
+  .loader-wrapper {
+    margin-right: 1%;
+    margin-bottom: 1vh;
   }
 
-  /* Branding */
   .site-title {
     font-size: 14px;
   }
 
   .site-logo {
-    height: 16px;
     width: 16px;
+    height: 16px;
   }
-  .encryption {
-    padding: 4px 5px;
-    cursor: pointer;
-    border: 1px solid #333;
-    font-size: 13px;
-    font-family: "Lexend";
-    margin-left: 27px;
-    border-radius: 3px;
-  }
+
+  /* Inputs and Buttons */
   .input-bar {
-    width: 60px;
-    height: 23px;
-    padding: 8px;
-    margin-top: 10px;
     width: 26px;
+    height: 25px;
+    padding: 8px;
     margin-left: 6px;
   }
-  .individual-custom-amount {
-    display: flex;
-    align-items: center;
-    gap: 0.2rem;
-    cursor: pointer;
-    font-size: 0.4rem;
-    color: #333;
-    -webkit-user-select: none;
-    user-select: none;
-    margin: 0.3rem 0;
-  }
-  .token-dropdown {
-    width: 64px;
-    height: 19px;
-    padding: 2px;
-    font-size: 0.4rem;
-    margin-left: -6px;
+  .address {
+    font-weight: bold;
+    margin-left: 1vh;
   }
   .q-btn.q-ml-sm {
-    padding: 3px 5px;
+    padding: 4px 10px;
     cursor: pointer;
     border: 1px solid #333;
-    font-size: 0.5rem;
+    font-size: 11px;
     font-family: "Lexend";
-    margin-left: -3px;
+    margin-left: 10px;
     border-radius: 4px;
-    background: #f0f0fc;
+    background: #f0f0f0;
     height: 4px;
-    width: 30px;
-    max-width: 125px;
-  }
-  .q-btn__content {
-    transition: opacity 0.3s;
-    z-index: 0;
-    padding: 0%;
+    width: 125px;
   }
   .expand-btn {
-    -webkit-text-size-adjust: 100%;
-    -moz-text-size-adjust: 100%;
-    text-size-adjust: 94%;
-    width: 100%;
-    min-width: 80px;
+    text-size-adjust: 87%;
+    width: 100% !important;
+    min-width: 130px;
   }
-  .loader-wrapper {
-    margin-left: -1%;
-  }
-  /* Toggle and Description */
+
   .toggle-button {
     font-size: 12px;
-    width: 20px;
-    height: 20px;
+    width: 24px;
+    height: 24px;
   }
 
-  .wallet-description {
-    margin-bottom: 0%;
-    margin-top: -12%;
-    font-size: 1rem;
-  }
-  .wallet-address {
-    position: absolute;
-    top: 2%;
-    left: 57%;
-    width: 25%;
-    font-size: clamp(4.2px, 0.6vw, 5px) !important;
-    text-align: center;
-    white-space: nowrap;
-    pointer-events: none;
-    color: inherit; /* Optional: overwritten via inline :style binding */
+  .generate-btn {
+    font-size: 0.75rem;
   }
 
-  /* Private Key Text */
-  .private-key {
-    position: absolute;
-    bottom: 80%;
-    left: 16%;
-    top: 25%;
-    width: 50%;
-    transform: translateX(-53%) translateY(-8%) rotate(-45.7deg);
-    font-size: min(max(2px, 0.6vw), 20px);
-    font-weight: bold;
-    text-align: center;
-    white-space: nowrap;
-    overflow: visible;
-    text-overflow: ellipsis;
-    pointer-events: none;
-    color: inherit; /* Optional: overwritten via inline :style binding */
-  }
-
-  /* QR Code Container for Public Key */
-  .public-section {
-    position: absolute;
-    top: 13%;
-    right: 5.3%;
-    width: 18%;
-    height: auto;
-    pointer-events: none;
-    gap: 10px;
-  }
-
-  /* QR Code Container for Private Key */
-  .private-section {
-    position: absolute;
-    top: 3.8%;
-    left: 0.2%;
-    width: 18%;
-    height: auto;
-    pointer-events: none;
-  }
-
-  /* QR Code Image */
-  .qr-code {
-    width: clamp(21px, 7vw, 205px);
-    height: auto;
-  }
-
-  /* Step Labels */
-  .step-label1 .step-text,
-  .step-label2 .step-text,
-  .step-label3 .step-text {
-    font-size: 0.7rem;
-  }
-  .bch-amount {
-    margin-left: 16.3%;
-    margin-right: -10%;
-  }
-
-  /* QR Code and Positioning */
-  .selected-design .qr-code {
-    width: 2rem;
-    height: 2rem;
-  }
-
-  .selected-design .public-section {
-    position: absolute;
-    top: 9.8% !important;
-    left: 81%;
-    transform: translateX(-50%);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .selected-design .private-section {
-    position: absolute;
-    left: -1% !important;
-    top: 2.1% !important;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .wallet-address {
-    margin-top: 4%;
-    font-size: clamp(3.2px, 0.6vw, 5px) !important;
-    text-align: center;
-    word-break: break-word;
-    color: black;
-    max-width: 100px;
-  }
-
-  .private-key {
-    font-size: 0.18rem;
-    margin-right: 1%;
-    text-align: center;
-    word-break: break-word;
-    color: black;
-    max-width: 80px;
-  }
-
-  .selected-design .design-image {
-    width: 104%;
-    height: auto;
-  }
-
-  .wallets-container {
-    width: 100%;
-    padding: 3%;
-    position: relative;
-  }
-
-  .selected-design .design-image-container {
-    position: relative;
-    display: inline-block;
-    padding-top: 8px;
-    margin: -2px;
-  }
-
-  .selected-design .qr-code-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 48vh;
-    height: 35vh;
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    padding: 2px;
-  }
+  /* Customization + Token Options */
   .customization-section {
-    padding: 2px;
     background-color: #e2e8f0;
-  }
-  .individual-wallet-section {
-    margin-left: 1px;
-    margin-top: 0px;
-    font-size: 11px;
+    padding: 8px;
   }
 
-  /* Design Grid */
-  .design-grid {
-    display: flex !important;
-    flex-direction: column;
-    align-items: center;
-    height: auto;
-    gap: 1rem;
-    padding: 1rem 0;
-  }
-  .card-margin {
-    background-color: white !important;
-    margin: 18px;
-    border-radius: 14px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-    background-color: var(--q-color-white);
-    transition: transform 0.2s ease-in-out;
-    height: 73vh;
-  }
-
-  .design-preview {
-    width: 90vw !important;
-    max-width: 145%;
-    margin-right: 5%;
-  }
-  .dropdown-panel {
-    width: 81vw !important;
-    height: 25vh !important;
-  }
-  .p {
-    margin: 1px 0 1px !important;
-  }
-  .advanced-settings-row {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 1rem;
-    font-size: 12.7px !important;
-  }
-  .passphrase-input[data-v-11bdf92a] {
-    padding: 4px 6px;
-    border: 1px solid #ccc;
-    border-radius: 3px;
-  }
-  q-card__section
-    q-card__section--vert
-    qr-section
-    public-section
-    private-section {
-    width: 100%;
-    height: 100%;
-    display: flex;
-  }
-
-  /* Select Button */
-  .select-button {
-    font-size: 0.6rem;
-    line-height: 2%;
-    margin-bottom: 1%;
-    top: 40%;
-    width: 200px;
-    height: 5vh;
-  }
-
-  /* Customization Section */
   .customization-section .custom,
   .customization-section .dropdown,
   .customization-section .address,
   .customization-section .input-bar,
   .customization-section .encryption {
-    font-size: 0.6rem; /* merged smallest font size */
+    font-size: 0.7rem;
   }
 
-  /* Dropdown */
+  .step-label1 {
+    display: flex;
+    align-items: center;
+    padding: 3.5%;
+    background-color: rgb(51 65 85);
+    color: white;
+    cursor: pointer;
+    height: 43px;
+  }
+  .step-label2 {
+    display: flex;
+    align-items: center;
+    padding: 3.5%;
+    background-color: #e05458;
+    color: white;
+    cursor: pointer;
+    height: 43px;
+  }
+  .step-label3[data-v-11bdf92a] {
+    display: flex;
+    align-items: center;
+    padding: 3.5%;
+    background-color: rgb(51 65 85);
+    color: white;
+    cursor: pointer;
+    height: 43px;
+  }
+
+  .token-dropdown {
+    width: 92px;
+    height: 26px;
+    padding: 4px;
+    font-size: 0.7rem;
+  }
+
+  .individual-custom-amount {
+    font-size: 0.4rem;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin: 4px 0;
+    color: #333;
+  }
+
+  .individual-wallet-section {
+    font-size: 0.8rem;
+    margin-top: 4px;
+  }
+
+  /* Design Grid View */
+  .design-grid {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 0;
+  }
+
+  .design-preview {
+    width: 90vw;
+    max-width: 51vh;
+    margin-right: 12px;
+  }
+
+  .design-image {
+    width: 100%;
+    height: auto;
+  }
+  .design-image-container {
+    position: relative;
+    display: inline-block;
+    padding-top: 2px;
+    width: 104%;
+  }
+  .selected-design .design-image {
+    position: relative;
+    width: 100%;
+    height: auto;
+  }
+
+  .card-margin {
+    background-color: white;
+    border-radius: 14px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    height: auto;
+    padding: 1rem;
+    margin: 1rem 0;
+  }
+  .encryption {
+    padding: 5px 4px;
+    cursor: pointer;
+    border: 1px solid #333;
+    font-size: 13px;
+    font-family: "Lexend";
+    margin-left: 32px;
+    border-radius: 5px;
+    margin-bottom: 0rem;
+    margin-left: 5vh;
+  }
+
+  .select-button {
+    width: 71% !important;
+    font-size: 0.8rem !important;
+    padding: 1rem !important;
+  }
+
+  /* QR Code Sections */
+  .selected-design .qr-code {
+    position: relative;
+    width: clamp(18vh, 6vw, 10px) !important;
+    max-width: 121%;
+    height: auto;
+    display: block;
+  }
+  .selected-design .public-section {
+    position: relative;
+    left: 74% !important;
+    top: 11% !important;
+  }
+  .selected-design .private-section {
+    position: relative;
+    left: -2% !important;
+    top: 2.5% !important;
+  }
+
+  .wallet-address {
+    max-width: 65px;
+  }
+
+  .private-key {
+    font-size: clamp(0.1rem, 1vw, 1rem) !important;
+    text-align: center;
+    word-break: break-word;
+    max-width: 160px;
+    color: black;
+  }
+
+  /* Text Labels */
+  .step-label1 .step-text,
+  .step-label2 .step-text,
+  .step-label3 .step-text {
+    font-size: 0.9rem;
+  }
+
+  .bch-amount {
+    margin-left: 16%;
+    margin-right: -10%;
+  }
+
+  .bip38-label-text {
+    font-size: 0.75rem;
+    color: #333;
+    font-weight: bold;
+    margin-top: 10px;
+  }
+
+  .advanced-settings-row {
+    font-size: 0.75rem;
+    gap: 1rem;
+    flex-wrap: wrap;
+    display: flex;
+    align-items: center;
+  }
+
+  /* Drop Panel */
   .dropdown-panel {
-    width: 51vw; /* merged smallest width */
-    height: 50vh; /* merged tallest height */
+    width: 90vw;
+    height: auto;
+    padding: 1rem;
   }
 
   .dropdown-image {
@@ -3416,22 +2918,11 @@ export default {
     height: 20px;
   }
 
-  .dropdown-panel .strong,
-  .dropdown-panel .advanced-settings-row {
-    font-size: 0.2rem;
-    bottom: 10%;
-  }
-
-  /* Generate Button */
-  .generate-btn {
-    font-size: 0.5rem;
-  }
-
-  /* Additional Styles */
+  /* Misc Elements */
   .step-container {
     border: 1px solid #ddd;
     border-radius: 7px;
-    margin-bottom: 3px;
+    margin-bottom: 1rem;
     overflow: hidden;
     max-width: 100%;
   }
@@ -3439,38 +2930,12 @@ export default {
   .overlay {
     position: absolute;
     top: 0;
-    left: 2px;
+    left: 0;
     width: 100%;
     height: 100%;
     background: rgba(0, 0, 0, 0.4);
     opacity: 0;
     transition: opacity 0.3s ease;
-  }
-
-  /* Added styles for public-qr and private-qr */
-  .public-qr {
-    width: 41px !important;
-    height: 41.1px !important;
-    margin-right: -10px !important;
-    margin-top: -1px !important;
-  }
-
-  .private-qr {
-    width: 41px !important;
-    height: 41px !important;
-    margin-left: -1px !important;
-    margin-top: -3px !important;
-  }
-  .bip38-label {
-    text-align: center;
-    margin-bottom: -100px;
-    transform: translateX(-50%) rotate(-180deg);
-  }
-  .bip38-label-text {
-    font-size: 0.8rem;
-    color: #333;
-    font-weight: bold;
-    margin-top: 10px;
   }
 }
 </style>
