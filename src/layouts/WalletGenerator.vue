@@ -468,6 +468,7 @@
                         v-if="selectedAsset === 'Token' && selectedTokenObject"
                         :src="selectedTokenObject.image_url || 'default.png'"
                         alt="Token Logo"
+                        class="token-logo"
                         style="
                           position: absolute;
                           top: 50%;
@@ -2652,7 +2653,9 @@ export default {
     padding: 3%;
     position: relative;
   }
-
+  .selected-design {
+    width: 100%;
+  }
   /* Header */
   .header-padding {
     background-color: rgb(30, 41, 59);
@@ -2691,10 +2694,10 @@ export default {
 
   /* Inputs and Buttons */
   .input-bar {
-    width: 26px;
+    width: 4vh;
     height: 25px;
-    padding: 8px;
-    margin-left: 6px;
+    padding: 4px;
+    margin-left: 0px;
   }
   .address {
     font-weight: bold;
@@ -2713,21 +2716,44 @@ export default {
     width: 125px;
   }
   .expand-btn {
-    text-size-adjust: 87%;
+    text-size-adjust: 85%;
     width: 100% !important;
-    min-width: 130px;
+    min-width: 101px;
   }
-
+  .img {
+    position: absolute;
+    top: 50%;
+    left: -9%;
+    transform: translate(-50%, -50%);
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    z-index: 10;
+  }
   .toggle-button {
     font-size: 12px;
     width: 24px;
     height: 24px;
   }
+  .token-logo {
+    position: absolute;
+    top: 50% !important;
+    left: -9% !important;
+    transform: translate(-50%, -50%);
+    width: 2rem !important;
+    height: 2rem !important;
+    border-radius: 50%;
+    z-index: 10;
+  }
+  .step-text {
+    margin-left: 3px;
+    font-size: 18px;
+    font-weight: bold;
+  }
 
   .generate-btn {
     font-size: 0.75rem;
   }
-
   /* Customization + Token Options */
   .customization-section {
     background-color: #e2e8f0;
@@ -2760,14 +2786,14 @@ export default {
     cursor: pointer;
     height: 43px;
   }
-  .step-label3[data-v-11bdf92a] {
+  .step-label3 {
     display: flex;
     align-items: center;
-    padding: 3.5%;
+    padding: 2.5% 2.5%;
     background-color: rgb(51 65 85);
     color: white;
     cursor: pointer;
-    height: 43px;
+    height: 43px !important;
   }
 
   .token-dropdown {
@@ -2836,10 +2862,9 @@ export default {
     border: 1px solid #333;
     font-size: 13px;
     font-family: "Lexend";
-    margin-left: 32px;
     border-radius: 5px;
     margin-bottom: 0rem;
-    margin-left: 5vh;
+    margin-left: 4vh;
   }
 
   .select-button {
@@ -2851,20 +2876,20 @@ export default {
   /* QR Code Sections */
   .selected-design .qr-code {
     position: relative;
-    width: clamp(18vh, 6vw, 10px) !important;
-    max-width: 121%;
+    width: clamp(24vh, 6vw, 50px) !important;
+    max-width: 166%;
     height: auto;
     display: block;
   }
   .selected-design .public-section {
-    position: relative;
-    left: 74% !important;
-    top: 11% !important;
+    position: relative !important;
+    left: 74.5% !important;
+    top: 7% !important;
   }
   .selected-design .private-section {
     position: relative;
-    left: -2% !important;
-    top: 2.5% !important;
+    left: -4% !important;
+    top: 0.5% !important;
   }
 
   .wallet-address {
