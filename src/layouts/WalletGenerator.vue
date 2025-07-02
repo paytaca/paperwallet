@@ -2476,15 +2476,15 @@ export default {
     margin-top: 2px;
   }
   .design-preview {
-    width: 110px;
+    width: 186px;
   }
   .select-button {
-    font-size: 0.6rem;
+    font-size: 13px !important;
+    height: 4vh;
     line-height: 2%;
     margin-bottom: 1%;
     top: 40%;
-    width: 100px;
-    height: 1vh;
+    width: 168px;
   }
   .customization-section .custom,
   .customization-section .dropdown,
@@ -2510,8 +2510,9 @@ export default {
     font-size: 0.5rem;
   }
   .selected-design .public-section {
-    right: 8.5% !important;
     top: 9.9% !important;
+    left: 73%;
+    position: absolute !important;
   }
   .selected-design .private-section {
     left: -3% !important;
@@ -2519,13 +2520,22 @@ export default {
   }
   .private-key {
     font-size: 0.18rem;
-    top: 22%;
+    top: 24% !important;
     margin-right: 1%;
   }
   .wallet-address {
-    margin-top: 1%;
-    right: -18px;
-    font-size: clamp(5px, 0.7vw, 6.8px) !important;
+    font-size: clamp(6.5px, 0.7vw 5.376px, 6.8px) !important;
+    left: 60% !important;
+  }
+  .token-logo {
+    position: absolute;
+    top: 50% !important;
+    left: -9% !important;
+    transform: translate(-50%, -50%);
+    width: 2rem !important;
+    height: 2rem !important;
+    border-radius: 50%;
+    z-index: 10;
   }
 }
 
