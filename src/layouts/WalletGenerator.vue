@@ -2886,7 +2886,7 @@ export default {
   /* QR Code Sections */
   .selected-design .qr-code {
     position: relative;
-    width: clamp(24vh, 6vw, 50px) !important;
+    width: clamp(8.5vh, 6vw, 15px) !important;
     max-width: 166%;
     height: auto;
     display: block;

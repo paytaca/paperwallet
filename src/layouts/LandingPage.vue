@@ -382,7 +382,7 @@ export default {
     height: 30px;
   }
   .header-padding-text {
-    font-size: 12px;
+    font-size: 16px;
   }
   .paper5-logo {
     height: 30px;
