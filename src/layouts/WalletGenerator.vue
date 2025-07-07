@@ -837,18 +837,23 @@ export default {
 
     handleAssetChange() {
       if (this.selectedAsset === "Token") {
-        for (let i = 0; i < this.generatedWallets.length; i++) {
-          const converted = this.convertCashAddress(
-            this.generatedWallets[i].address
-          );
-          this.generatedWallets[i].displayAddress =
-            converted.address || this.generatedWallets[i].address;
+        for (let wallet of this.generatedWallets) {
+          // Convert to CashToken address
+          const converted = this.convertCashAddress(wallet.address);
+          wallet.displayAddress = converted.address || wallet.address;
+
+          // ✅ Reset the individual wallet amount
+          wallet.customAmount = "";
         }
-        // Convert BCH address to CashToken address
+
+        // ✅ Reset global amount input
+        this.paymentDetails = "";
       } else {
-        // Show original BCH address
+        // Switch back to BCH addresses
         this.displayAddress = this.generatedWallets[0].address;
       }
+
+      // ✅ Regenerate QR codes after address & amount reset
       this.updatePublicQRCodes();
     },
     // Call this once on mounted to initialize displayedAddress
@@ -1195,29 +1200,45 @@ export default {
     async updateQRCodeForWallet(wallet) {
       if (!wallet) return;
 
-      // Default BCH address and prefix
+      // Default to BCH address
       let selectedAddress = wallet.address;
       let uriPrefix = "bitcoincash:";
 
-      // Use CashToken address and prefix if option is set
-      if (this.displayAddress === "Token" && wallet.displayAddress) {
+      // Use CashToken address if selected
+      const isToken = this.selectedAsset === "Token";
+
+      if (isToken && wallet.displayAddress) {
         selectedAddress = wallet.displayAddress;
-        uriPrefix = "bitcoincash:"; // <-- Correct prefix for CashToken
+        uriPrefix = "bitcoincash:"; // CashTokens also use the same prefix
       }
 
-      // Clean address by removing any prefix
       const cleanAddress = selectedAddress.replace(/^(bitcoincash:)/, "");
 
       let qrDataPublic = `${uriPrefix}${cleanAddress}`;
 
-      if (this.individualWalletOption && wallet.customAmount > 0) {
+      // CashToken URI format
+      if (isToken && this.selectedTokenId) {
+        const cleanTokenId = this.selectedTokenId.replace(/^ct\//, "");
+        qrDataPublic += `?c=${cleanTokenId}`;
+
+        if (wallet.customAmount > 0) {
+          const token = this.tokens.find(
+            (t) =>
+              t.id === this.selectedTokenId || t.symbol === this.selectedToken
+          );
+          const scaledAmount =
+            wallet.customAmount * 10 ** (token?.decimals || 0);
+          qrDataPublic += `&f=${scaledAmount}`;
+        }
+      } else if (wallet.customAmount > 0) {
+        // Standard BCH format
         qrDataPublic += `?amount=${wallet.customAmount}`;
       }
 
       try {
         wallet.qrCodePublic = await QRCode.toDataURL(qrDataPublic);
       } catch (error) {
-        console.error(`Error updating QR code for ${selectedAddress}:`, error);
+        console.error(`Error updating QR code for ${cleanAddress}:`, error);
       }
     },
 
