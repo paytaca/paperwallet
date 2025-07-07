@@ -43,14 +43,6 @@
         />
       </div>
     </div>
-
-    <!-- 🆕 Jumbled text that moves dynamically -->
-    <p
-      class="jumbled-text"
-      :style="{ transform: `translate(${offsetX}px, ${offsetY}px)` }"
-    >
-      {{ jumbledText }}
-    </p>
   </div>
 </template>
 
