@@ -187,63 +187,75 @@
             <q-dialog v-model="tokenDialog">
               <q-card class="card-margin bg-white static-dialog">
                 <q-card class="card-margin">
-                  <!-- Apply the new margin class here -->
                   <q-card-section>
                     <div class="text-h6">Select a Token</div>
                   </q-card-section>
-                  <div class="search-bar-wrapper">
-                    <q-card-section class="q-pb-none q-mb-lg">
-                      <q-input
-                        dense
-                        debounce="200"
-                        filled
-                        v-model="searchQuery"
-                        placeholder="Search by name or symbol"
-                        clearable
-                      >
-                        <template v-slot:append>
-                          <q-icon name="search" />
-                        </template>
-                      </q-input>
-                    </q-card-section>
-                  </div>
-                  <q-card-section
-                    class="q-pa-none"
-                    style="max-height: 450px; overflow-y: auto"
-                  >
-                    <div v-if="loadingTokens" class="spinner-container">
-                      <q-spinner size="sm" color="primary" position="center" />
-                    </div>
-
-                    <q-list class="q-pa-none scroll-container">
+                  <q-card-section class="q-pa-md">
+                    <q-list>
                       <q-item
-                        v-for="token in filteredTokens"
-                        :key="token.token_id || token.id || token.symbol"
                         clickable
-                        @click="selectToken(token)"
+                        @click="tokenDialogOption = 'any'"
                         class="q-my-xs q-pa-sm token-item"
+                        :class="{ 'selected-option': tokenDialogOption === 'any' }"
                       >
                         <q-item-section>
-                          <div class="text-subtitle1">
-                            {{ token.name }} ({{ token.symbol }})
-                          </div>
-                          <div
-                            v-if="token.token_id || token.id"
-                            class="text-caption text-grey"
-                            style="white-space: pre-line"
-                          >
-                            c={{ formatTokenId(token.token_id || token.id) }}
+                          <div class="text-subtitle1">Any CashToken</div>
+                          <div class="text-caption text-grey">
+                            No specific token required
                           </div>
                         </q-item-section>
+                        <q-item-section side>
+                          <q-radio v-model="tokenDialogOption" val="any" />
+                        </q-item-section>
                       </q-item>
-                      <div
-                        v-if="!filteredTokens.length && !loadingTokens"
-                        class="q-pa-sm text-grey"
+                      <q-item
+                        clickable
+                        @click="tokenDialogOption = 'category'"
+                        class="q-my-xs q-pa-sm token-item"
+                        :class="{ 'selected-option': tokenDialogOption === 'category' }"
                       >
-                        No tokens found
-                      </div>
+                        <q-item-section>
+                          <div class="text-subtitle1">Give CashToken Category</div>
+                          <div class="text-caption text-grey">
+                            Specify a token category to receive
+                          </div>
+                        </q-item-section>
+                        <q-item-section side>
+                          <q-radio v-model="tokenDialogOption" val="category" />
+                        </q-item-section>
+                      </q-item>
                     </q-list>
+                    <div v-if="tokenDialogOption === 'category'" class="q-mt-md">
+                      <q-input
+                        dense
+                        filled
+                        v-model="tokenCategoryInput"
+                        placeholder="Enter token category (hex)"
+                        class="q-mb-sm"
+                      />
+                      <div v-if="tokenMetadata" class="token-preview q-mt-sm">
+                        <div class="row items-center">
+                          <img
+                            :src="tokenMetadata.uris?.icon || '/ct-logo.png'"
+                            alt=""
+                            class="token-preview-icon"
+                            @error="$event.target.src = '/ct-logo.png'"
+                          />
+                          <div class="q-ml-sm">
+                            <div class="text-subtitle2">{{ tokenMetadata.name }}</div>
+                            <div class="text-caption text-grey">{{ tokenMetadata.token?.symbol }}</div>
+                          </div>
+                        </div>
+                      </div>
+                      <div v-if="loadingTokens" class="spinner-container">
+                        <q-spinner size="sm" color="primary" />
+                      </div>
+                    </div>
                   </q-card-section>
+                  <q-card-actions align="right">
+                    <q-btn flat label="Cancel" v-close-popup color="primary" />
+                    <q-btn flat label="Confirm" @click="confirmTokenSelection" color="primary" />
+                  </q-card-actions>
                 </q-card>
               </q-card>
             </q-dialog>
@@ -307,25 +319,36 @@
                   style="display: block"
                   >Passphrase:
                 </label>
-                <input
-                  id="passphrase"
-                  type="text"
-                  v-model="passphrase"
-                  class="passphrase-input"
-                  style="
-                    width: 40%;
-                    padding: 0.2rem;
-                    font-size: 0.9rem;
-                    border: 1px solid #ccc;
-                    border-radius: 5px;
-                  "
-                />
+                <div class="passphrase-field">
+                  <input
+                    id="passphrase"
+                    type="text"
+                    v-model="passphrase"
+                    :disabled="!encryptOption"
+                    class="passphrase-input"
+                    style="
+                      width: 100%;
+                      padding: 0.2rem;
+                      font-size: 0.9rem;
+                      border: 1px solid #ccc;
+                      border-radius: 5px;
+                    "
+                  />
+                  <div
+                    v-if="passphraseError"
+                    class="passphrase-error"
+                  >
+                    {{ passphraseError }}
+                  </div>
+                </div>
 
                 <!-- Generate Button -->
                 <button
                   v-if="encryptOption"
                   @click="generateMultipleKeys()"
+                  :disabled="!isPassphraseValid"
                   class="generate-btn"
+                  :class="{ 'generate-btn-disabled': !isPassphraseValid }"
                 >
                   Generate
                 </button>
@@ -466,7 +489,7 @@
                       <!-- Token logo on the left -->
                       <img
                         v-if="selectedAsset === 'Token' && selectedTokenObject"
-                        :src="selectedTokenObject.image_url || 'default.png'"
+                        :src="selectedTokenObject.icon || '/ct-logo.png'"
                         alt="Token Logo"
                         class="token-logo"
                         style="
@@ -633,19 +656,18 @@ export default {
       showAdvanceSettingdropdown: false,
       encryptOption: false,
       passphrase: "",
+      passphraseError: "",
       individualWalletOption: false,
       wallet: { customAmount: "" },
       selectedAsset: "Bitcoin Cash",
-      selectedToken: "",
       selectedTokenId: "",
-      tokens: [],
+      tokenMetadata: null,
+      tokenDialog: false,
+      tokenDialogOption: "any",
+      tokenCategoryInput: "",
       loadingTokens: false,
       suppressWatcher: false,
       isTestNet: false,
-      tokenSearch: "",
-      tokenDialog: false,
-      searchQuery: "",
-      filteredTokens: [],
       designs: [
         { id: 1, image: pw1, textColor: "black", addressColor: "white" },
         { id: 2, image: pw2, textColor: "white", addressColor: "black" },
@@ -661,138 +683,57 @@ export default {
     };
   },
 
-  async created() {
+  created() {
     document.body.classList.toggle("dark-mode", this.isDarkMode);
     document.body.classList.toggle("light-mode", this.isLightMode);
 
-    this.loadingTokens = true;
-
-    async function checkImageLoad(url) {
-      return new Promise((resolve) => {
-        const img = new Image();
-        img.onload = () => resolve(true);
-        img.onerror = () => resolve(false);
-        img.src = url;
-      });
-    }
-
-    try {
-      let allResults = [];
-      let nextUrl =
-        "https://watchtower.cash/api/cashtokens/fungible/?limit=50&offset=1";
-
-      // Fetch all pages of tokens
-      while (nextUrl) {
-        const res = await fetch(nextUrl);
-        const data = await res.json();
-        allResults = allResults.concat(data.results);
-        nextUrl = data.next;
-      }
-
-      // Process tokens with image validation
-      const tokenProcessingPromises = allResults.map(async (token) => {
-        if (!token.name || !token.symbol || !token.image_url) return null;
-        if (token.name.length > 30 || token.symbol.length > 30) return null;
-
-        // Skip IPFS URLs
-        if (
-          token.image_url.startsWith("ipfs://") ||
-          token.image_url.includes("ipfs.dweb.link")
-        ) {
-          return null;
-        }
-
-        try {
-          // Check if image loads (with 2 second timeout)
-          const imageValid = await Promise.race([
-            checkImageLoad(token.image_url),
-            new Promise((resolve) => setTimeout(() => resolve(false), 2000)),
-          ]);
-
-          return {
-            ...token,
-            image_url: imageValid ? token.image_url : "/ct-logo.png",
-            fallbackImage: "/ct-logo.png",
-          };
-        } catch {
-          return {
-            ...token,
-            image_url: "/ct-logo.png",
-            fallbackImage: "/ct-logo.png",
-          };
-        }
-      });
-
-      // Wait for all token processing to complete
-      const processedTokens = await Promise.all(tokenProcessingPromises);
-      const validTokens = processedTokens.filter((t) => t !== null);
-
-      // Sort tokens alphabetically
-      validTokens.sort((a, b) =>
-        a.name.toLowerCase().localeCompare(b.name.toLowerCase())
-      );
-
-      // Add "Any CashToken" at the top
-      this.tokens = [
-        {
-          name: "Any CashToken",
-          symbol: "CT",
-          image_url: "/ct-logo.png",
-          fallbackImage: "/ct-logo.png",
-        },
-        ...validTokens,
-      ];
-
-      this.filteredTokens = this.tokens;
-      console.log("Successfully loaded tokens:", this.tokens);
-    } catch {
-      console.error("Failed to fetch tokens.");
-      // Fallback to just the Any CashToken if all else fails
-      this.tokens = [
-        {
-          name: "Any CashToken",
-          symbol: "CT",
-          image_url: "/ct-logo.png",
-          fallbackImage: "/ct-logo.png",
-        },
-      ];
-      this.filteredTokens = this.tokens;
-    } finally {
-      this.loadingTokens = false;
-    }
+    this.tokenDialogOption = "any";
+    this.tokenMetadata = null;
+    this.tokenCategoryInput = "";
   },
 
   computed: {
+    selectedToken() {
+      return this.tokenMetadata?.symbol || "";
+    },
+
     selectedTokenObject() {
-      return this.tokens.find((token) => token.symbol === this.selectedToken);
+      if (this.selectedAsset !== "Token") return null;
+      // When "Any CashToken" is selected (no specific category), show the CT logo
+      if (!this.selectedTokenId) {
+        return { icon: "/ct-logo.png" };
+      }
+      return this.tokenMetadata;
+    },
+
+    tokenDecimals() {
+      return this.tokenMetadata?.decimals ?? 0;
+    },
+
+    isPassphraseValid() {
+      if (!this.encryptOption) return true;
+      const pw = this.passphrase || "";
+      if (pw.length < 5 || pw.length > 50) return false;
+      if (/\s/.test(pw)) return false;
+      const validRegex = /^[a-zA-Z0-9!@#$%^&*()_\-+=~`<>?/.,\[\]{}|\\]+$/;
+      return validRegex.test(pw);
     },
 
     availableAmounts() {
       if (this.selectedAsset === "Token") {
-        const token = this.tokens.find(
-          (t) =>
-            t.id === this.selectedTokenId || t.symbol === this.selectedToken
-        );
-        const decimals = token ? token.decimals : 0;
+        const decimals = this.tokenDecimals;
         if (decimals === 0) {
-          // Only whole numbers allowed
           return [1, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50];
         } else {
-          // Decimals allowed
           return [0.25, 0.75, 1, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50];
         }
       } else {
-        // BCH
         return [0.0001, 0.001, 0.005, 0.05, 0.1, 0.25, 0.5, 0.75, 1, 5, 10];
       }
     },
     customAmountOptions() {
       if (this.selectedAsset === "Token") {
-        const token = this.tokens.find(
-          (t) =>
-            t.id === this.selectedTokenId || t.symbol === this.selectedToken
-        );
-        const decimals = token ? token.decimals : 0;
+        const decimals = this.tokenDecimals;
         if (decimals === 0) {
           return [1, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50];
         } else {
@@ -918,12 +859,79 @@ export default {
       }
     },
 
-    selectToken(token) {
-      this.selectedToken = token.symbol;
-      this.selectedTokenId = token.token_id || token.id || "";
+    validatePassphrase() {
+      if (!this.encryptOption) {
+        this.passphraseError = "";
+        return true;
+      }
+
+      const pw = this.passphrase || "";
+
+      if (pw.length === 0) {
+        this.passphraseError = "Passphrase is required when BIP38 is enabled.";
+        return false;
+      }
+
+      if (pw.length < 5) {
+        this.passphraseError =
+          "Passphrase must be at least 5 characters long.";
+        return false;
+      }
+
+      if (pw.length > 50) {
+        this.passphraseError =
+          "Passphrase must not exceed 50 characters.";
+        return false;
+      }
+
+      if (/\s/.test(pw)) {
+        this.passphraseError = "Passphrase must not contain spaces.";
+        return false;
+      }
+
+      const validRegex = /^[a-zA-Z0-9!@#$%^&*()_\-+=~`<>?/.,\[\]{}|\\]+$/;
+      if (!validRegex.test(pw)) {
+        this.passphraseError =
+          "Passphrase may only contain alphanumeric characters and the symbols !@#$%^&*()_-+=~`<>?/.,[]{}|\\";
+        return false;
+      }
+
+      this.passphraseError = "";
+      return true;
+    },
+
+    async confirmTokenSelection() {
+      if (this.tokenDialogOption === "any") {
+        this.selectedTokenId = "";
+        this.tokenMetadata = null;
+      } else {
+        const category = this.tokenCategoryInput.trim();
+        if (!category) return;
+        this.loadingTokens = true;
+        await this.fetchTokenMetadata(category);
+        this.loadingTokens = false;
+      }
       this.tokenDialog = false;
-      this.searchQuery = "";
+      this.tokenCategoryInput = "";
       this.updatePublicQRCodes();
+    },
+
+    async fetchTokenMetadata(category) {
+      try {
+        const res = await fetch(`https://bcmr.paytaca.com/api/tokens/${category}/`);
+        if (!res.ok) throw new Error("Not found");
+        const data = await res.json();
+        this.selectedTokenId = data.token.category;
+        this.tokenMetadata = {
+          symbol: data.token.symbol,
+          decimals: data.token.decimals,
+          icon: data.uris?.icon || "/ct-logo.png",
+        };
+      } catch (error) {
+        console.error("Failed to fetch token metadata:", error);
+        this.selectedTokenId = "";
+        this.tokenMetadata = null;
+      }
     },
     async sha256(data = "", encoding = "utf8") {
       let buffer;
@@ -1033,6 +1041,16 @@ export default {
     },
 
     async generateMultipleKeys() {
+      if (this.encryptOption) {
+        const isValid = this.validatePassphrase();
+        if (!isValid) {
+          this.loading = false;
+          return;
+        }
+      } else {
+        this.passphraseError = "";
+      }
+
       this.loading = true;
       if (this.encryptOption) {
         this.wallets = [];
@@ -1170,11 +1188,7 @@ export default {
           const cleanTokenId = this.selectedTokenId.replace(/^ct\//, "");
           qrDataPublic += `?c=${cleanTokenId}`;
           if (amount > 0) {
-            const token = this.tokens.find(
-              (t) =>
-                t.id === this.selectedTokenId || t.symbol === this.selectedToken
-            );
-            amount = amount * 10 ** (token?.decimals || 0);
+            amount = amount * 10 ** this.tokenDecimals;
             qrDataPublic += `&f=${amount}`; // Use 'f' for amount as in your example
           }
         } else if (amount > 0) {
@@ -1190,18 +1204,6 @@ export default {
         }
       }
     },
-    filterTokens() {
-      // No search? List all tokens
-      const q = this.searchQuery.trim().toLowerCase();
-      if (!q) return this.tokens || [];
-      // Search: Only show matching tokens
-      return (this.tokens || []).filter(
-        (token) =>
-          (token.name && token.name.toLowerCase().includes(q)) ||
-          (token.symbol && token.symbol.toLowerCase().includes(q))
-      );
-    },
-
     async updateQRCodeForWallet(wallet) {
       if (!wallet) return;
 
@@ -1227,12 +1229,8 @@ export default {
         qrDataPublic += `?c=${cleanTokenId}`;
 
         if (wallet.customAmount > 0) {
-          const token = this.tokens.find(
-            (t) =>
-              t.id === this.selectedTokenId || t.symbol === this.selectedToken
-          );
           const scaledAmount =
-            wallet.customAmount * 10 ** (token?.decimals || 0);
+            wallet.customAmount * 10 ** this.tokenDecimals;
           qrDataPublic += `&f=${scaledAmount}`;
         }
       } else if (wallet.customAmount > 0) {
@@ -1399,10 +1397,7 @@ export default {
     individualWalletOption(newVal) {
       if (this.suppressWatcher) return;
 
-      const token = this.tokens.find(
-        (t) => t.id === this.selectedTokenId || t.symbol === this.selectedToken
-      );
-      const decimals = token ? token.decimals : 0;
+      const decimals = this.tokenDecimals;
 
       if (newVal) {
         this.generatedWallets.forEach((wallet) => {
@@ -1426,25 +1421,19 @@ export default {
         });
       }
     },
-    searchQuery: {
-      handler(query) {
-        const lowerQuery = (query || "").trim().toLowerCase();
-        if (!this.tokens || this.tokens.length === 0) {
-          this.filteredTokens = []; // Or some default value
-          return;
-        }
-        if (!lowerQuery) {
-          this.filteredTokens = this.tokens;
-        } else {
-          this.filteredTokens = this.tokens.filter(
-            (token) =>
-              token.name.toLowerCase().includes(lowerQuery) ||
-              token.symbol.toLowerCase().includes(lowerQuery)
-          );
-        }
-      },
-      searchQuery: "filterTokens",
-      tokens: "filterTokens",
+    passphrase(newVal) {
+      if (this.encryptOption && newVal) {
+        this.validatePassphrase();
+      } else {
+        this.passphraseError = "";
+      }
+    },
+    encryptOption(newVal) {
+      if (!newVal) {
+        this.passphraseError = "";
+      } else if (this.passphrase) {
+        this.validatePassphrase();
+      }
     },
   },
 };
@@ -1655,6 +1644,20 @@ export default {
   border-radius: 3px;
 }
 
+.passphrase-field {
+  position: relative;
+  width: 40%;
+}
+
+.passphrase-error {
+  color: #e53e3e;
+  font-size: 0.8rem;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin-top: 0.2rem;
+}
+
 .generate-btn {
   padding: 6px 10px;
   background-color: rgb(239, 246, 255);
@@ -1669,6 +1672,11 @@ export default {
 .generate-btn:hover {
   background-color: #e2e8f0;
   opacity: 10px;
+}
+
+.generate-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .encryption {
