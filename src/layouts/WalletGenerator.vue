@@ -284,74 +284,58 @@
                 </strong>
               </p>
 
-              <div
-                class="advanced-settings-row"
-                style="
-                  display: flex;
-                  flex-wrap: wrap;
-                  align-items: center;
-                  gap: 1rem;
-                  font-size: 0.95rem;
-                "
-              >
-                <input type="checkbox" v-model="encryptOption" id="bip38" />
-
-                <label for="bip38">
-                  BIP38 Encrypt?
-                  <span class="tooltip-container" style="position: relative">
-                    <a class="what-is-this" href="#" style="margin-left: 4px"
-                      >(What's this?)
-                    </a>
-                    <span class="tooltip-text">
-                      Selecting this option allows you to encrypt your wallet
-                      with a password you choose. You will not be able to spend
-                      from the wallet without this password. The benefit is
-                      additional security, but be careful — there is no way to
-                      recover your password if you forget it!
+              <div class="bip38-form">
+                <!-- BIP38 Checkbox Row -->
+                <div class="bip38-checkbox-row">
+                  <input type="checkbox" v-model="encryptOption" id="bip38" />
+                  <label for="bip38" class="bip38-checkbox-label">
+                    BIP38 Encrypt?
+                    <span class="tooltip-container" style="position: relative">
+                      <a class="what-is-this" href="#" style="margin-left: 4px"
+                        >(What's this?)
+                      </a>
+                      <span class="tooltip-text">
+                        Selecting this option allows you to encrypt your wallet
+                        with a password you choose. You will not be able to spend
+                        from the wallet without this password. The benefit is
+                        additional security, but be careful — there is no way to
+                        recover your password if you forget it!
+                      </span>
                     </span>
-                  </span>
-                </label>
-
-                <!-- Passphrase -->
-                <label
-                  for="passphrase"
-                  class="passphrase-label"
-                  style="display: block"
-                  >Passphrase:
-                </label>
-                <div class="passphrase-field">
-                  <input
-                    id="passphrase"
-                    type="text"
-                    v-model="passphrase"
-                    :disabled="!encryptOption"
-                    class="passphrase-input"
-                    style="
-                      width: 100%;
-                      padding: 0.2rem;
-                      font-size: 0.9rem;
-                      border: 1px solid #ccc;
-                      border-radius: 5px;
-                    "
-                  />
-                  <div
-                    v-if="passphraseError"
-                    class="passphrase-error"
-                  >
-                    {{ passphraseError }}
-                  </div>
+                  </label>
                 </div>
 
-                <!-- Generate Button -->
-                <button
-                  v-if="encryptOption"
-                  @click="generateMultipleKeys()"
-                  :disabled="!isPassphraseValid"
-                  class="generate-btn"
-                  :class="{ 'generate-btn-disabled': !isPassphraseValid }"
-                >
-                  Generate
-                </button>
+                <!-- Passphrase + Generate Form (below checkbox) -->
+                <div v-if="encryptOption" class="passphrase-form">
+                  <div class="passphrase-field">
+                    <label for="passphrase" class="passphrase-label">
+                      Passphrase:
+                    </label>
+                    <input
+                      id="passphrase"
+                      type="text"
+                      v-model="passphrase"
+                      class="passphrase-input"
+                      placeholder="Enter passphrase (5–50 chars)"
+                      autocomplete="off"
+                    />
+                    <div
+                      v-if="passphraseError"
+                      class="passphrase-error"
+                    >
+                      {{ passphraseError }}
+                    </div>
+                  </div>
+
+                  <button
+                    @click="generateMultipleKeys()"
+                    :disabled="!isPassphraseValid"
+                    class="generate-btn"
+                    :class="{ 'generate-btn-disabled': !isPassphraseValid }"
+                  >
+                    Generate
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -1634,47 +1618,92 @@ export default {
   color: rgb(51, 65, 85);
 }
 
-.passphrase {
-  margin-left: 20px;
+/* BIP38 Form */
+.bip38-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
 }
 
-.passphrase-input {
-  padding: 4px 6px;
-  border: 1px solid #ccc;
-  border-radius: 3px;
+.bip38-checkbox-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.95rem;
+}
+
+.bip38-checkbox-label {
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.passphrase-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
 }
 
 .passphrase-field {
   position: relative;
-  width: 40%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.passphrase-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.passphrase-input {
+  width: 100%;
+  padding: 0.5rem 0.6rem;
+  font-size: 0.9rem;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-sizing: border-box;
+}
+
+.passphrase-input:focus {
+  outline: none;
+  border-color: #00cfcf;
+  box-shadow: 0 0 0 2px rgba(0, 207, 207, 0.2);
+}
+
+.passphrase-input:disabled {
+  background-color: #f0f0f0;
+  cursor: not-allowed;
 }
 
 .passphrase-error {
   color: #e53e3e;
   font-size: 0.8rem;
-  position: absolute;
-  top: 100%;
-  left: 0;
-  margin-top: 0.2rem;
+  line-height: 1.3;
+  word-break: break-word;
 }
 
 .generate-btn {
-  padding: 6px 10px;
+  padding: 0.55rem 1.2rem;
   background-color: rgb(239, 246, 255);
   color: rgb(51, 65, 85);
-  font-size: 15px;
-  border: 2px;
-  border-radius: 4px;
+  font-size: 0.95rem;
+  border: 2px solid rgb(51, 65, 85);
+  border-radius: 6px;
   cursor: pointer;
   font-weight: bold;
+  width: 100%;
+  box-sizing: border-box;
+  transition: background-color 0.2s, opacity 0.2s;
 }
 
-.generate-btn:hover {
+.generate-btn:hover:not(:disabled) {
   background-color: #e2e8f0;
-  opacity: 10px;
 }
 
-.generate-btn:disabled {
+.generate-btn:disabled,
+.generate-btn-disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
@@ -1698,7 +1727,7 @@ export default {
   display: relative;
 }
 
-.dropdown-panel input[type="text"] {
+.dropdown-panel input[type="text"]:not(.passphrase-input) {
   margin-left: 5px;
   padding: 4px;
   width: 250px;
@@ -2539,20 +2568,12 @@ export default {
     font-size: 0.8rem;
   }
   .dropdown-panel {
-    width: 54vw;
-    height: 29vh;
+    width: 100%;
+    height: auto;
   }
   .dropdown-image {
     width: 20px;
     height: 20px;
-  }
-  .dropdown-panel .strong,
-  .dropdown-panel .advanced-settings-row {
-    font-size: 0.2rem;
-    bottom: 10%;
-  }
-  .generate-btn {
-    font-size: 0.5rem;
   }
   .selected-design .public-section {
     top: 9.9% !important;
@@ -2659,14 +2680,6 @@ export default {
   .dropdown-image {
     width: 20px;
     height: 20px;
-  }
-  .dropdown-panel .strong,
-  .dropdown-panel .advanced-settings-row {
-    font-size: 0.2rem;
-    bottom: 10%;
-  }
-  .generate-btn {
-    font-size: 0.5rem;
   }
   .selected-design .public-section {
     right: 9% !important;
@@ -2806,9 +2819,38 @@ export default {
     font-weight: bold;
   }
 
-  .generate-btn {
-    font-size: 0.75rem;
+  /* BIP38 form mobile styles */
+  .bip38-form {
+    gap: 0.6rem;
   }
+
+  .bip38-checkbox-row {
+    font-size: 0.85rem;
+  }
+
+  .bip38-label {
+    font-size: 0.85rem;
+  }
+
+  .passphrase-label {
+    font-size: 0.8rem;
+  }
+
+  .passphrase-input {
+    font-size: 16px; /* prevents iOS zoom-on-focus */
+    padding: 0.55rem 0.6rem;
+  }
+
+  .passphrase-error {
+    font-size: 0.75rem;
+    line-height: 1.35;
+  }
+
+  .generate-btn {
+    font-size: 0.9rem;
+    padding: 0.6rem 1rem;
+  }
+
   /* Customization + Token Options */
   .customization-section {
     background-color: #e2e8f0;
@@ -2978,12 +3020,42 @@ export default {
     margin-top: 10px;
   }
 
-  .advanced-settings-row {
-    font-size: 0.75rem;
-    gap: 1rem;
-    flex-wrap: wrap;
-    display: flex;
-    align-items: center;
+  /* BIP38 Form on mobile */
+  .bip38-form {
+    gap: 0.6rem;
+  }
+
+  .bip38-checkbox-row {
+    font-size: 0.85rem;
+    align-items: flex-start;
+  }
+
+  .bip38-label {
+    font-size: 0.85rem;
+    line-height: 1.4;
+  }
+
+  .passphrase-form {
+    gap: 0.5rem;
+  }
+
+  .passphrase-label {
+    font-size: 0.8rem;
+  }
+
+  .passphrase-input {
+    padding: 0.55rem 0.6rem;
+    font-size: 16px; /* prevents iOS zoom */
+  }
+
+  .passphrase-error {
+    font-size: 0.78rem;
+    line-height: 1.35;
+  }
+
+  .generate-btn {
+    padding: 0.6rem 1rem;
+    font-size: 0.9rem;
   }
 
   /* Drop Panel */
