@@ -579,6 +579,7 @@
 </template>
 
 <script>
+import axios from "axios";
 import CryptoJS from "crypto-js";
 import QRCode from "qrcode";
 import { Buffer } from "buffer/";
@@ -1078,6 +1079,8 @@ export default {
         firstWallet.customAmount = this.customAmount;
         firstWallet.design = { ...this.selectedDesign };
         this.generatedWallets.push(firstWallet);
+
+        this.subscribeToWatchtower(firstWallet.address);
       }
 
       this.addressCount = Math.min(Math.max(this.addressCount, 0), MAX_WALLETS);
@@ -1130,6 +1133,7 @@ export default {
         wallet.design = { ...this.selectedDesign };
 
         this.generatedWallets.push(wallet);
+        this.subscribeToWatchtower(wallet.address);
       }
       this.handleAssetChange();
       this.loading = false;
@@ -1240,6 +1244,17 @@ export default {
         wallet.qrCodePublic = await QRCode.toDataURL(qrDataPublic);
       } catch (error) {
         console.error(`Error updating QR code for ${cleanAddress}:`, error);
+      }
+    },
+
+    async subscribeToWatchtower(address) {
+      try {
+        await axios.post("https://watchtower.cash/api/subscription/", {
+          address,
+          project_id: process.env.WATCHTOWER_PROJECT_ID
+        });
+      } catch (error) {
+        console.error("Watchtower subscription failed for", address, error);
       }
     },
 
