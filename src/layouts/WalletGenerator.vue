@@ -1010,10 +1010,11 @@ export default {
       let encryptedWIF = null;
 
       if (this.encryptOption && this.passphrase) {
+        const trimmedPassphrase = this.passphrase.trim();
         encryptedWIF = bip38.encrypt(
           Buffer.from(privateKey),
           true,
-          this.passphrase
+          trimmedPassphrase
         );
       }
 
